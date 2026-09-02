@@ -230,7 +230,9 @@
     margin-top:6px;padding-top:12px;border-top:1px solid var(--line);
     display:flex;flex-direction:column;gap:6px;
   }
-  .prod-row{display:flex;justify-content:space-between;font-size:0.88rem;}
+  .prod-row{display:flex;justify-content:space-between;font-size:0.88rem;cursor:pointer;padding:2px 0;border-radius:4px;}
+  .prod-row:hover{color:var(--flame-dark);}
+  .prod-row:hover .price{color:var(--flame-dark);}
   .prod-row .price{font-weight:600;color:var(--ink);}
   .no-products{font-size:0.85rem;color:var(--ink-soft);font-style:italic;}
   .catalog-link{font-size:0.85rem;font-weight:600;color:var(--navy);margin-top:4px;}
@@ -411,6 +413,7 @@
   .profile-head{
     display:flex;align-items:flex-end;gap:18px;
     margin-top:-116px;padding-bottom:20px;text-align:left;
+    position:relative;z-index:2;
   }
   .profile-avatar{
     width:300px;height:300px;border-radius:50%;border:5px solid var(--bg);
@@ -519,7 +522,7 @@
 
 <header class="site-header">
   <div class="wrap header-inner">
-    <a href="#/" class="brand">
+    <a href="#/" class="brand" id="brandHomeLink">
       <span class="brand-mark" id="headerBrandMark">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 17a2 2 0 100-4 2 2 0 000 4zM19 17a2 2 0 100-4 2 2 0 000 4z" stroke="#fff" stroke-width="2"/><path d="M5 15V8a1 1 0 011-1h5l5 5h3v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
       </span>
@@ -1115,7 +1118,7 @@
 
 <footer>
   <div class="wrap footer-inner">
-    <a href="#/" class="brand" style="font-size:1.05rem;">
+    <a href="#/" class="brand" id="footerBrandHomeLink" style="font-size:1.05rem;">
       <span class="brand-mark" id="footerBrandMark" style="width:26px;height:26px;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 17a2 2 0 100-4 2 2 0 000 4zM19 17a2 2 0 100-4 2 2 0 000 4z" stroke="#fff" stroke-width="2"/><path d="M5 15V8a1 1 0 011-1h5l5 5h3v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
       </span>
@@ -1525,7 +1528,7 @@
       const products = (biz.products || []).slice(0,2);
       const totalProducts = (biz.products || []).length;
       const productsHtml = products.length
-        ? products.map(p => `<div class="prod-row"><span>${escapeHtml(p.name)}</span><span class="price">$${escapeHtml(String(p.price))}</span></div>`).join('')
+        ? products.map(p => `<div class="prod-row" data-pid="${p.id}"><span>${escapeHtml(p.name)}</span><span class="price">$${escapeHtml(String(p.price))}</span></div>`).join('')
         : `<span class="no-products">Todavía no cargó su menú</span>`;
       const catalogLink = totalProducts > 2 ? `<span class="catalog-link">Ver catálogo completo (${totalProducts})</span>` : (totalProducts > 0 ? `<span class="catalog-link">Ver catálogo completo</span>` : '');
 
@@ -1543,6 +1546,14 @@
         </div>
         <div class="biz-products">${productsHtml}${catalogLink}</div>
       `;
+      card.querySelectorAll('.prod-row[data-pid]').forEach(row => {
+        row.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const prod = (biz.products || []).find(pp => pp.id === row.dataset.pid);
+          if(prod) openProductModal(prod, biz);
+        });
+      });
       cardGrid.appendChild(card);
     });
   }
@@ -1564,7 +1575,7 @@
     results.forEach(({product, bizId, bizName}) => {
       const card = document.createElement('a');
       card.className = 'result-card';
-      card.href = '#/negocio/' + bizId;
+      card.href = 'javascript:void(0)';
       card.innerHTML = `
         ${product.image ? `<img class="result-img" src="${product.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
@@ -1574,6 +1585,10 @@
           <p class="result-biz">De <strong>${escapeHtml(bizName)}</strong></p>
         </div>
       `;
+      card.addEventListener('click', () => {
+        const biz = data.businesses[bizId];
+        if(biz) openProductModal(product, biz);
+      });
       cardGrid.appendChild(card);
     });
   }
@@ -2419,6 +2434,18 @@
 
   /* ---------- INIT ---------- */
   window.addEventListener('hashchange', render);
+
+  function resetHomeFilters(){
+    searchTerm = '';
+    activeCategory = 'Todos';
+    const searchInput = document.getElementById('searchInput');
+    if(searchInput) searchInput.value = '';
+    if(getRoute().name === 'home') render();
+  }
+  const brandHomeLink = document.getElementById('brandHomeLink');
+  const footerBrandHomeLink = document.getElementById('footerBrandHomeLink');
+  if(brandHomeLink) brandHomeLink.addEventListener('click', resetHomeFilters);
+  if(footerBrandHomeLink) footerBrandHomeLink.addEventListener('click', resetHomeFilters);
 
   async function init(){
     await loadData();
