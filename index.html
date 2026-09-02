@@ -87,8 +87,12 @@
   }
   .btn-link:hover{color:var(--ink);}
 
-  .promo-bar{background:var(--navy);color:#fff;text-align:center;font-size:0.85rem;padding:9px 0;}
-  .promo-bar .wrap{padding:0 28px;}
+  .promo-bar{background:var(--navy);color:#fff;font-size:0.85rem;padding:9px 0;overflow:hidden;white-space:nowrap;position:relative;}
+  .promo-bar-track{display:inline-block;padding-left:100%;animation:promoMarquee 18s linear infinite;}
+  @keyframes promoMarquee{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-100%); }
+  }
   .btn{
     display:inline-flex;align-items:center;gap:8px;
     padding:11px 20px;border-radius:var(--radius-pill);
@@ -161,19 +165,19 @@
   .route-art svg{width:100%;height:100%;}
 
   .hero-carousel{position:relative;width:100%;height:100%;border-radius:16px;overflow:hidden;background:var(--bg);}
-  .hero-carousel img{width:100%;height:100%;object-fit:cover;display:block;}
+  .carousel-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity 0.9s ease;}
   .carousel-arrow{
     position:absolute;top:50%;transform:translateY(-50%);
     width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.9);
     border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;
-    font-size:1.1rem;color:var(--ink);line-height:1;
+    font-size:1.1rem;color:var(--ink);line-height:1;z-index:3;
   }
   .carousel-arrow:hover{background:#fff;}
   .carousel-arrow.prev{left:12px;}
   .carousel-arrow.next{right:12px;}
   .carousel-dots{
     position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
-    display:flex;gap:7px;
+    display:flex;gap:7px;z-index:3;
   }
   .carousel-dot{
     width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.55);
@@ -499,7 +503,7 @@
   </div>
 </header>
 <div class="promo-bar" id="promoBar" hidden>
-  <div class="wrap"><span id="promoBarText"></span></div>
+  <div class="promo-bar-track" id="promoBarText"></div>
 </div>
 
 <main id="app">
@@ -998,9 +1002,16 @@
 
           <div class="divider"></div>
 
+          <label for="ahWhatsapp">WhatsApp de la cadetería</label>
+          <input type="tel" id="ahWhatsapp" placeholder="Solo números, con código de país y área">
+          <span class="field-hint">A este número se redirige a los clientes cuando piden un viaje particular.</span>
+          <span class="form-msg" id="ahWhatsappMsg"></span>
+
+          <div class="divider"></div>
+
           <label for="ahImage">Imágenes del banner</label>
-          <input type="file" id="ahImage" accept="image/*">
-          <span class="field-hint">Subí una a la vez — se van sumando a la lista. Si hay más de una, se deslizan solas cada pocos segundos.</span>
+          <input type="file" id="ahImage" accept="image/*" multiple>
+          <span class="field-hint">Podés seleccionar varias imágenes juntas. Si hay más de una, se van deslizando solas cada pocos segundos.</span>
           <div class="banner-img-list" id="bannerImgList"></div>
         </div>
 
@@ -1093,7 +1104,7 @@
   let myTripIds = [];
   let users = {};
   let session = null;
-  let siteSettings = { heroTitle:'', heroSubtitle:'', heroImages:[], logoUrl:'', promoEnabled:false, promoText:'' };
+  let siteSettings = { heroTitle:'', heroSubtitle:'', heroImages:[], logoUrl:'', promoEnabled:false, promoText:'', cadeteriaWhatsapp:'' };
   let activeCategory = 'Todos';
   let searchTerm = '';
   let selectedMyBizId = null;
@@ -1987,41 +1998,52 @@
 
     if(heroCarouselIndex >= images.length) heroCarouselIndex = 0;
 
-    function paint(){
-      const dots = images.map((img, i) => `<button type="button" class="carousel-dot${i===heroCarouselIndex?' active':''}" data-i="${i}" aria-label="Imagen ${i+1}"></button>`).join('');
-      heroArtEl.innerHTML = `
-        <div class="hero-carousel">
-          <img src="${images[heroCarouselIndex]}" alt="">
-          ${images.length > 1 ? `
-            <button type="button" class="carousel-arrow prev" aria-label="Imagen anterior">‹</button>
-            <button type="button" class="carousel-arrow next" aria-label="Imagen siguiente">›</button>
-            <div class="carousel-dots">${dots}</div>
-          ` : ''}
-        </div>
-      `;
-      if(images.length > 1){
-        heroArtEl.querySelector('.prev').addEventListener('click', () => goTo(heroCarouselIndex - 1));
-        heroArtEl.querySelector('.next').addEventListener('click', () => goTo(heroCarouselIndex + 1));
-        heroArtEl.querySelectorAll('.carousel-dot').forEach(dot => {
-          dot.addEventListener('click', () => goTo(parseInt(dot.dataset.i, 10)));
-        });
-      }
-    }
+    const dots = images.map((img, i) => `<button type="button" class="carousel-dot${i===heroCarouselIndex?' active':''}" data-i="${i}" aria-label="Imagen ${i+1}"></button>`).join('');
+    heroArtEl.innerHTML = `
+      <div class="hero-carousel">
+        <img class="carousel-img" id="carouselLayerA" src="${images[heroCarouselIndex]}" alt="" style="opacity:1;z-index:2;">
+        <img class="carousel-img" id="carouselLayerB" alt="" style="opacity:0;z-index:1;">
+        ${images.length > 1 ? `
+          <button type="button" class="carousel-arrow prev" aria-label="Imagen anterior">‹</button>
+          <button type="button" class="carousel-arrow next" aria-label="Imagen siguiente">›</button>
+          <div class="carousel-dots">${dots}</div>
+        ` : ''}
+      </div>
+    `;
+
+    if(images.length <= 1) return;
+
+    const layerA = document.getElementById('carouselLayerA');
+    const layerB = document.getElementById('carouselLayerB');
+    let frontIsA = true;
 
     function goTo(i){
-      heroCarouselIndex = ((i % images.length) + images.length) % images.length;
-      paint();
-      restartTimer();
+      const newIndex = ((i % images.length) + images.length) % images.length;
+      if(newIndex === heroCarouselIndex) return;
+      const incoming = frontIsA ? layerB : layerA;
+      const outgoing = frontIsA ? layerA : layerB;
+      incoming.src = images[newIndex];
+      incoming.style.zIndex = '2';
+      outgoing.style.zIndex = '1';
+      incoming.style.opacity = '0';
+      void incoming.offsetWidth; // fuerza el reflow para que el fade se anime
+      incoming.style.opacity = '1';
+      frontIsA = !frontIsA;
+      heroCarouselIndex = newIndex;
+      heroArtEl.querySelectorAll('.carousel-dot').forEach((d,i2) => d.classList.toggle('active', i2 === newIndex));
     }
 
     function restartTimer(){
       if(heroCarouselTimer) clearInterval(heroCarouselTimer);
-      if(images.length > 1){
-        heroCarouselTimer = setInterval(() => goTo(heroCarouselIndex + 1), 4000);
-      }
+      heroCarouselTimer = setInterval(() => goTo(heroCarouselIndex + 1), 4500);
     }
 
-    paint();
+    heroArtEl.querySelector('.prev').addEventListener('click', () => { goTo(heroCarouselIndex - 1); restartTimer(); });
+    heroArtEl.querySelector('.next').addEventListener('click', () => { goTo(heroCarouselIndex + 1); restartTimer(); });
+    heroArtEl.querySelectorAll('.carousel-dot').forEach(dot => {
+      dot.addEventListener('click', () => { goTo(parseInt(dot.dataset.i, 10)); restartTimer(); });
+    });
+
     restartTimer();
   }
 
@@ -2061,6 +2083,8 @@
   const bannerImgList = document.getElementById('bannerImgList');
   const ahLogoInput = document.getElementById('ahLogo');
   const adminLogoPreview = document.getElementById('adminLogoPreview');
+  const ahWhatsappInput = document.getElementById('ahWhatsapp');
+  const ahWhatsappMsg = document.getElementById('ahWhatsappMsg');
   const adminPromoForm = document.getElementById('adminPromoForm');
   const adminPromoMsg = document.getElementById('adminPromoMsg');
 
@@ -2069,6 +2093,7 @@
     document.getElementById('ahSubtitle').value = siteSettings.heroSubtitle || '';
     document.getElementById('apEnabled').checked = !!siteSettings.promoEnabled;
     document.getElementById('apText').value = siteSettings.promoText || '';
+    ahWhatsappInput.value = siteSettings.cadeteriaWhatsapp || '';
     ahImageInput.value = '';
     ahLogoInput.value = '';
 
@@ -2118,18 +2143,22 @@
   }
 
   ahImageInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
+    const files = Array.from(e.target.files || []);
+    if(files.length === 0) return;
+    adminHeroMsg.textContent = `Subiendo ${files.length} imagen${files.length===1?'':'es'}…`;
+    adminHeroMsg.className = 'form-msg';
     try{
-      const dataUrl = await fileToResizedDataUrl(file, 1400, 0.8);
+      const dataUrls = await Promise.all(files.map(f => fileToResizedDataUrl(f, 1400, 0.8)));
       siteSettings.heroImages = siteSettings.heroImages || [];
-      siteSettings.heroImages.push(dataUrl);
+      siteSettings.heroImages.push(...dataUrls);
       await saveSiteSettings();
       applySiteSettings();
       renderBannerImgList();
       ahImageInput.value = '';
+      adminHeroMsg.textContent = `${dataUrls.length} imagen${dataUrls.length===1?'':'es'} agregada${dataUrls.length===1?'':'s'}.`;
+      adminHeroMsg.className = 'form-msg success';
     }catch(err){
-      adminHeroMsg.textContent = 'No pudimos guardar esa imagen. Probá con un archivo más liviano.';
+      adminHeroMsg.textContent = 'No pudimos guardar esas imágenes. Probá con archivos más livianos o de a menos por vez.';
       adminHeroMsg.className = 'form-msg error';
     }
   });
@@ -2146,6 +2175,20 @@
     }catch(err){
       adminHeroMsg.textContent = 'No pudimos guardar ese logo.';
       adminHeroMsg.className = 'form-msg error';
+    }
+  });
+
+  ahWhatsappInput.addEventListener('change', async () => {
+    ahWhatsappMsg.textContent = '';
+    ahWhatsappMsg.className = 'form-msg';
+    siteSettings.cadeteriaWhatsapp = ahWhatsappInput.value.trim();
+    try{
+      await saveSiteSettings();
+      ahWhatsappMsg.textContent = 'Guardado.';
+      ahWhatsappMsg.classList.add('success');
+    }catch(err){
+      ahWhatsappMsg.textContent = 'No se pudo guardar.';
+      ahWhatsappMsg.classList.add('error');
     }
   });
 
@@ -2241,7 +2284,15 @@
     await saveMyTrips();
 
     tripForm.reset();
-    tripMsg.textContent = 'Pedido enviado. Un cadete se va a contactar con vos.';
+
+    if(siteSettings.cadeteriaWhatsapp){
+      const digits = siteSettings.cadeteriaWhatsapp.replace(/[^0-9]/g,'');
+      const message = `Hola! Quiero pedir un viaje particular por Cadetería Centro.\nOrigen: ${origin}\nDestino: ${dest}\nQué hay que llevar: ${description}\nMi teléfono: ${phone}`;
+      window.open(`https://wa.me/${digits}?text=${encodeURIComponent(message)}`, '_blank');
+      tripMsg.textContent = 'Pedido guardado. Te llevamos a WhatsApp para coordinar con un cadete.';
+    } else {
+      tripMsg.textContent = 'Pedido enviado. Un cadete se va a contactar con vos.';
+    }
     tripMsg.classList.add('success');
     renderMyTrips();
   });
