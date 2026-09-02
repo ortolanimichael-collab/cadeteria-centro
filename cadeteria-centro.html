@@ -77,6 +77,17 @@
     font-weight:500;
   }
   nav.main-nav a:hover{color:var(--ink);}
+  .header-auth-area{display:flex;align-items:center;gap:10px;}
+  .header-greeting{font-size:0.88rem;color:var(--ink-soft);white-space:nowrap;}
+  .header-greeting strong{color:var(--ink);}
+  .btn-link{
+    background:none;border:none;color:var(--ink-soft);cursor:pointer;
+    font-size:0.9rem;font-weight:500;text-decoration:none;padding:0;
+  }
+  .btn-link:hover{color:var(--ink);}
+
+  .promo-bar{background:var(--navy);color:#fff;text-align:center;font-size:0.85rem;padding:9px 0;}
+  .promo-bar .wrap{padding:0 28px;}
   .btn{
     display:inline-flex;align-items:center;gap:8px;
     padding:11px 20px;border-radius:var(--radius-pill);
@@ -304,6 +315,16 @@
     margin-top:22px;padding:14px 16px;border-radius:9px;background:var(--bg);
     font-size:0.85rem;color:var(--ink-soft);
   }
+  .choice-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;}
+  .choice-card{
+    display:flex;flex-direction:column;gap:6px;text-align:left;
+    border:1.5px solid var(--line);border-radius:12px;padding:20px;
+    text-decoration:none;color:var(--ink);transition:border-color .15s ease, transform .15s ease;
+  }
+  .choice-card:hover{border-color:var(--navy);transform:translateY(-2px);}
+  .choice-title{font-family:var(--font-display);font-weight:700;font-size:1rem;}
+  .choice-desc{font-size:0.85rem;color:var(--ink-soft);}
+  @media (max-width:600px){ .choice-row{grid-template-columns:1fr;} }
 
   /* ---------- PANEL DE NEGOCIO ---------- */
   .panel-view{padding:48px 0 96px;}
@@ -329,6 +350,12 @@
     width:100%;font-size:0.86rem;color:var(--ink-soft);
     padding:9px 10px;border-radius:9px;border:1.5px dashed var(--line);background:#fff;
   }
+  .stat-row{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .stat-item{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 14px;background:var(--bg);border-radius:9px;font-size:0.9rem;
+  }
+  .stat-item strong{font-family:var(--font-display);font-size:1.1rem;}
 
   /* ---------- PERFIL PUBLICO DEL NEGOCIO ---------- */
   .biz-profile{padding-bottom:80px;}
@@ -436,9 +463,12 @@
       <a href="#viaje-particular">Viaje particular</a>
       <a href="#como-funciona">Cómo funciona</a>
     </nav>
-    <a href="#/registro" class="btn btn-flame" id="headerBizCta">Registrar mi negocio</a>
+    <div id="headerAuthArea" class="header-auth-area"></div>
   </div>
 </header>
+<div class="promo-bar" id="promoBar" hidden>
+  <div class="wrap"><span id="promoBarText"></span></div>
+</div>
 
 <main id="app">
 
@@ -449,8 +479,8 @@
     <div class="wrap hero-grid">
       <div>
         <p class="eyebrow-count"><span class="dot"></span> <strong id="bizCount">0</strong> negocios ya venden por acá</p>
-        <h1 class="hero-title">Pedí en minutos. Vendé sin límites.</h1>
-        <p class="hero-sub">Encontrá rotiserías, pizzerías y panaderías de tu zona, o sumá tu negocio y empezá a recibir pedidos hoy mismo.</p>
+        <h1 class="hero-title" id="heroTitle">Pedí en minutos. Vendé sin límites.</h1>
+        <p class="hero-sub" id="heroSubtitle">Encontrá rotiserías, pizzerías y panaderías de tu zona, o sumá tu negocio y empezá a recibir pedidos hoy mismo.</p>
 
         <div class="search-box">
           <input type="text" id="searchInput" placeholder="Buscá un negocio o un plato — ej. milanesas, pizzería..." aria-label="Buscar negocios o productos">
@@ -465,7 +495,7 @@
         <p class="hero-trip-link">¿Necesitás mandar algo puntual, sin pasar por un negocio? <a href="#viaje-particular">Pedí un viaje particular</a></p>
       </div>
 
-      <div class="route-art" aria-hidden="true">
+      <div class="route-art" id="heroArt" aria-hidden="true">
         <svg viewBox="0 0 420 380" fill="none">
           <path d="M20 340 C 90 300, 90 200, 180 190 S 320 100, 340 40" stroke="#DADFD6" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round"/>
           <circle cx="20" cy="340" r="9" fill="#14213D"/>
@@ -608,51 +638,142 @@
   <section class="auth-view">
     <div class="wrap-narrow">
       <a href="#/" class="back-link">← Volver a la búsqueda</a>
+
+      <div id="registroChooser">
+        <div class="panel auth-panel" style="text-align:center;">
+          <h3>¿Cómo querés registrarte?</h3>
+          <p class="sub">Elegí una opción para continuar.</p>
+          <div class="choice-row">
+            <a href="#/registro/cliente" class="choice-card">
+              <span class="choice-title">Soy cliente particular</span>
+              <span class="choice-desc">Quiero pedir en negocios o solicitar viajes particulares.</span>
+            </a>
+            <a href="#/registro/negocio" class="choice-card">
+              <span class="choice-title">Soy dueño de un negocio</span>
+              <span class="choice-desc">Quiero vender mis productos en Cadetería Centro.</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div id="registroCliente" hidden>
+        <div class="panel auth-panel">
+          <h3>Registro de cliente</h3>
+          <p class="sub">Creá tu cuenta para pedir más rápido la próxima vez.</p>
+          <form id="clientForm">
+            <div class="form-row full">
+              <div>
+                <label for="cName">Nombre y apellido</label>
+                <input type="text" id="cName" required placeholder="Tu nombre">
+              </div>
+            </div>
+            <div class="form-row full">
+              <div>
+                <label for="cEmail">Email</label>
+                <input type="email" id="cEmail" required placeholder="tu@email.com">
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label for="cPassword">Contraseña</label>
+                <input type="password" id="cPassword" required placeholder="Elegí una contraseña" minlength="4">
+              </div>
+              <div>
+                <label for="cPassword2">Repetir contraseña</label>
+                <input type="password" id="cPassword2" required placeholder="Repetila" minlength="4">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-flame btn-block">Crear cuenta</button>
+            </div>
+            <span class="form-msg" id="clientRegisterMsg"></span>
+          </form>
+        </div>
+      </div>
+
+      <div id="registroNegocio" hidden>
+        <div class="panel auth-panel">
+          <h3>Registrá tu negocio</h3>
+          <p class="sub">Por ahora este es un formulario protocolar para reservar tu lugar. Más adelante vamos a validar los datos de verdad.</p>
+          <form id="registerForm">
+            <div class="form-row full">
+              <div>
+                <label for="bName">Nombre del negocio</label>
+                <input type="text" id="bName" required placeholder="Ej. Rotisería Don Pedro">
+              </div>
+            </div>
+            <div class="form-row full">
+              <div>
+                <label for="bCategory">Rubro</label>
+                <select id="bCategory" required>
+                  <option value="">Elegí un rubro</option>
+                  <option>Rotisería</option>
+                  <option>Pizzería</option>
+                  <option>Panadería</option>
+                  <option>Parrilla</option>
+                  <option>Comida china</option>
+                  <option>Heladería</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div>
+                <label for="bEmail">Email</label>
+                <input type="email" id="bEmail" required placeholder="tu@email.com">
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label for="bPassword">Contraseña</label>
+                <input type="password" id="bPassword" required placeholder="Elegí una contraseña" minlength="4">
+              </div>
+              <div>
+                <label for="bPassword2">Repetir contraseña</label>
+                <input type="password" id="bPassword2" required placeholder="Repetila" minlength="4">
+              </div>
+            </div>
+            <span class="field-hint">Por ahora no se valida contra ningún servidor real — es solo para simular el flujo.</span>
+            <div class="form-actions" style="margin-top:14px;">
+              <button type="submit" class="btn btn-flame btn-block">Crear cuenta y continuar</button>
+            </div>
+            <span class="form-msg" id="registerMsg"></span>
+          </form>
+        </div>
+        <div class="note-box">Al crear la cuenta vas a entrar directo al panel de tu negocio, donde vas a poder cargar tu perfil comercial y tus productos.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ INICIAR SESION ============ -->
+<div class="view" id="view-ingresar" hidden>
+  <section class="auth-view">
+    <div class="wrap-narrow">
+      <a href="#/" class="back-link">← Volver a la búsqueda</a>
       <div class="panel auth-panel">
-        <h3>Registrá tu negocio</h3>
-        <p class="sub">Por ahora este es un formulario protocolar para reservar tu lugar. Más adelante vamos a validar los datos de verdad.</p>
-        <form id="registerForm">
+        <h3>Iniciar sesión</h3>
+        <p class="sub">Entrá con el email y la contraseña que usaste al registrarte.</p>
+        <form id="loginForm">
           <div class="form-row full">
             <div>
-              <label for="bName">Nombre del negocio</label>
-              <input type="text" id="bName" required placeholder="Ej. Rotisería Don Pedro">
+              <label for="lEmail">Email</label>
+              <input type="email" id="lEmail" required placeholder="tu@email.com">
             </div>
           </div>
           <div class="form-row full">
             <div>
-              <label for="bCategory">Rubro</label>
-              <select id="bCategory" required>
-                <option value="">Elegí un rubro</option>
-                <option>Rotisería</option>
-                <option>Pizzería</option>
-                <option>Panadería</option>
-                <option>Parrilla</option>
-                <option>Comida china</option>
-                <option>Heladería</option>
-                <option>Otro</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row full">
-            <div>
-              <label for="bEmail">Email</label>
-              <input type="email" id="bEmail" required placeholder="tu@email.com">
-            </div>
-          </div>
-          <div class="form-row full">
-            <div>
-              <label for="bPassword">Contraseña</label>
-              <input type="password" id="bPassword" required placeholder="Elegí una contraseña" minlength="4">
-              <span class="field-hint">Por ahora no se valida contra ningún servidor — es solo para simular el flujo.</span>
+              <label for="lPassword">Contraseña</label>
+              <input type="password" id="lPassword" required placeholder="Tu contraseña">
             </div>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn btn-flame btn-block">Crear cuenta y continuar</button>
+            <button type="submit" class="btn btn-flame btn-block">Ingresar</button>
           </div>
-          <span class="form-msg" id="registerMsg"></span>
+          <span class="form-msg" id="loginMsg"></span>
         </form>
       </div>
-      <div class="note-box">Al crear la cuenta vas a entrar directo al panel de tu negocio, donde vas a poder cargar tu perfil comercial y tus productos.</div>
+      <div class="note-box">¿Todavía no tenés cuenta? <a href="#/registro">Registrate acá</a>.</div>
     </div>
   </section>
 </div>
@@ -777,7 +898,8 @@
               </div>
             </div>
             <div class="form-actions">
-              <button type="submit" class="btn btn-flame">Agregar producto</button>
+              <button type="submit" class="btn btn-flame" id="productSubmitBtn">Agregar producto</button>
+              <button type="button" class="btn-link" id="cancelEditBtn" hidden>Cancelar edición</button>
               <span class="form-msg" id="productMsg"></span>
             </div>
           </form>
@@ -816,6 +938,84 @@
   </section>
 </div>
 
+<!-- ============ PANEL ADMINISTRADOR ============ -->
+<div class="view" id="view-admin" hidden>
+  <section class="panel-view">
+    <div class="wrap">
+      <a href="#/" class="back-link">← Volver a la búsqueda</a>
+      <div class="panel-header">
+        <div>
+          <h1>Panel de administrador</h1>
+          <p>Cambios acá se ven en el momento para todos los que visiten la página.</p>
+        </div>
+      </div>
+
+      <div class="panel-two-col">
+        <div class="panel">
+          <h3>Banner principal</h3>
+          <p class="sub">El título, el subtítulo y la imagen que ven todos al entrar a Cadetería Centro.</p>
+          <form id="adminHeroForm">
+            <div class="form-row full">
+              <div>
+                <label for="ahTitle">Título</label>
+                <input type="text" id="ahTitle" placeholder="Ej. Pedí en minutos. Vendé sin límites.">
+              </div>
+            </div>
+            <div class="form-row full">
+              <div>
+                <label for="ahSubtitle">Subtítulo</label>
+                <textarea id="ahSubtitle" placeholder="Bajada del banner principal"></textarea>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div>
+                <div class="cover-preview" id="adminHeroImgPreview"></div>
+                <label for="ahImage">Imagen de fondo (opcional)</label>
+                <input type="file" id="ahImage" accept="image/*">
+                <span class="field-hint">Si no subís nada, se muestra la ilustración de ruta por defecto.</span>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-navy">Guardar banner</button>
+              <button type="button" class="btn btn-outline btn-sm" id="resetHeroBtn">Quitar imagen</button>
+              <span class="form-msg" id="adminHeroMsg"></span>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel">
+          <h3>Barra de anuncio</h3>
+          <p class="sub">Una franja fina arriba de todo el sitio, para avisos o promociones.</p>
+          <form id="adminPromoForm">
+            <div class="form-row full">
+              <div>
+                <label style="display:flex; align-items:center; gap:8px; font-weight:500;">
+                  <input type="checkbox" id="apEnabled" style="width:auto;">
+                  Mostrar barra de anuncio
+                </label>
+              </div>
+            </div>
+            <div class="form-row full">
+              <div>
+                <label for="apText">Texto del anuncio</label>
+                <input type="text" id="apText" placeholder="Ej. Envío gratis en tu primer pedido">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-navy">Guardar anuncio</button>
+              <span class="form-msg" id="adminPromoMsg"></span>
+            </div>
+          </form>
+
+          <div class="divider"></div>
+          <h3>Resumen del sitio</h3>
+          <div class="stat-row" id="adminStats"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
 </main>
 
 <footer>
@@ -836,22 +1036,36 @@
   const MY_BIZ_KEY = 'my-businesses';
   const TRIPS_KEY = 'trip-requests';
   const MY_TRIPS_KEY = 'my-trip-requests';
+  const USERS_KEY = 'user-accounts';
+  const SESSION_KEY = 'session';
+  const SITE_SETTINGS_KEY = 'site-settings';
   const CATEGORIES = ['Todos','Rotisería','Pizzería','Panadería','Parrilla','Comida china','Heladería','Otro'];
   const AVATAR_COLORS = ['#14213D','#E6462A','#8A5F00','#1E7A3D'];
+  const ADMIN_EMAIL = 'admin@cadeteriacentro.com';
+  const ADMIN_PASSWORD = 'admin1234';
 
   let data = { businesses: {} };
   let trips = {};
   let myBusinessIds = [];
   let myTripIds = [];
+  let users = {};
+  let session = null;
+  let siteSettings = { heroTitle:'', heroSubtitle:'', heroImage:'', promoEnabled:false, promoText:'' };
   let activeCategory = 'Todos';
   let searchTerm = '';
   let selectedMyBizId = null;
+  let editingProductId = null;
+
+  const heroArtEl = document.getElementById('heroArt');
+  const defaultHeroArtHtml = heroArtEl.innerHTML;
 
   const views = {
     home: document.getElementById('view-home'),
     registro: document.getElementById('view-registro'),
+    ingresar: document.getElementById('view-ingresar'),
     panel: document.getElementById('view-panel'),
-    negocio: document.getElementById('view-negocio')
+    negocio: document.getElementById('view-negocio'),
+    admin: document.getElementById('view-admin')
   };
 
   const cardGrid = document.getElementById('cardGrid');
@@ -859,10 +1073,17 @@
   const listingsNote = document.getElementById('listingsNote');
   const listingsTitle = document.getElementById('listingsTitle');
   const chipRow = document.getElementById('chipRow');
-  const headerBizCta = document.getElementById('headerBizCta');
+  const headerAuthArea = document.getElementById('headerAuthArea');
 
+  const registroChooser = document.getElementById('registroChooser');
+  const registroCliente = document.getElementById('registroCliente');
+  const registroNegocio = document.getElementById('registroNegocio');
+  const clientForm = document.getElementById('clientForm');
+  const clientRegisterMsg = document.getElementById('clientRegisterMsg');
   const registerForm = document.getElementById('registerForm');
   const registerMsg = document.getElementById('registerMsg');
+  const loginForm = document.getElementById('loginForm');
+  const loginMsg = document.getElementById('loginMsg');
 
   const myBizSelectWrap = document.getElementById('myBizSelectWrap');
   const viewPublicLink = document.getElementById('viewPublicLink');
@@ -888,6 +1109,15 @@
 
   function uid(){
     return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8);
+  }
+
+  function encodePw(pw){
+    try{ return btoa(unescape(encodeURIComponent(pw))); }
+    catch(e){ return pw; }
+  }
+
+  function normEmail(email){
+    return (email || '').trim().toLowerCase();
   }
 
   function escapeHtml(str){
@@ -960,6 +1190,21 @@
       const myTrips = await window.storage.get(MY_TRIPS_KEY, false);
       if(myTrips && myTrips.value) myTripIds = JSON.parse(myTrips.value);
     }catch(e){ myTripIds = []; }
+
+    try{
+      const usersRes = await window.storage.get(USERS_KEY, true);
+      if(usersRes && usersRes.value) users = JSON.parse(usersRes.value);
+    }catch(e){ users = {}; }
+
+    try{
+      const sessionRes = await window.storage.get(SESSION_KEY, false);
+      if(sessionRes && sessionRes.value) session = JSON.parse(sessionRes.value);
+    }catch(e){ session = null; }
+
+    try{
+      const settingsRes = await window.storage.get(SITE_SETTINGS_KEY, true);
+      if(settingsRes && settingsRes.value) siteSettings = Object.assign(siteSettings, JSON.parse(settingsRes.value));
+    }catch(e){ /* keep defaults */ }
   }
 
   async function saveData(){
@@ -978,12 +1223,30 @@
     try{ await window.storage.set(MY_TRIPS_KEY, JSON.stringify(myTripIds), false); }
     catch(e){ console.error('No se pudo guardar', e); }
   }
+  async function saveUsers(){
+    try{ await window.storage.set(USERS_KEY, JSON.stringify(users), true); }
+    catch(e){ console.error('No se pudo guardar', e); }
+  }
+  async function saveSession(){
+    try{
+      if(session) await window.storage.set(SESSION_KEY, JSON.stringify(session), false);
+      else await window.storage.delete(SESSION_KEY, false);
+    }catch(e){ console.error('No se pudo guardar la sesión', e); }
+  }
+  async function saveSiteSettings(){
+    try{ await window.storage.set(SITE_SETTINGS_KEY, JSON.stringify(siteSettings), true); }
+    catch(e){ console.error('No se pudo guardar', e); }
+  }
 
   /* ---------- ROUTER ---------- */
   function getRoute(){
     const h = location.hash;
-    if(h === '#/registro') return { name:'registro' };
+    if(h === '#/registro') return { name:'registro', sub:'chooser' };
+    if(h === '#/registro/cliente') return { name:'registro', sub:'cliente' };
+    if(h === '#/registro/negocio') return { name:'registro', sub:'negocio' };
+    if(h === '#/ingresar') return { name:'ingresar' };
     if(h === '#/panel') return { name:'panel' };
+    if(h === '#/admin') return { name:'admin' };
     if(h.indexOf('#/negocio/') === 0) return { name:'negocio', id: h.replace('#/negocio/','') };
     return { name:'home' };
   }
@@ -992,29 +1255,73 @@
     Object.keys(views).forEach(k => { views[k].hidden = (k !== name); });
   }
 
-  function refreshHeaderCta(){
-    if(myBusinessIds.length > 0){
-      headerBizCta.textContent = 'Mi negocio';
-      headerBizCta.href = '#/panel';
+  function showRegistroSub(sub){
+    registroChooser.hidden = sub !== 'chooser';
+    registroCliente.hidden = sub !== 'cliente';
+    registroNegocio.hidden = sub !== 'negocio';
+  }
+
+  function renderHeaderAuthUI(){
+    headerAuthArea.innerHTML = '';
+    if(!session){
+      headerAuthArea.innerHTML = `
+        <a href="#/ingresar" class="btn-link">Iniciar sesión</a>
+        <a href="#/registro" class="btn btn-flame">Registrarme</a>
+      `;
+      return;
+    }
+    if(session.type === 'negocio'){
+      headerAuthArea.innerHTML = `
+        <span class="header-greeting">Hola, <strong>${escapeHtml(session.name)}</strong></span>
+        <a href="#/panel" class="btn btn-outline btn-sm">Mi negocio</a>
+        <button type="button" class="btn-link" id="logoutBtn">Cerrar sesión</button>
+      `;
+    } else if(session.type === 'admin'){
+      headerAuthArea.innerHTML = `
+        <a href="#/admin" class="btn btn-navy btn-sm">Panel admin</a>
+        <button type="button" class="btn-link" id="logoutBtn">Cerrar sesión</button>
+      `;
     } else {
-      headerBizCta.textContent = 'Registrar mi negocio';
-      headerBizCta.href = '#/registro';
+      headerAuthArea.innerHTML = `
+        <span class="header-greeting">Hola, <strong>${escapeHtml(session.name)}</strong></span>
+        <button type="button" class="btn-link" id="logoutBtn">Cerrar sesión</button>
+      `;
+    }
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(logoutBtn){
+      logoutBtn.addEventListener('click', async () => {
+        session = null;
+        await saveSession();
+        location.hash = '#/';
+        renderHeaderAuthUI();
+      });
     }
   }
 
   function render(){
     const route = getRoute();
-    refreshHeaderCta();
+    renderHeaderAuthUI();
 
     if(route.name === 'registro'){
       showView('registro');
+      showRegistroSub(route.sub);
+    } else if(route.name === 'ingresar'){
+      showView('ingresar');
     } else if(route.name === 'panel'){
-      if(myBusinessIds.length === 0){
-        location.hash = '#/registro';
+      if(!session || session.type !== 'negocio'){
+        location.hash = '#/ingresar';
         return;
       }
+      selectedMyBizId = session.businessId;
       showView('panel');
       renderPanel();
+    } else if(route.name === 'admin'){
+      if(!session || session.type !== 'admin'){
+        location.hash = '#/ingresar';
+        return;
+      }
+      showView('admin');
+      renderAdmin();
     } else if(route.name === 'negocio'){
       showView('negocio');
       renderPublicBusiness(route.id);
@@ -1168,7 +1475,7 @@
     });
   }
 
-  /* ---------- REGISTRO ---------- */
+  /* ---------- REGISTRO: NEGOCIO ---------- */
   registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     registerMsg.textContent = '';
@@ -1176,54 +1483,140 @@
 
     const name = document.getElementById('bName').value.trim();
     const category = document.getElementById('bCategory').value;
-    const email = document.getElementById('bEmail').value.trim();
+    const email = normEmail(document.getElementById('bEmail').value);
     const password = document.getElementById('bPassword').value;
+    const password2 = document.getElementById('bPassword2').value;
 
-    if(!name || !category || !email || !password){
+    if(!name || !category || !email || !password || !password2){
       registerMsg.textContent = 'Completá todos los campos.';
       registerMsg.classList.add('error');
       return;
     }
+    if(password !== password2){
+      registerMsg.textContent = 'Las contraseñas no coinciden.';
+      registerMsg.classList.add('error');
+      return;
+    }
+    if(users[email]){
+      registerMsg.textContent = 'Ya existe una cuenta con ese email.';
+      registerMsg.classList.add('error');
+      return;
+    }
 
-    const id = uid();
-    data.businesses[id] = {
-      id, name, category, email,
+    const bizId = uid();
+    data.businesses[bizId] = {
+      id: bizId, name, category, email,
       address:'', phone:'', whatsapp:'', instagram:'', facebook:'',
       description:'', avatarUrl:'', coverUrl:'',
       products: [],
       createdAt: Date.now()
     };
-
     await saveData();
-    myBusinessIds.push(id);
+
+    const userId = uid();
+    users[email] = {
+      id: userId, type: 'negocio', name, email,
+      passwordObfuscated: encodePw(password),
+      businessId: bizId, createdAt: Date.now()
+    };
+    await saveUsers();
+
+    myBusinessIds.push(bizId);
     await saveMyBusinesses();
-    selectedMyBizId = id;
+
+    session = { email, type:'negocio', userId, businessId: bizId, name };
+    await saveSession();
 
     registerForm.reset();
     location.hash = '#/panel';
   });
 
+  /* ---------- REGISTRO: CLIENTE ---------- */
+  clientForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clientRegisterMsg.textContent = '';
+    clientRegisterMsg.className = 'form-msg';
+
+    const name = document.getElementById('cName').value.trim();
+    const email = normEmail(document.getElementById('cEmail').value);
+    const password = document.getElementById('cPassword').value;
+    const password2 = document.getElementById('cPassword2').value;
+
+    if(!name || !email || !password || !password2){
+      clientRegisterMsg.textContent = 'Completá todos los campos.';
+      clientRegisterMsg.classList.add('error');
+      return;
+    }
+    if(password !== password2){
+      clientRegisterMsg.textContent = 'Las contraseñas no coinciden.';
+      clientRegisterMsg.classList.add('error');
+      return;
+    }
+    if(users[email]){
+      clientRegisterMsg.textContent = 'Ya existe una cuenta con ese email.';
+      clientRegisterMsg.classList.add('error');
+      return;
+    }
+
+    const userId = uid();
+    users[email] = {
+      id: userId, type: 'cliente', name, email,
+      passwordObfuscated: encodePw(password),
+      createdAt: Date.now()
+    };
+    await saveUsers();
+
+    session = { email, type:'cliente', userId, name };
+    await saveSession();
+
+    clientForm.reset();
+    location.hash = '#/';
+  });
+
+  /* ---------- LOGIN ---------- */
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loginMsg.textContent = '';
+    loginMsg.className = 'form-msg';
+
+    const email = normEmail(document.getElementById('lEmail').value);
+    const password = document.getElementById('lPassword').value;
+
+    if(!email || !password){
+      loginMsg.textContent = 'Completá el email y la contraseña.';
+      loginMsg.classList.add('error');
+      return;
+    }
+
+    if(email === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD){
+      session = { email, type:'admin', name:'Administrador' };
+      await saveSession();
+      loginForm.reset();
+      location.hash = '#/admin';
+      return;
+    }
+
+    const u = users[email];
+    if(!u || u.passwordObfuscated !== encodePw(password)){
+      loginMsg.textContent = 'Email o contraseña incorrectos.';
+      loginMsg.classList.add('error');
+      return;
+    }
+
+    session = { email, type: u.type, userId: u.id, name: u.name, businessId: u.businessId };
+    await saveSession();
+    loginForm.reset();
+    location.hash = u.type === 'negocio' ? '#/panel' : '#/';
+  });
+
   /* ---------- PANEL ---------- */
   function renderPanel(){
-    if(!selectedMyBizId || !myBusinessIds.includes(selectedMyBizId)){
-      selectedMyBizId = myBusinessIds[myBusinessIds.length - 1];
-    }
-    const mine = myBusinessIds.map(id => data.businesses[id]).filter(Boolean);
     const biz = data.businesses[selectedMyBizId];
+    myBizSelectWrap.innerHTML = '';
+    exitEditMode();
 
     panelTitle.textContent = biz ? `Panel de ${biz.name}` : 'Panel de tu negocio';
     viewPublicLink.href = '#/negocio/' + selectedMyBizId;
-
-    if(mine.length > 1){
-      const options = mine.map(b => `<option value="${b.id}" ${b.id===selectedMyBizId?'selected':''}>${escapeHtml(b.name)}</option>`).join('');
-      myBizSelectWrap.innerHTML = `<select id="myBizSelect">${options}</select>`;
-      document.getElementById('myBizSelect').addEventListener('change', (e) => {
-        selectedMyBizId = e.target.value;
-        renderPanel();
-      });
-    } else {
-      myBizSelectWrap.innerHTML = '';
-    }
 
     if(!biz) return;
 
@@ -1329,12 +1722,19 @@
           ${thumb}
           <span>${escapeHtml(p.name)} — $${escapeHtml(String(p.price))}</span>
         </div>
-        <button class="del" type="button" data-id="${p.id}">Quitar</button>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <button class="del" type="button" data-action="edit" data-id="${p.id}">Editar</button>
+          <button class="del" type="button" data-action="del" data-id="${p.id}">Quitar</button>
+        </div>
       `;
-      row.querySelector('.del').addEventListener('click', async () => {
+      row.querySelector('[data-action="del"]').addEventListener('click', async () => {
         biz.products = biz.products.filter(prod => prod.id !== p.id);
         await saveData();
+        if(editingProductId === p.id) exitEditMode();
         renderMyProductList();
+      });
+      row.querySelector('[data-action="edit"]').addEventListener('click', () => {
+        enterEditMode(p);
       });
       myProductList.appendChild(row);
     });
@@ -1342,7 +1742,34 @@
 
   const pImageInput = document.getElementById('pImage');
   const productImgPreview = document.getElementById('productImgPreview');
+  const productSubmitBtn = document.getElementById('productSubmitBtn');
+  const cancelEditBtn = document.getElementById('cancelEditBtn');
   let pendingProductImageDataUrl = '';
+
+  function enterEditMode(p){
+    editingProductId = p.id;
+    document.getElementById('pName').value = p.name;
+    document.getElementById('pPrice').value = p.price;
+    document.getElementById('pDesc').value = p.desc || '';
+    pendingProductImageDataUrl = '';
+    pImageInput.value = '';
+    productImgPreview.innerHTML = p.image ? `<img class="prod-thumb" style="width:48px;height:48px;" src="${p.image}" alt="">` : '';
+    productSubmitBtn.textContent = 'Guardar cambios';
+    cancelEditBtn.hidden = false;
+    document.getElementById('pName').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function exitEditMode(){
+    editingProductId = null;
+    pendingProductImageDataUrl = '';
+    productForm.reset();
+    pImageInput.value = '';
+    productImgPreview.innerHTML = '';
+    productSubmitBtn.textContent = 'Agregar producto';
+    cancelEditBtn.hidden = true;
+  }
+
+  cancelEditBtn.addEventListener('click', exitEditMode);
 
   pImageInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -1375,14 +1802,24 @@
     }
 
     biz.products = biz.products || [];
-    biz.products.push({ id: uid(), name, price, desc, image: pendingProductImageDataUrl });
+
+    if(editingProductId){
+      const existing = biz.products.find(p => p.id === editingProductId);
+      if(existing){
+        existing.name = name;
+        existing.price = price;
+        existing.desc = desc;
+        if(pendingProductImageDataUrl) existing.image = pendingProductImageDataUrl;
+      }
+    } else {
+      biz.products.push({ id: uid(), name, price, desc, image: pendingProductImageDataUrl });
+    }
 
     try{
       await saveData();
-      productForm.reset();
-      pendingProductImageDataUrl = '';
-      productImgPreview.innerHTML = '';
-      productMsg.textContent = 'Producto agregado.';
+      const wasEditing = !!editingProductId;
+      exitEditMode();
+      productMsg.textContent = wasEditing ? 'Producto actualizado.' : 'Producto agregado.';
       productMsg.classList.add('success');
     }catch(err){
       productMsg.textContent = 'No se pudo guardar. Probá con una imagen más liviana.';
@@ -1485,6 +1922,124 @@
     });
   }
 
+  /* ---------- SITIO: BANNER Y ANUNCIO ---------- */
+  function applySiteSettings(){
+    const titleEl = document.getElementById('heroTitle');
+    const subEl = document.getElementById('heroSubtitle');
+    titleEl.textContent = siteSettings.heroTitle || 'Pedí en minutos. Vendé sin límites.';
+    subEl.textContent = siteSettings.heroSubtitle || 'Encontrá rotiserías, pizzerías y panaderías de tu zona, o sumá tu negocio y empezá a recibir pedidos hoy mismo.';
+    if(siteSettings.heroImage){
+      heroArtEl.innerHTML = `<img src="${siteSettings.heroImage}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">`;
+    } else {
+      heroArtEl.innerHTML = defaultHeroArtHtml;
+    }
+  }
+
+  function renderPromoBar(){
+    const bar = document.getElementById('promoBar');
+    const text = document.getElementById('promoBarText');
+    if(siteSettings.promoEnabled && siteSettings.promoText){
+      bar.hidden = false;
+      text.textContent = siteSettings.promoText;
+    } else {
+      bar.hidden = true;
+    }
+  }
+
+  /* ---------- ADMIN ---------- */
+  const adminHeroForm = document.getElementById('adminHeroForm');
+  const adminHeroMsg = document.getElementById('adminHeroMsg');
+  const ahImageInput = document.getElementById('ahImage');
+  const adminHeroImgPreview = document.getElementById('adminHeroImgPreview');
+  const resetHeroBtn = document.getElementById('resetHeroBtn');
+  const adminPromoForm = document.getElementById('adminPromoForm');
+  const adminPromoMsg = document.getElementById('adminPromoMsg');
+  let pendingHeroImageDataUrl = '';
+
+  function renderAdmin(){
+    document.getElementById('ahTitle').value = siteSettings.heroTitle || '';
+    document.getElementById('ahSubtitle').value = siteSettings.heroSubtitle || '';
+    document.getElementById('apEnabled').checked = !!siteSettings.promoEnabled;
+    document.getElementById('apText').value = siteSettings.promoText || '';
+    pendingHeroImageDataUrl = '';
+    ahImageInput.value = '';
+    adminHeroImgPreview.style.background = siteSettings.heroImage
+      ? `url('${siteSettings.heroImage}') center/cover no-repeat`
+      : 'linear-gradient(135deg, var(--navy), var(--flame))';
+
+    const allBusinesses = Object.values(data.businesses);
+    const totalProducts = allBusinesses.reduce((sum, b) => sum + (b.products ? b.products.length : 0), 0);
+    const pendingTrips = Object.values(trips).filter(t => t.status === 'Pendiente').length;
+    document.getElementById('adminStats').innerHTML = `
+      <div class="stat-item"><span>Negocios registrados</span><strong>${allBusinesses.length}</strong></div>
+      <div class="stat-item"><span>Productos publicados</span><strong>${totalProducts}</strong></div>
+      <div class="stat-item"><span>Viajes particulares pendientes</span><strong>${pendingTrips}</strong></div>
+      <div class="stat-item"><span>Cuentas registradas</span><strong>${Object.keys(users).length}</strong></div>
+    `;
+  }
+
+  ahImageInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      pendingHeroImageDataUrl = await fileToResizedDataUrl(file, 1400, 0.8);
+      adminHeroImgPreview.style.background = `url('${pendingHeroImageDataUrl}') center/cover no-repeat`;
+    }catch(err){
+      adminHeroMsg.textContent = 'No pudimos procesar esa imagen.';
+      adminHeroMsg.className = 'form-msg error';
+    }
+  });
+
+  resetHeroBtn.addEventListener('click', async () => {
+    pendingHeroImageDataUrl = '';
+    siteSettings.heroImage = '';
+    ahImageInput.value = '';
+    adminHeroImgPreview.style.background = 'linear-gradient(135deg, var(--navy), var(--flame))';
+    try{
+      await saveSiteSettings();
+      applySiteSettings();
+      adminHeroMsg.textContent = 'Imagen quitada. Volvió la ilustración por defecto.';
+      adminHeroMsg.className = 'form-msg success';
+    }catch(err){
+      adminHeroMsg.textContent = 'No se pudo guardar el cambio.';
+      adminHeroMsg.className = 'form-msg error';
+    }
+  });
+
+  adminHeroForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    adminHeroMsg.textContent = '';
+    adminHeroMsg.className = 'form-msg';
+
+    siteSettings.heroTitle = document.getElementById('ahTitle').value.trim();
+    siteSettings.heroSubtitle = document.getElementById('ahSubtitle').value.trim();
+    if(pendingHeroImageDataUrl) siteSettings.heroImage = pendingHeroImageDataUrl;
+
+    try{
+      await saveSiteSettings();
+      applySiteSettings();
+      adminHeroMsg.textContent = 'Banner guardado.';
+      adminHeroMsg.classList.add('success');
+    }catch(err){
+      adminHeroMsg.textContent = 'No se pudo guardar. Probá con una imagen más liviana.';
+      adminHeroMsg.classList.add('error');
+    }
+  });
+
+  adminPromoForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    adminPromoMsg.textContent = '';
+    adminPromoMsg.className = 'form-msg';
+
+    siteSettings.promoEnabled = document.getElementById('apEnabled').checked;
+    siteSettings.promoText = document.getElementById('apText').value.trim();
+
+    await saveSiteSettings();
+    renderPromoBar();
+    adminPromoMsg.textContent = 'Anuncio guardado.';
+    adminPromoMsg.classList.add('success');
+  });
+
   /* ---------- VIAJE PARTICULAR ---------- */
   function renderMyTrips(){
     if(myTripIds.length === 0){
@@ -1569,6 +2124,8 @@
 
   async function init(){
     await loadData();
+    applySiteSettings();
+    renderPromoBar();
     render();
   }
   init();
