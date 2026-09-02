@@ -1130,29 +1130,18 @@
 
 <script>
 (function(){
-  const STORAGE_KEY = 'marketplace-data';
-  const MY_BIZ_KEY = 'my-businesses';
-  const TRIPS_KEY = 'trip-requests';
-  const MY_TRIPS_KEY = 'my-trip-requests';
-  const USERS_KEY = 'user-accounts';
-  const SESSION_KEY = 'session';
-  const SITE_SETTINGS_KEY = 'site-settings';
+  const API_BASE = 'https://cadeteria-centro-backend.onrender.com/api';
+  const SESSION_KEY = 'cc_session';
   const CATEGORIES = ['Todos','Rotisería','Pizzería','Panadería','Parrilla','Comida china','Heladería','Otro'];
   const AVATAR_COLORS = ['#14213D','#E6462A','#8A5F00','#1E7A3D'];
-  const ADMIN_EMAIL = 'admin@cadeteriacentro.com';
-  const ADMIN_PASSWORD = 'admin1234';
 
-  let data = { businesses: {} };
-  let trips = {};
-  let myBusinessIds = [];
-  let myTripIds = [];
-  let users = {};
+  // session: { token, type: 'negocio'|'cliente'|'admin', name, businessId? }
   let session = null;
   let siteSettings = { heroTitle:'', heroSubtitle:'', heroImages:[], logoUrl:'', promoEnabled:false, promoText:'', cadeteriaWhatsapp:'' };
   let activeCategory = 'Todos';
   let searchTerm = '';
-  let selectedMyBizId = null;
   let editingProductId = null;
+  let currentBusinessCache = null; // último negocio del panel, para no re-pedirlo en cada click
 
   const heroArtEl = document.getElementById('heroArt');
   const defaultHeroArtHtml = heroArtEl.innerHTML;
@@ -1207,19 +1196,7 @@
   const myTripsBlock = document.getElementById('myTripsBlock');
   const myTripList = document.getElementById('myTripList');
 
-  function uid(){
-    return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8);
-  }
-
-  function encodePw(pw){
-    try{ return btoa(unescape(encodeURIComponent(pw))); }
-    catch(e){ return pw; }
-  }
-
-  function normEmail(email){
-    return (email || '').trim().toLowerCase();
-  }
-
+  /* ---------- HELPERS ---------- */
   function escapeHtml(str){
     const div = document.createElement('div');
     div.textContent = str == null ? '' : str;
@@ -1232,15 +1209,17 @@
 
   function colorFor(id){
     let sum = 0;
-    for(let i=0;i<id.length;i++) sum += id.charCodeAt(i);
+    for(let i=0;i<(id||'').length;i++) sum += id.charCodeAt(i);
     return AVATAR_COLORS[sum % AVATAR_COLORS.length];
   }
 
-  function avatarHtml(biz, size){
-    if(biz.avatarUrl){
-      return `<img src="${escapeHtml(biz.avatarUrl)}" alt="">`;
-    }
+  function avatarHtml(biz){
+    if(biz.avatarUrl) return `<img src="${escapeHtml(biz.avatarUrl)}" alt="">`;
     return initials(biz.name);
+  }
+
+  function capitalize(s){
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
   }
 
   function fileToResizedDataUrl(file, maxDim, quality){
@@ -1269,78 +1248,45 @@
     });
   }
 
-  /* ---------- STORAGE ---------- */
-  async function loadData(){
-    try{
-      const res = await window.storage.get(STORAGE_KEY, true);
-      if(res && res.value) data = JSON.parse(res.value);
-    }catch(e){ data = { businesses: {} }; }
+  /* ---------- API ---------- */
+  async function apiFetch(path, options){
+    options = options || {};
+    const headers = Object.assign({'Content-Type':'application/json'}, options.headers || {});
+    if(session && session.token) headers['Authorization'] = 'Bearer ' + session.token;
 
+    let res;
     try{
-      const mine = await window.storage.get(MY_BIZ_KEY, false);
-      if(mine && mine.value) myBusinessIds = JSON.parse(mine.value);
-    }catch(e){ myBusinessIds = []; }
+      res = await fetch(API_BASE + path, Object.assign({}, options, {headers}));
+    }catch(networkErr){
+      const err = new Error('No pudimos conectarnos con el servidor. Probá de nuevo en un momento.');
+      err.network = true;
+      throw err;
+    }
 
-    try{
-      const tripsRes = await window.storage.get(TRIPS_KEY, true);
-      if(tripsRes && tripsRes.value) trips = JSON.parse(tripsRes.value);
-    }catch(e){ trips = {}; }
+    let body = null;
+    try{ body = await res.json(); }catch(e){ /* respuesta sin cuerpo */ }
 
-    try{
-      const myTrips = await window.storage.get(MY_TRIPS_KEY, false);
-      if(myTrips && myTrips.value) myTripIds = JSON.parse(myTrips.value);
-    }catch(e){ myTripIds = []; }
+    if(!res.ok){
+      const err = new Error((body && (body.error || body.message)) || `Error del servidor (${res.status})`);
+      err.status = res.status;
+      err.body = body;
+      throw err;
+    }
+    return body;
+  }
 
+  function loadSession(){
     try{
-      const usersRes = await window.storage.get(USERS_KEY, true);
-      if(usersRes && usersRes.value) users = JSON.parse(usersRes.value);
-    }catch(e){ users = {}; }
-
-    try{
-      const sessionRes = await window.storage.get(SESSION_KEY, false);
-      if(sessionRes && sessionRes.value) session = JSON.parse(sessionRes.value);
+      const raw = localStorage.getItem(SESSION_KEY);
+      session = raw ? JSON.parse(raw) : null;
     }catch(e){ session = null; }
-
-    try{
-      const settingsRes = await window.storage.get(SITE_SETTINGS_KEY, true);
-      if(settingsRes && settingsRes.value) siteSettings = Object.assign(siteSettings, JSON.parse(settingsRes.value));
-      if(!Array.isArray(siteSettings.heroImages)) siteSettings.heroImages = [];
-      if(siteSettings.heroImage){
-        siteSettings.heroImages.push(siteSettings.heroImage);
-        delete siteSettings.heroImage;
-      }
-    }catch(e){ /* keep defaults */ }
   }
 
-  async function saveData(){
-    try{ await window.storage.set(STORAGE_KEY, JSON.stringify(data), true); }
-    catch(e){ console.error('No se pudo guardar', e); }
-  }
-  async function saveMyBusinesses(){
-    try{ await window.storage.set(MY_BIZ_KEY, JSON.stringify(myBusinessIds), false); }
-    catch(e){ console.error('No se pudo guardar', e); }
-  }
-  async function saveTrips(){
-    try{ await window.storage.set(TRIPS_KEY, JSON.stringify(trips), true); }
-    catch(e){ console.error('No se pudo guardar', e); }
-  }
-  async function saveMyTrips(){
-    try{ await window.storage.set(MY_TRIPS_KEY, JSON.stringify(myTripIds), false); }
-    catch(e){ console.error('No se pudo guardar', e); }
-  }
-  async function saveUsers(){
-    try{ await window.storage.set(USERS_KEY, JSON.stringify(users), true); }
-    catch(e){ console.error('No se pudo guardar', e); }
-  }
-  async function saveSession(){
+  function saveSession(){
     try{
-      if(session) await window.storage.set(SESSION_KEY, JSON.stringify(session), false);
-      else await window.storage.delete(SESSION_KEY, false);
-    }catch(e){ console.error('No se pudo guardar la sesión', e); }
-  }
-  async function saveSiteSettings(){
-    try{ await window.storage.set(SITE_SETTINGS_KEY, JSON.stringify(siteSettings), true); }
-    catch(e){ console.error('No se pudo guardar', e); }
+      if(session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+      else localStorage.removeItem(SESSION_KEY);
+    }catch(e){ /* si el navegador bloquea localStorage, la sesión no persiste entre visitas */ }
   }
 
   /* ---------- ROUTER ---------- */
@@ -1394,9 +1340,9 @@
     }
     const logoutBtn = document.getElementById('logoutBtn');
     if(logoutBtn){
-      logoutBtn.addEventListener('click', async () => {
+      logoutBtn.addEventListener('click', () => {
         session = null;
-        await saveSession();
+        saveSession();
         location.hash = '#/';
         renderHeaderAuthUI();
         render();
@@ -1404,7 +1350,7 @@
     }
   }
 
-  function render(){
+  async function render(){
     const route = getRoute();
     renderHeaderAuthUI();
 
@@ -1418,29 +1364,28 @@
         location.hash = '#/ingresar';
         return;
       }
-      selectedMyBizId = session.businessId;
       showView('panel');
-      renderPanel();
+      await renderPanel();
     } else if(route.name === 'admin'){
       if(!session || session.type !== 'admin'){
         location.hash = '#/ingresar';
         return;
       }
       showView('admin');
-      renderAdmin();
+      await renderAdmin();
     } else if(route.name === 'negocio'){
       showView('negocio');
-      renderPublicBusiness(route.id);
+      await renderPublicBusiness(route.id);
     } else {
       showView('home');
       renderChips();
-      renderListings();
-      renderMyTrips();
+      await renderListings();
+      await renderMyTrips();
     }
     window.scrollTo(0,0);
   }
 
-  /* ---------- HOME: LISTINGS ---------- */
+  /* ---------- HOME: LISTADO Y BÚSQUEDA ---------- */
   function renderChips(){
     chipRow.innerHTML = '';
     CATEGORIES.forEach(cat => {
@@ -1448,51 +1393,47 @@
       chip.className = 'chip' + (cat === activeCategory ? ' active' : '');
       chip.type = 'button';
       chip.textContent = cat;
-      chip.addEventListener('click', () => {
+      chip.addEventListener('click', async () => {
         activeCategory = cat;
         renderChips();
-        renderListings();
+        await renderListings();
       });
       chipRow.appendChild(chip);
     });
   }
 
-  function matches(biz){
-    const catOk = activeCategory === 'Todos' || biz.category === activeCategory;
-    if(!catOk) return false;
-    if(!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    if(biz.name.toLowerCase().includes(term)) return true;
-    if((biz.description||'').toLowerCase().includes(term)) return true;
-    if((biz.products||[]).some(p => p.name.toLowerCase().includes(term))) return true;
-    return false;
-  }
+  async function renderListings(){
+    cardGrid.innerHTML = `<div class="empty-state"><p>Cargando…</p></div>`;
 
-  function getMatchingProducts(){
-    const term = searchTerm.toLowerCase();
-    const results = [];
-    Object.values(data.businesses).forEach(biz => {
-      if(activeCategory !== 'Todos' && biz.category !== activeCategory) return;
-      const bizTextMatch = biz.name.toLowerCase().includes(term) || (biz.description||'').toLowerCase().includes(term);
-      (biz.products || []).forEach(p => {
-        const prodMatch = p.name.toLowerCase().includes(term) || (p.desc||'').toLowerCase().includes(term);
-        if(bizTextMatch || prodMatch){
-          results.push({ product: p, bizId: biz.id, bizName: biz.name });
-        }
-      });
-    });
-    return results;
-  }
+    if(searchTerm){
+      await renderProductResults();
+      return;
+    }
 
-  function renderListings(){
-    const all = Object.values(data.businesses).sort((a,b) => b.createdAt - a.createdAt);
+    listingsTitle.textContent = 'Negocios en tu zona';
+
+    let all;
+    try{
+      const qs = activeCategory !== 'Todos' ? `?category=${encodeURIComponent(activeCategory)}` : '';
+      all = await apiFetch('/businesses' + qs);
+    }catch(err){
+      cardGrid.innerHTML = `<div class="empty-state"><h3>No pudimos cargar los negocios</h3><p>${escapeHtml(err.message)}</p></div>`;
+      return;
+    }
+
     bizCount.textContent = all.length;
+    listingsNote.textContent = activeCategory !== 'Todos'
+      ? `Mostrando ${activeCategory.toLowerCase()}`
+      : 'Mostrando todos los negocios registrados';
 
     cardGrid.innerHTML = '';
 
     if(all.length === 0){
-      listingsNote.textContent = 'Mostrando todos los negocios registrados';
-      cardGrid.innerHTML = `
+      cardGrid.innerHTML = activeCategory !== 'Todos' ? `
+        <div class="empty-state">
+          <h3>No encontramos negocios en ese rubro</h3>
+          <p>Probá con otro filtro.</p>
+        </div>` : `
         <div class="empty-state">
           <h3>Todavía no hay negocios acá</h3>
           <p>Sé el primer negocio de tu zona en aparecer en Cadetería Centro.</p>
@@ -1501,27 +1442,7 @@
       return;
     }
 
-    if(searchTerm){
-      renderProductResults();
-      return;
-    }
-
-    listingsTitle.textContent = 'Negocios en tu zona';
-    const filtered = all.filter(matches);
-    listingsNote.textContent = activeCategory !== 'Todos'
-      ? `Mostrando ${activeCategory.toLowerCase()}`
-      : 'Mostrando todos los negocios registrados';
-
-    if(filtered.length === 0){
-      cardGrid.innerHTML = `
-        <div class="empty-state">
-          <h3>No encontramos negocios en ese rubro</h3>
-          <p>Probá con otro filtro.</p>
-        </div>`;
-      return;
-    }
-
-    filtered.forEach(biz => {
+    all.forEach(biz => {
       const card = document.createElement('a');
       card.className = 'biz-card';
       card.href = '#/negocio/' + biz.id;
@@ -1558,10 +1479,22 @@
     });
   }
 
-  function renderProductResults(){
+  async function renderProductResults(){
     listingsTitle.textContent = 'Productos';
-    const results = getMatchingProducts();
+
+    let results;
+    try{
+      const qs = new URLSearchParams();
+      qs.set('q', searchTerm);
+      if(activeCategory !== 'Todos') qs.set('category', activeCategory);
+      results = await apiFetch('/products/search?' + qs.toString());
+    }catch(err){
+      cardGrid.innerHTML = `<div class="empty-state"><h3>No pudimos buscar</h3><p>${escapeHtml(err.message)}</p></div>`;
+      return;
+    }
+
     listingsNote.textContent = `${results.length} producto${results.length===1?'':'s'} encontrado${results.length===1?'':'s'} para "${searchTerm}"`;
+    cardGrid.innerHTML = '';
 
     if(results.length === 0){
       cardGrid.innerHTML = `
@@ -1572,22 +1505,24 @@
       return;
     }
 
-    results.forEach(({product, bizId, bizName}) => {
+    results.forEach(item => {
       const card = document.createElement('a');
       card.className = 'result-card';
       card.href = 'javascript:void(0)';
       card.innerHTML = `
-        ${product.image ? `<img class="result-img" src="${product.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
+        ${item.image ? `<img class="result-img" src="${item.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
-          <p class="pname">${escapeHtml(product.name)}</p>
-          <span class="pprice">$${escapeHtml(String(product.price))}</span>
-          ${product.desc ? `<p class="pdesc">${escapeHtml(product.desc)}</p>` : ''}
-          <p class="result-biz">De <strong>${escapeHtml(bizName)}</strong></p>
+          <p class="pname">${escapeHtml(item.name)}</p>
+          <span class="pprice">$${escapeHtml(String(item.price))}</span>
+          ${item.desc ? `<p class="pdesc">${escapeHtml(item.desc)}</p>` : ''}
+          <p class="result-biz">De <strong>${escapeHtml(item.bizName)}</strong></p>
         </div>
       `;
-      card.addEventListener('click', () => {
-        const biz = data.businesses[bizId];
-        if(biz) openProductModal(product, biz);
+      card.addEventListener('click', async () => {
+        try{
+          const biz = await apiFetch('/businesses/' + item.bizId);
+          openProductModal(item, biz);
+        }catch(err){ /* si falla, no pasa nada, el usuario puede reintentar */ }
       });
       cardGrid.appendChild(card);
     });
@@ -1601,7 +1536,7 @@
 
     const name = document.getElementById('bName').value.trim();
     const category = document.getElementById('bCategory').value;
-    const email = normEmail(document.getElementById('bEmail').value);
+    const email = document.getElementById('bEmail').value.trim();
     const password = document.getElementById('bPassword').value;
     const password2 = document.getElementById('bPassword2').value;
 
@@ -1615,38 +1550,20 @@
       registerMsg.classList.add('error');
       return;
     }
-    if(users[email]){
-      registerMsg.textContent = 'Ya existe una cuenta con ese email.';
+
+    try{
+      const res = await apiFetch('/auth/register/business', {
+        method: 'POST',
+        body: JSON.stringify({ name, category, email, password, password2 })
+      });
+      session = { token: res.token, type: 'negocio', name: res.business.name, businessId: res.business.id };
+      saveSession();
+      registerForm.reset();
+      location.hash = '#/panel';
+    }catch(err){
+      registerMsg.textContent = err.message;
       registerMsg.classList.add('error');
-      return;
     }
-
-    const bizId = uid();
-    data.businesses[bizId] = {
-      id: bizId, name, category, email,
-      address:'', phone:'', whatsapp:'', instagram:'', facebook:'',
-      description:'', avatarUrl:'', coverUrl:'',
-      products: [],
-      createdAt: Date.now()
-    };
-    await saveData();
-
-    const userId = uid();
-    users[email] = {
-      id: userId, type: 'negocio', name, email,
-      passwordObfuscated: encodePw(password),
-      businessId: bizId, createdAt: Date.now()
-    };
-    await saveUsers();
-
-    myBusinessIds.push(bizId);
-    await saveMyBusinesses();
-
-    session = { email, type:'negocio', userId, businessId: bizId, name };
-    await saveSession();
-
-    registerForm.reset();
-    location.hash = '#/panel';
   });
 
   /* ---------- REGISTRO: CLIENTE ---------- */
@@ -1656,7 +1573,7 @@
     clientRegisterMsg.className = 'form-msg';
 
     const name = document.getElementById('cName').value.trim();
-    const email = normEmail(document.getElementById('cEmail').value);
+    const email = document.getElementById('cEmail').value.trim();
     const password = document.getElementById('cPassword').value;
     const password2 = document.getElementById('cPassword2').value;
 
@@ -1670,25 +1587,20 @@
       clientRegisterMsg.classList.add('error');
       return;
     }
-    if(users[email]){
-      clientRegisterMsg.textContent = 'Ya existe una cuenta con ese email.';
+
+    try{
+      const res = await apiFetch('/auth/register/client', {
+        method: 'POST',
+        body: JSON.stringify({ name, email, password, password2 })
+      });
+      session = { token: res.token, type: 'cliente', name: res.client.name };
+      saveSession();
+      clientForm.reset();
+      location.hash = '#/';
+    }catch(err){
+      clientRegisterMsg.textContent = err.message;
       clientRegisterMsg.classList.add('error');
-      return;
     }
-
-    const userId = uid();
-    users[email] = {
-      id: userId, type: 'cliente', name, email,
-      passwordObfuscated: encodePw(password),
-      createdAt: Date.now()
-    };
-    await saveUsers();
-
-    session = { email, type:'cliente', userId, name };
-    await saveSession();
-
-    clientForm.reset();
-    location.hash = '#/';
   });
 
   /* ---------- LOGIN ---------- */
@@ -1697,7 +1609,7 @@
     loginMsg.textContent = '';
     loginMsg.className = 'form-msg';
 
-    const email = normEmail(document.getElementById('lEmail').value);
+    const email = document.getElementById('lEmail').value.trim();
     const password = document.getElementById('lPassword').value;
 
     if(!email || !password){
@@ -1706,37 +1618,60 @@
       return;
     }
 
-    if(email === ADMIN_EMAIL.toLowerCase() && password === ADMIN_PASSWORD){
-      session = { email, type:'admin', name:'Administrador' };
-      await saveSession();
+    try{
+      const res = await apiFetch('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password })
+      });
+
+      if(res.type === 'admin'){
+        session = { token: res.token, type: 'admin', name: res.name || 'Administrador' };
+      } else if(res.type === 'negocio'){
+        session = { token: res.token, type: 'negocio', name: res.business.name, businessId: res.business.id };
+      } else {
+        session = { token: res.token, type: 'cliente', name: res.client.name };
+      }
+      saveSession();
       loginForm.reset();
-      location.hash = '#/admin';
-      return;
-    }
 
-    const u = users[email];
-    if(!u || u.passwordObfuscated !== encodePw(password)){
-      loginMsg.textContent = 'Email o contraseña incorrectos.';
+      if(res.membershipWarning){
+        alert(res.membershipWarning);
+      }
+      location.hash = session.type === 'negocio' ? '#/panel' : (session.type === 'admin' ? '#/admin' : '#/');
+    }catch(err){
+      loginMsg.textContent = err.message;
       loginMsg.classList.add('error');
-      return;
     }
-
-    session = { email, type: u.type, userId: u.id, name: u.name, businessId: u.businessId };
-    await saveSession();
-    loginForm.reset();
-    location.hash = u.type === 'negocio' ? '#/panel' : '#/';
   });
 
   /* ---------- PANEL ---------- */
-  function renderPanel(){
-    const biz = data.businesses[selectedMyBizId];
+  async function renderPanel(){
     myBizSelectWrap.innerHTML = '';
     exitEditMode();
 
-    panelTitle.textContent = biz ? `Panel de ${biz.name}` : 'Panel de tu negocio';
-    viewPublicLink.href = '#/negocio/' + selectedMyBizId;
+    let biz;
+    try{
+      biz = await apiFetch('/business/me');
+    }catch(err){
+      if(err.status === 403 && err.body && err.body.error === 'membership_inactive'){
+        panelTitle.textContent = 'Acceso suspendido';
+        document.querySelector('.panel-header p').textContent = err.body.message;
+        document.querySelectorAll('.panel-two-col')[0].hidden = true;
+        return;
+      }
+      if(err.status === 401){
+        session = null;
+        saveSession();
+        location.hash = '#/ingresar';
+        return;
+      }
+      panelTitle.textContent = 'No pudimos cargar tu negocio';
+      return;
+    }
 
-    if(!biz) return;
+    currentBusinessCache = biz;
+    panelTitle.textContent = `Panel de ${biz.name}`;
+    viewPublicLink.href = '#/negocio/' + biz.id;
 
     document.getElementById('pfDesc').value = biz.description || '';
     document.getElementById('pfAddress').value = biz.address || '';
@@ -1752,7 +1687,7 @@
     pfCoverInput.value = '';
 
     renderAvatarPreview(biz);
-    renderMyProductList();
+    renderMyProductList(biz);
   }
 
   function renderAvatarPreview(biz){
@@ -1768,11 +1703,10 @@
 
   pfAvatarInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    if(!file) return;
+    if(!file || !currentBusinessCache) return;
     try{
       pendingAvatarDataUrl = await fileToResizedDataUrl(file, 300, 0.85);
-      const biz = data.businesses[selectedMyBizId];
-      if(biz) renderAvatarPreview(biz);
+      renderAvatarPreview(currentBusinessCache);
     }catch(err){
       profileMsg.textContent = 'No pudimos procesar esa imagen.';
       profileMsg.className = 'form-msg error';
@@ -1781,11 +1715,10 @@
 
   pfCoverInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    if(!file) return;
+    if(!file || !currentBusinessCache) return;
     try{
       pendingCoverDataUrl = await fileToResizedDataUrl(file, 1000, 0.8);
-      const biz = data.businesses[selectedMyBizId];
-      if(biz) renderAvatarPreview(biz);
+      renderAvatarPreview(currentBusinessCache);
     }catch(err){
       profileMsg.textContent = 'No pudimos procesar esa imagen.';
       profileMsg.className = 'form-msg error';
@@ -1797,35 +1730,33 @@
     profileMsg.textContent = '';
     profileMsg.className = 'form-msg';
 
-    const biz = data.businesses[selectedMyBizId];
-    if(!biz) return;
-
-    if(pendingAvatarDataUrl) biz.avatarUrl = pendingAvatarDataUrl;
-    if(pendingCoverDataUrl) biz.coverUrl = pendingCoverDataUrl;
-    biz.description = document.getElementById('pfDesc').value.trim();
-    biz.address = document.getElementById('pfAddress').value.trim();
-    biz.phone = document.getElementById('pfPhone').value.trim();
-    biz.whatsapp = document.getElementById('pfWhatsapp').value.trim();
-    biz.category = document.getElementById('pfCategory').value;
-    biz.instagram = document.getElementById('pfInstagram').value.trim();
-    biz.facebook = document.getElementById('pfFacebook').value.trim();
+    const payload = {
+      description: document.getElementById('pfDesc').value.trim(),
+      address: document.getElementById('pfAddress').value.trim(),
+      phone: document.getElementById('pfPhone').value.trim(),
+      whatsapp: document.getElementById('pfWhatsapp').value.trim(),
+      category: document.getElementById('pfCategory').value,
+      instagram: document.getElementById('pfInstagram').value.trim(),
+      facebook: document.getElementById('pfFacebook').value.trim(),
+    };
+    if(pendingAvatarDataUrl) payload.avatarUrl = pendingAvatarDataUrl;
+    if(pendingCoverDataUrl) payload.coverUrl = pendingCoverDataUrl;
 
     try{
-      await saveData();
+      const biz = await apiFetch('/business/me', { method: 'PUT', body: JSON.stringify(payload) });
+      currentBusinessCache = biz;
       profileMsg.textContent = 'Perfil guardado.';
       profileMsg.classList.add('success');
+      renderAvatarPreview(biz);
     }catch(err){
-      profileMsg.textContent = 'No se pudo guardar. Probá con una imagen más liviana.';
+      profileMsg.textContent = err.message;
       profileMsg.classList.add('error');
-      return;
     }
-    renderAvatarPreview(biz);
   });
 
-  function renderMyProductList(){
-    const biz = data.businesses[selectedMyBizId];
+  function renderMyProductList(biz){
     myProductList.innerHTML = '';
-    if(!biz || !biz.products || biz.products.length === 0){
+    if(!biz.products || biz.products.length === 0){
       myProductList.innerHTML = `<p class="sub" style="margin:16px 0 0;">Este negocio todavía no tiene productos cargados.</p>`;
       return;
     }
@@ -1846,10 +1777,16 @@
         </div>
       `;
       row.querySelector('[data-action="del"]').addEventListener('click', async () => {
-        biz.products = biz.products.filter(prod => prod.id !== p.id);
-        await saveData();
-        if(editingProductId === p.id) exitEditMode();
-        renderMyProductList();
+        try{
+          await apiFetch('/business/me/products/' + p.id, { method: 'DELETE' });
+          if(editingProductId === p.id) exitEditMode();
+          const fresh = await apiFetch('/business/me');
+          currentBusinessCache = fresh;
+          renderMyProductList(fresh);
+        }catch(err){
+          productMsg.textContent = err.message;
+          productMsg.className = 'form-msg error';
+        }
       });
       row.querySelector('[data-action="edit"]').addEventListener('click', () => {
         enterEditMode(p);
@@ -1906,9 +1843,6 @@
     productMsg.textContent = '';
     productMsg.className = 'form-msg';
 
-    const biz = data.businesses[selectedMyBizId];
-    if(!biz) return;
-
     const name = document.getElementById('pName').value.trim();
     const price = document.getElementById('pPrice').value;
     const desc = document.getElementById('pDesc').value.trim();
@@ -1919,37 +1853,30 @@
       return;
     }
 
-    biz.products = biz.products || [];
-
-    if(editingProductId){
-      const existing = biz.products.find(p => p.id === editingProductId);
-      if(existing){
-        existing.name = name;
-        existing.price = price;
-        existing.desc = desc;
-        if(pendingProductImageDataUrl) existing.image = pendingProductImageDataUrl;
-      }
-    } else {
-      biz.products.push({ id: uid(), name, price, desc, image: pendingProductImageDataUrl });
-    }
+    const payload = { name, price, desc };
+    if(pendingProductImageDataUrl) payload.image = pendingProductImageDataUrl;
 
     try{
-      await saveData();
+      if(editingProductId){
+        await apiFetch('/business/me/products/' + editingProductId, { method: 'PUT', body: JSON.stringify(payload) });
+      } else {
+        await apiFetch('/business/me/products', { method: 'POST', body: JSON.stringify(payload) });
+      }
       const wasEditing = !!editingProductId;
       exitEditMode();
       productMsg.textContent = wasEditing ? 'Producto actualizado.' : 'Producto agregado.';
       productMsg.classList.add('success');
+      const fresh = await apiFetch('/business/me');
+      currentBusinessCache = fresh;
+      renderMyProductList(fresh);
     }catch(err){
-      productMsg.textContent = 'No se pudo guardar. Probá con una imagen más liviana.';
+      productMsg.textContent = err.message;
       productMsg.classList.add('error');
-      return;
     }
-    renderMyProductList();
   });
 
-  /* ---------- PAGINA PUBLICA DEL NEGOCIO ---------- */
-  function renderPublicBusiness(id){
-    const biz = data.businesses[id];
+  /* ---------- PÁGINA PÚBLICA DEL NEGOCIO ---------- */
+  async function renderPublicBusiness(id){
     const cover = document.getElementById('pubCover');
     const avatar = document.getElementById('pubAvatar');
     const nameEl = document.getElementById('pubName');
@@ -1961,6 +1888,11 @@
     const contactRow = document.getElementById('pubContactRow');
     const descEl = document.getElementById('pubDesc');
     const catalog = document.getElementById('pubCatalog');
+
+    let biz = null;
+    try{
+      biz = await apiFetch('/businesses/' + id);
+    }catch(err){ biz = null; }
 
     if(!biz){
       cover.style.background = 'linear-gradient(135deg, var(--navy), var(--flame))';
@@ -1991,7 +1923,6 @@
     dot1.hidden = !biz.address;
     dot2.hidden = !biz.phone;
     descEl.textContent = biz.description || 'Este negocio todavía no cargó una descripción.';
-    descEl.hidden = false;
 
     contactRow.innerHTML = '';
     if(biz.whatsapp){
@@ -2194,6 +2125,20 @@
     }
   }
 
+  async function loadSiteSettings(){
+    try{
+      const res = await apiFetch('/site-settings');
+      siteSettings = Object.assign(siteSettings, res);
+      if(!Array.isArray(siteSettings.heroImages)) siteSettings.heroImages = [];
+    }catch(e){ /* seguimos con los valores por defecto */ }
+  }
+
+  async function saveSiteSettingsPatch(patch){
+    const updated = await apiFetch('/admin/site-settings', { method: 'PUT', body: JSON.stringify(patch) });
+    siteSettings = Object.assign(siteSettings, updated);
+    return siteSettings;
+  }
+
   /* ---------- ADMIN ---------- */
   const adminHeroForm = document.getElementById('adminHeroForm');
   const adminHeroMsg = document.getElementById('adminHeroMsg');
@@ -2206,7 +2151,7 @@
   const adminPromoForm = document.getElementById('adminPromoForm');
   const adminPromoMsg = document.getElementById('adminPromoMsg');
 
-  function renderAdmin(){
+  async function renderAdmin(){
     document.getElementById('ahTitle').value = siteSettings.heroTitle || '';
     document.getElementById('ahSubtitle').value = siteSettings.heroSubtitle || '';
     document.getElementById('apEnabled').checked = !!siteSettings.promoEnabled;
@@ -2220,15 +2165,18 @@
 
     renderBannerImgList();
 
-    const allBusinesses = Object.values(data.businesses);
-    const totalProducts = allBusinesses.reduce((sum, b) => sum + (b.products ? b.products.length : 0), 0);
-    const pendingTrips = Object.values(trips).filter(t => t.status === 'Pendiente').length;
-    document.getElementById('adminStats').innerHTML = `
-      <div class="stat-item"><span>Negocios registrados</span><strong>${allBusinesses.length}</strong></div>
-      <div class="stat-item"><span>Productos publicados</span><strong>${totalProducts}</strong></div>
-      <div class="stat-item"><span>Viajes particulares pendientes</span><strong>${pendingTrips}</strong></div>
-      <div class="stat-item"><span>Cuentas registradas</span><strong>${Object.keys(users).length}</strong></div>
-    `;
+    document.getElementById('adminStats').innerHTML = `<div class="stat-item"><span>Cargando…</span><strong></strong></div>`;
+    try{
+      const stats = await apiFetch('/admin/stats');
+      document.getElementById('adminStats').innerHTML = `
+        <div class="stat-item"><span>Negocios registrados</span><strong>${stats.businesses}</strong></div>
+        <div class="stat-item"><span>Productos publicados</span><strong>${stats.products}</strong></div>
+        <div class="stat-item"><span>Viajes particulares pendientes</span><strong>${stats.pendingTrips}</strong></div>
+        <div class="stat-item"><span>Cuentas registradas</span><strong>${stats.accounts}</strong></div>
+      `;
+    }catch(err){
+      document.getElementById('adminStats').innerHTML = `<p class="sub" style="margin:0;">No pudimos cargar las estadísticas.</p>`;
+    }
   }
 
   function renderBannerImgList(){
@@ -2246,14 +2194,15 @@
     bannerImgList.querySelectorAll('button').forEach(btn => {
       btn.addEventListener('click', async () => {
         const i = parseInt(btn.dataset.i, 10);
-        siteSettings.heroImages.splice(i, 1);
+        const newImages = (siteSettings.heroImages || []).slice();
+        newImages.splice(i, 1);
         try{
-          await saveSiteSettings();
+          await saveSiteSettingsPatch({ heroImages: newImages });
           heroCarouselIndex = 0;
           applySiteSettings();
           renderBannerImgList();
         }catch(err){
-          adminHeroMsg.textContent = 'No se pudo guardar el cambio.';
+          adminHeroMsg.textContent = err.message;
           adminHeroMsg.className = 'form-msg error';
         }
       });
@@ -2267,16 +2216,15 @@
     adminHeroMsg.className = 'form-msg';
     try{
       const dataUrls = await Promise.all(files.map(f => fileToResizedDataUrl(f, 1400, 0.8)));
-      siteSettings.heroImages = siteSettings.heroImages || [];
-      siteSettings.heroImages.push(...dataUrls);
-      await saveSiteSettings();
+      const newImages = (siteSettings.heroImages || []).concat(dataUrls);
+      await saveSiteSettingsPatch({ heroImages: newImages });
       applySiteSettings();
       renderBannerImgList();
       ahImageInput.value = '';
       adminHeroMsg.textContent = `${dataUrls.length} imagen${dataUrls.length===1?'':'es'} agregada${dataUrls.length===1?'':'s'}.`;
       adminHeroMsg.className = 'form-msg success';
     }catch(err){
-      adminHeroMsg.textContent = 'No pudimos guardar esas imágenes. Probá con archivos más livianos o de a menos por vez.';
+      adminHeroMsg.textContent = err.message || 'No pudimos guardar esas imágenes. Probá con archivos más livianos o de a menos por vez.';
       adminHeroMsg.className = 'form-msg error';
     }
   });
@@ -2285,13 +2233,13 @@
     const file = e.target.files[0];
     if(!file) return;
     try{
-      siteSettings.logoUrl = await fileToResizedDataUrl(file, 200, 0.85);
-      await saveSiteSettings();
+      const logoUrl = await fileToResizedDataUrl(file, 200, 0.85);
+      await saveSiteSettingsPatch({ logoUrl });
       applySiteSettings();
       adminLogoPreview.style.background = 'transparent';
       adminLogoPreview.innerHTML = `<img src="${siteSettings.logoUrl}" alt="">`;
     }catch(err){
-      adminHeroMsg.textContent = 'No pudimos guardar ese logo.';
+      adminHeroMsg.textContent = err.message || 'No pudimos guardar ese logo.';
       adminHeroMsg.className = 'form-msg error';
     }
   });
@@ -2299,13 +2247,12 @@
   ahWhatsappInput.addEventListener('change', async () => {
     ahWhatsappMsg.textContent = '';
     ahWhatsappMsg.className = 'form-msg';
-    siteSettings.cadeteriaWhatsapp = ahWhatsappInput.value.trim();
     try{
-      await saveSiteSettings();
+      await saveSiteSettingsPatch({ cadeteriaWhatsapp: ahWhatsappInput.value.trim() });
       ahWhatsappMsg.textContent = 'Guardado.';
       ahWhatsappMsg.classList.add('success');
     }catch(err){
-      ahWhatsappMsg.textContent = 'No se pudo guardar.';
+      ahWhatsappMsg.textContent = err.message;
       ahWhatsappMsg.classList.add('error');
     }
   });
@@ -2315,16 +2262,16 @@
     adminHeroMsg.textContent = '';
     adminHeroMsg.className = 'form-msg';
 
-    siteSettings.heroTitle = document.getElementById('ahTitle').value.trim();
-    siteSettings.heroSubtitle = document.getElementById('ahSubtitle').value.trim();
-
     try{
-      await saveSiteSettings();
+      await saveSiteSettingsPatch({
+        heroTitle: document.getElementById('ahTitle').value.trim(),
+        heroSubtitle: document.getElementById('ahSubtitle').value.trim(),
+      });
       applySiteSettings();
       adminHeroMsg.textContent = 'Guardado.';
       adminHeroMsg.classList.add('success');
     }catch(err){
-      adminHeroMsg.textContent = 'No se pudo guardar.';
+      adminHeroMsg.textContent = err.message;
       adminHeroMsg.classList.add('error');
     }
   });
@@ -2334,44 +2281,61 @@
     adminPromoMsg.textContent = '';
     adminPromoMsg.className = 'form-msg';
 
-    siteSettings.promoEnabled = document.getElementById('apEnabled').checked;
-    siteSettings.promoText = document.getElementById('apText').value.trim();
-
-    await saveSiteSettings();
-    renderPromoBar();
-    adminPromoMsg.textContent = 'Anuncio guardado.';
-    adminPromoMsg.classList.add('success');
+    try{
+      await saveSiteSettingsPatch({
+        promoEnabled: document.getElementById('apEnabled').checked,
+        promoText: document.getElementById('apText').value.trim(),
+      });
+      renderPromoBar();
+      adminPromoMsg.textContent = 'Anuncio guardado.';
+      adminPromoMsg.classList.add('success');
+    }catch(err){
+      adminPromoMsg.textContent = err.message;
+      adminPromoMsg.classList.add('error');
+    }
   });
 
   /* ---------- VIAJE PARTICULAR ---------- */
-  function renderMyTrips(){
-    if(!session || myTripIds.length === 0){
+  async function renderMyTrips(){
+    if(!session){
       myTripsBlock.hidden = true;
       return;
     }
+
+    let mine;
+    try{
+      mine = await apiFetch('/trips/mine');
+    }catch(err){
+      myTripsBlock.hidden = true;
+      return;
+    }
+
+    if(!mine || mine.length === 0){
+      myTripsBlock.hidden = true;
+      return;
+    }
+
     myTripsBlock.hidden = false;
     myTripList.innerHTML = '';
-    const mine = myTripIds.map(id => trips[id]).filter(Boolean).sort((a,b) => b.createdAt - a.createdAt);
     mine.forEach(trip => {
       const row = document.createElement('div');
       row.className = 'trip-item';
-      const badgeClass = trip.status === 'Cancelado' ? 'cancelado' : 'pendiente';
+      const badgeClass = trip.status === 'cancelado' ? 'cancelado' : 'pendiente';
       row.innerHTML = `
         <div class="trip-item-top">
           <span class="route">${escapeHtml(trip.origin)} → ${escapeHtml(trip.dest)}</span>
-          <span class="status-badge ${badgeClass}">${escapeHtml(trip.status)}</span>
+          <span class="status-badge ${badgeClass}">${escapeHtml(capitalize(trip.status))}</span>
         </div>
         <span class="desc">${escapeHtml(trip.description)}</span>
-        ${trip.status === 'Pendiente' ? `<button type="button" class="cancel-trip" data-id="${trip.id}">Cancelar pedido</button>` : ''}
+        ${trip.status === 'pendiente' ? `<button type="button" class="cancel-trip" data-id="${trip.id}">Cancelar pedido</button>` : ''}
       `;
       const cancelBtn = row.querySelector('.cancel-trip');
       if(cancelBtn){
         cancelBtn.addEventListener('click', async () => {
-          if(trips[trip.id]){
-            trips[trip.id].status = 'Cancelado';
-            await saveTrips();
-            renderMyTrips();
-          }
+          try{
+            await apiFetch('/trips/' + trip.id + '/cancel', { method: 'PUT' });
+            await renderMyTrips();
+          }catch(err){ /* si falla, el botón sigue disponible para reintentar */ }
         });
       }
       myTripList.appendChild(row);
@@ -2394,40 +2358,37 @@
       return;
     }
 
-    const id = uid();
-    trips[id] = { id, origin, dest, description, phone, status: 'Pendiente', createdAt: Date.now() };
+    try{
+      await apiFetch('/trips', { method: 'POST', body: JSON.stringify({ origin, dest, description, phone }) });
+      tripForm.reset();
 
-    await saveTrips();
-    if(session){
-      myTripIds.push(id);
-      await saveMyTrips();
+      if(siteSettings.cadeteriaWhatsapp){
+        const digits = siteSettings.cadeteriaWhatsapp.replace(/[^0-9]/g,'');
+        const message = `Hola! Quiero pedir un viaje particular por Cadetería Centro.\nOrigen: ${origin}\nDestino: ${dest}\nQué hay que llevar: ${description}\nMi teléfono: ${phone}`;
+        window.open(`https://wa.me/${digits}?text=${encodeURIComponent(message)}`, '_blank');
+        tripMsg.textContent = 'Pedido guardado. Te llevamos a WhatsApp para coordinar con un cadete.';
+      } else {
+        tripMsg.textContent = 'Pedido enviado. Un cadete se va a contactar con vos.';
+      }
+      tripMsg.classList.add('success');
+      await renderMyTrips();
+    }catch(err){
+      tripMsg.textContent = err.message;
+      tripMsg.classList.add('error');
     }
-
-    tripForm.reset();
-
-    if(siteSettings.cadeteriaWhatsapp){
-      const digits = siteSettings.cadeteriaWhatsapp.replace(/[^0-9]/g,'');
-      const message = `Hola! Quiero pedir un viaje particular por Cadetería Centro.\nOrigen: ${origin}\nDestino: ${dest}\nQué hay que llevar: ${description}\nMi teléfono: ${phone}`;
-      window.open(`https://wa.me/${digits}?text=${encodeURIComponent(message)}`, '_blank');
-      tripMsg.textContent = 'Pedido guardado. Te llevamos a WhatsApp para coordinar con un cadete.';
-    } else {
-      tripMsg.textContent = 'Pedido enviado. Un cadete se va a contactar con vos.';
-    }
-    tripMsg.classList.add('success');
-    renderMyTrips();
   });
 
-  /* ---------- SEARCH ---------- */
-  document.getElementById('searchBtn').addEventListener('click', () => {
+  /* ---------- BUSCADOR ---------- */
+  document.getElementById('searchBtn').addEventListener('click', async () => {
     searchTerm = document.getElementById('searchInput').value.trim();
-    renderListings();
+    await renderListings();
     document.getElementById('listings').scrollIntoView({behavior:'smooth'});
   });
-  document.getElementById('searchInput').addEventListener('keydown', (e) => {
+  document.getElementById('searchInput').addEventListener('keydown', async (e) => {
     if(e.key === 'Enter'){
       e.preventDefault();
       searchTerm = e.target.value.trim();
-      renderListings();
+      await renderListings();
       document.getElementById('listings').scrollIntoView({behavior:'smooth'});
     }
   });
@@ -2435,12 +2396,12 @@
   /* ---------- INIT ---------- */
   window.addEventListener('hashchange', render);
 
-  function resetHomeFilters(){
+  async function resetHomeFilters(){
     searchTerm = '';
     activeCategory = 'Todos';
     const searchInput = document.getElementById('searchInput');
     if(searchInput) searchInput.value = '';
-    if(getRoute().name === 'home') render();
+    if(getRoute().name === 'home') await render();
   }
   const brandHomeLink = document.getElementById('brandHomeLink');
   const footerBrandHomeLink = document.getElementById('footerBrandHomeLink');
@@ -2448,10 +2409,11 @@
   if(footerBrandHomeLink) footerBrandHomeLink.addEventListener('click', resetHomeFilters);
 
   async function init(){
-    await loadData();
+    loadSession();
+    await loadSiteSettings();
     applySiteSettings();
     renderPromoBar();
-    render();
+    await render();
   }
   init();
 })();
