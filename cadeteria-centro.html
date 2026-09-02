@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root{
     --ink:#14181B;
@@ -336,6 +337,13 @@
   /* ---------- AUTH / REGISTRO ---------- */
   .auth-view{padding:72px 0 96px;}
   .auth-panel{max-width:480px;margin:0 auto;}
+  .google-btn-wrap{display:flex; justify-content:center; margin-top:6px;}
+  .google-btn-wrap > div{ width:100% !important; }
+  .auth-divider{
+    display:flex; align-items:center; gap:12px; margin:20px 0;
+    color:var(--ink-soft); font-size:0.82rem;
+  }
+  .auth-divider::before, .auth-divider::after{content:'';flex:1;height:1px;background:var(--line);}
   .back-link{
     display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft);
     text-decoration:none;font-size:0.9rem;font-weight:500;margin-bottom:24px;
@@ -730,6 +738,8 @@
         <div class="panel auth-panel">
           <h3>Registro de cliente</h3>
           <p class="sub">Creá tu cuenta para pedir más rápido la próxima vez.</p>
+          <div id="googleBtnRegister" class="google-btn-wrap"></div>
+          <div class="auth-divider"><span>o con tu email</span></div>
           <form id="clientForm">
             <div class="form-row full">
               <div>
@@ -746,11 +756,11 @@
             <div class="form-row">
               <div>
                 <label for="cPassword">Contraseña</label>
-                <input type="password" id="cPassword" required placeholder="Elegí una contraseña" minlength="4">
+                <input type="password" id="cPassword" required placeholder="Elegí una contraseña" minlength="6">
               </div>
               <div>
                 <label for="cPassword2">Repetir contraseña</label>
-                <input type="password" id="cPassword2" required placeholder="Repetila" minlength="4">
+                <input type="password" id="cPassword2" required placeholder="Repetila" minlength="6">
               </div>
             </div>
             <div class="form-actions">
@@ -796,14 +806,13 @@
             <div class="form-row">
               <div>
                 <label for="bPassword">Contraseña</label>
-                <input type="password" id="bPassword" required placeholder="Elegí una contraseña" minlength="4">
+                <input type="password" id="bPassword" required placeholder="Elegí una contraseña" minlength="6">
               </div>
               <div>
                 <label for="bPassword2">Repetir contraseña</label>
-                <input type="password" id="bPassword2" required placeholder="Repetila" minlength="4">
+                <input type="password" id="bPassword2" required placeholder="Repetila" minlength="6">
               </div>
             </div>
-            <span class="field-hint">Por ahora no se valida contra ningún servidor real — es solo para simular el flujo.</span>
             <div class="form-actions" style="margin-top:14px;">
               <button type="submit" class="btn btn-flame btn-block">Crear cuenta y continuar</button>
             </div>
@@ -824,6 +833,9 @@
       <div class="panel auth-panel">
         <h3>Iniciar sesión</h3>
         <p class="sub">Entrá con el email y la contraseña que usaste al registrarte.</p>
+        <div id="googleBtnLogin" class="google-btn-wrap"></div>
+        <p class="field-hint" style="text-align:center; margin:6px 0 0;">El acceso con Google es para cuentas de cliente. Si tenés un negocio, entrá con tu email y contraseña.</p>
+        <div class="auth-divider"><span>o con tu email</span></div>
         <form id="loginForm">
           <div class="form-row full">
             <div>
@@ -842,8 +854,63 @@
           </div>
           <span class="form-msg" id="loginMsg"></span>
         </form>
+        <p class="sub" style="margin:14px 0 0; text-align:center;"><a href="#/recuperar">¿Olvidaste tu contraseña?</a></p>
       </div>
       <div class="note-box">¿Todavía no tenés cuenta? <a href="#/registro">Registrate acá</a>.</div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ RECUPERAR CONTRASEÑA ============ -->
+<div class="view" id="view-recuperar" hidden>
+  <section class="auth-view">
+    <div class="wrap-narrow">
+      <a href="#/ingresar" class="back-link">← Volver a iniciar sesión</a>
+      <div class="panel auth-panel">
+        <h3>Recuperar contraseña</h3>
+        <p class="sub">Ingresá el email con el que te registraste y te mandamos un link para elegir una nueva contraseña.</p>
+        <form id="forgotForm">
+          <div class="form-row full">
+            <div>
+              <label for="fEmail">Email</label>
+              <input type="email" id="fEmail" required placeholder="tu@email.com">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-flame btn-block">Mandarme el link</button>
+          </div>
+          <span class="form-msg" id="forgotMsg"></span>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ RESTABLECER CONTRASEÑA ============ -->
+<div class="view" id="view-restablecer" hidden>
+  <section class="auth-view">
+    <div class="wrap-narrow">
+      <a href="#/ingresar" class="back-link">← Volver a iniciar sesión</a>
+      <div class="panel auth-panel">
+        <h3>Elegí tu nueva contraseña</h3>
+        <p class="sub" id="resetSub">Escribí tu nueva contraseña dos veces.</p>
+        <form id="resetForm">
+          <div class="form-row">
+            <div>
+              <label for="rPassword">Contraseña nueva</label>
+              <input type="password" id="rPassword" required placeholder="Elegí una contraseña" minlength="6">
+            </div>
+            <div>
+              <label for="rPassword2">Repetila</label>
+              <input type="password" id="rPassword2" required placeholder="Repetila" minlength="6">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-flame btn-block">Guardar contraseña nueva</button>
+          </div>
+          <span class="form-msg" id="resetMsg"></span>
+        </form>
+      </div>
     </div>
   </section>
 </div>
@@ -1106,6 +1173,26 @@
           </form>
 
           <div class="divider"></div>
+          <h3>Recuperar contraseña de un usuario</h3>
+          <p class="sub">Para cuando el email no le llega — generá el link acá y mandáselo vos por WhatsApp o donde prefieras. Vence en 1 hora.</p>
+          <form id="genResetForm">
+            <div class="form-row full">
+              <div>
+                <label for="grEmail">Email del negocio o cliente</label>
+                <input type="email" id="grEmail" required placeholder="tu@email.com">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-navy">Generar link</button>
+              <span class="form-msg" id="genResetMsg"></span>
+            </div>
+          </form>
+          <div id="genResetResult" hidden>
+            <div class="banner-img-empty" style="margin-top:10px; word-break:break-all; font-size:0.82rem; user-select:all;" id="genResetLink"></div>
+            <button type="button" class="btn btn-outline btn-sm" id="copyResetLinkBtn" style="margin-top:8px;">Copiar link</button>
+          </div>
+
+          <div class="divider"></div>
           <h3>Resumen del sitio</h3>
           <div class="stat-row" id="adminStats"></div>
         </div>
@@ -1131,6 +1218,7 @@
 <script>
 (function(){
   const API_BASE = 'https://cadeteria-centro-backend.onrender.com/api';
+  const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_ACA.apps.googleusercontent.com';
   const SESSION_KEY = 'cc_session';
   const CATEGORIES = ['Todos','Rotisería','Pizzería','Panadería','Parrilla','Comida china','Heladería','Otro'];
   const AVATAR_COLORS = ['#14213D','#E6462A','#8A5F00','#1E7A3D'];
@@ -1152,6 +1240,8 @@
     home: document.getElementById('view-home'),
     registro: document.getElementById('view-registro'),
     ingresar: document.getElementById('view-ingresar'),
+    recuperar: document.getElementById('view-recuperar'),
+    restablecer: document.getElementById('view-restablecer'),
     panel: document.getElementById('view-panel'),
     negocio: document.getElementById('view-negocio'),
     admin: document.getElementById('view-admin')
@@ -1296,6 +1386,12 @@
     if(h === '#/registro/cliente') return { name:'registro', sub:'cliente' };
     if(h === '#/registro/negocio') return { name:'registro', sub:'negocio' };
     if(h === '#/ingresar') return { name:'ingresar' };
+    if(h === '#/recuperar') return { name:'recuperar' };
+    if(h.indexOf('#/restablecer') === 0){
+      const qIndex = h.indexOf('?');
+      const params = new URLSearchParams(qIndex >= 0 ? h.slice(qIndex + 1) : '');
+      return { name:'restablecer', token: params.get('token') || '' };
+    }
     if(h === '#/panel') return { name:'panel' };
     if(h === '#/admin') return { name:'admin' };
     if(h.indexOf('#/negocio/') === 0) return { name:'negocio', id: h.replace('#/negocio/','') };
@@ -1359,6 +1455,11 @@
       showRegistroSub(route.sub);
     } else if(route.name === 'ingresar'){
       showView('ingresar');
+    } else if(route.name === 'recuperar'){
+      showView('recuperar');
+    } else if(route.name === 'restablecer'){
+      showView('restablecer');
+      initRestablecer(route.token);
     } else if(route.name === 'panel'){
       if(!session || session.type !== 'negocio'){
         location.hash = '#/ingresar';
@@ -1626,7 +1727,7 @@
 
       if(res.type === 'admin'){
         session = { token: res.token, type: 'admin', name: res.name || 'Administrador' };
-      } else if(res.type === 'negocio'){
+      } else if(res.type === 'business'){
         session = { token: res.token, type: 'negocio', name: res.business.name, businessId: res.business.id };
       } else {
         session = { token: res.token, type: 'cliente', name: res.client.name };
@@ -1641,6 +1742,81 @@
     }catch(err){
       loginMsg.textContent = err.message;
       loginMsg.classList.add('error');
+    }
+  });
+
+  /* ---------- RECUPERAR CONTRASEÑA ---------- */
+  const forgotForm = document.getElementById('forgotForm');
+  const forgotMsg = document.getElementById('forgotMsg');
+
+  forgotForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    forgotMsg.textContent = '';
+    forgotMsg.className = 'form-msg';
+
+    const email = document.getElementById('fEmail').value.trim();
+    if(!email){
+      forgotMsg.textContent = 'Ingresá tu email.';
+      forgotMsg.classList.add('error');
+      return;
+    }
+
+    try{
+      const res = await apiFetch('/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
+      forgotForm.reset();
+      forgotMsg.textContent = res.message;
+      forgotMsg.classList.add('success');
+    }catch(err){
+      forgotMsg.textContent = err.message;
+      forgotMsg.classList.add('error');
+    }
+  });
+
+  /* ---------- RESTABLECER CONTRASEÑA ---------- */
+  const resetForm = document.getElementById('resetForm');
+  const resetMsg = document.getElementById('resetMsg');
+  const resetSub = document.getElementById('resetSub');
+  let currentResetToken = '';
+
+  function initRestablecer(token){
+    currentResetToken = token || '';
+    resetMsg.textContent = '';
+    resetMsg.className = 'form-msg';
+    if(!currentResetToken){
+      resetSub.textContent = 'Este link no es válido. Pedí uno nuevo desde "¿Olvidaste tu contraseña?".';
+      resetForm.hidden = true;
+    } else {
+      resetSub.textContent = 'Escribí tu nueva contraseña dos veces.';
+      resetForm.hidden = false;
+    }
+  }
+
+  resetForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    resetMsg.textContent = '';
+    resetMsg.className = 'form-msg';
+
+    const password = document.getElementById('rPassword').value;
+    const password2 = document.getElementById('rPassword2').value;
+
+    if(password !== password2){
+      resetMsg.textContent = 'Las contraseñas no coinciden.';
+      resetMsg.classList.add('error');
+      return;
+    }
+
+    try{
+      await apiFetch('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ token: currentResetToken, password, password2 })
+      });
+      resetForm.reset();
+      resetForm.hidden = true;
+      resetMsg.textContent = 'Contraseña actualizada. Ya podés iniciar sesión con la nueva.';
+      resetMsg.classList.add('success');
+    }catch(err){
+      resetMsg.textContent = err.message;
+      resetMsg.classList.add('error');
     }
   });
 
@@ -2163,6 +2339,11 @@
     adminLogoPreview.style.background = siteSettings.logoUrl ? 'transparent' : 'var(--flame)';
     adminLogoPreview.innerHTML = siteSettings.logoUrl ? `<img src="${siteSettings.logoUrl}" alt="">` : '';
 
+    genResetForm.reset();
+    genResetResult.hidden = true;
+    genResetMsg.textContent = '';
+    genResetMsg.className = 'form-msg';
+
     renderBannerImgList();
 
     document.getElementById('adminStats').innerHTML = `<div class="stat-item"><span>Cargando…</span><strong></strong></div>`;
@@ -2295,6 +2476,42 @@
     }
   });
 
+  /* ---------- ADMIN: GENERAR LINK DE RECUPERACIÓN ---------- */
+  const genResetForm = document.getElementById('genResetForm');
+  const genResetMsg = document.getElementById('genResetMsg');
+  const genResetResult = document.getElementById('genResetResult');
+  const genResetLink = document.getElementById('genResetLink');
+  const copyResetLinkBtn = document.getElementById('copyResetLinkBtn');
+
+  genResetForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    genResetMsg.textContent = '';
+    genResetMsg.className = 'form-msg';
+    genResetResult.hidden = true;
+
+    const email = document.getElementById('grEmail').value.trim();
+    try{
+      const res = await apiFetch('/admin/generate-reset-link', { method: 'POST', body: JSON.stringify({ email }) });
+      genResetLink.textContent = res.link;
+      genResetResult.hidden = false;
+      genResetMsg.textContent = `Link generado para ${res.name} (${res.accountType}). Vence en 1 hora.`;
+      genResetMsg.classList.add('success');
+    }catch(err){
+      genResetMsg.textContent = err.message;
+      genResetMsg.classList.add('error');
+    }
+  });
+
+  copyResetLinkBtn.addEventListener('click', async () => {
+    try{
+      await navigator.clipboard.writeText(genResetLink.textContent);
+      copyResetLinkBtn.textContent = '¡Copiado!';
+      setTimeout(() => { copyResetLinkBtn.textContent = 'Copiar link'; }, 1800);
+    }catch(err){
+      // si el navegador bloquea el portapapeles, el texto ya queda seleccionable a mano
+    }
+  });
+
   /* ---------- VIAJE PARTICULAR ---------- */
   async function renderMyTrips(){
     if(!session){
@@ -2408,12 +2625,55 @@
   if(brandHomeLink) brandHomeLink.addEventListener('click', resetHomeFilters);
   if(footerBrandHomeLink) footerBrandHomeLink.addEventListener('click', resetHomeFilters);
 
+  /* ---------- LOGIN CON GOOGLE ---------- */
+  async function handleGoogleCredential(response){
+    try{
+      const res = await apiFetch('/auth/google', {
+        method: 'POST',
+        body: JSON.stringify({ credential: response.credential })
+      });
+      session = { token: res.token, type: 'cliente', name: res.client.name };
+      saveSession();
+      location.hash = '#/';
+      renderHeaderAuthUI();
+      await render();
+    }catch(err){
+      alert('No pudimos iniciar sesión con Google: ' + err.message);
+    }
+  }
+
+  function initGoogleButtons(){
+    if(!window.google || !google.accounts || !google.accounts.id) return;
+    if(GOOGLE_CLIENT_ID.indexOf('TU_GOOGLE_CLIENT_ID_ACA') === 0) return; // todavía no configurado
+
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential
+    });
+
+    const loginWrap = document.getElementById('googleBtnLogin');
+    const registerWrap = document.getElementById('googleBtnRegister');
+    if(loginWrap) google.accounts.id.renderButton(loginWrap, { theme:'outline', size:'large', text:'continue_with', shape:'pill' });
+    if(registerWrap) google.accounts.id.renderButton(registerWrap, { theme:'outline', size:'large', text:'signup_with', shape:'pill' });
+  }
+
   async function init(){
     loadSession();
     await loadSiteSettings();
     applySiteSettings();
     renderPromoBar();
     await render();
+    // el script de Google carga async — reintentamos un toque hasta que esté listo
+    let tries = 0;
+    const tryInitGoogle = setInterval(() => {
+      tries++;
+      if(window.google && google.accounts && google.accounts.id){
+        initGoogleButtons();
+        clearInterval(tryInitGoogle);
+      } else if(tries > 20){
+        clearInterval(tryInitGoogle);
+      }
+    }, 250);
   }
   init();
 })();

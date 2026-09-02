@@ -1173,6 +1173,26 @@
           </form>
 
           <div class="divider"></div>
+          <h3>Recuperar contraseña de un usuario</h3>
+          <p class="sub">Para cuando el email no le llega — generá el link acá y mandáselo vos por WhatsApp o donde prefieras. Vence en 1 hora.</p>
+          <form id="genResetForm">
+            <div class="form-row full">
+              <div>
+                <label for="grEmail">Email del negocio o cliente</label>
+                <input type="email" id="grEmail" required placeholder="tu@email.com">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-navy">Generar link</button>
+              <span class="form-msg" id="genResetMsg"></span>
+            </div>
+          </form>
+          <div id="genResetResult" hidden>
+            <div class="banner-img-empty" style="margin-top:10px; word-break:break-all; font-size:0.82rem; user-select:all;" id="genResetLink"></div>
+            <button type="button" class="btn btn-outline btn-sm" id="copyResetLinkBtn" style="margin-top:8px;">Copiar link</button>
+          </div>
+
+          <div class="divider"></div>
           <h3>Resumen del sitio</h3>
           <div class="stat-row" id="adminStats"></div>
         </div>
@@ -1198,7 +1218,7 @@
 <script>
 (function(){
   const API_BASE = 'https://cadeteria-centro-backend.onrender.com/api';
-  const GOOGLE_CLIENT_ID = '199362785841-9ad0p83m6vsks02i5a0aoagkv2gt95kg.apps.googleusercontent.com';
+  const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_ACA.apps.googleusercontent.com';
   const SESSION_KEY = 'cc_session';
   const CATEGORIES = ['Todos','Rotisería','Pizzería','Panadería','Parrilla','Comida china','Heladería','Otro'];
   const AVATAR_COLORS = ['#14213D','#E6462A','#8A5F00','#1E7A3D'];
@@ -2319,6 +2339,11 @@
     adminLogoPreview.style.background = siteSettings.logoUrl ? 'transparent' : 'var(--flame)';
     adminLogoPreview.innerHTML = siteSettings.logoUrl ? `<img src="${siteSettings.logoUrl}" alt="">` : '';
 
+    genResetForm.reset();
+    genResetResult.hidden = true;
+    genResetMsg.textContent = '';
+    genResetMsg.className = 'form-msg';
+
     renderBannerImgList();
 
     document.getElementById('adminStats').innerHTML = `<div class="stat-item"><span>Cargando…</span><strong></strong></div>`;
@@ -2448,6 +2473,42 @@
     }catch(err){
       adminPromoMsg.textContent = err.message;
       adminPromoMsg.classList.add('error');
+    }
+  });
+
+  /* ---------- ADMIN: GENERAR LINK DE RECUPERACIÓN ---------- */
+  const genResetForm = document.getElementById('genResetForm');
+  const genResetMsg = document.getElementById('genResetMsg');
+  const genResetResult = document.getElementById('genResetResult');
+  const genResetLink = document.getElementById('genResetLink');
+  const copyResetLinkBtn = document.getElementById('copyResetLinkBtn');
+
+  genResetForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    genResetMsg.textContent = '';
+    genResetMsg.className = 'form-msg';
+    genResetResult.hidden = true;
+
+    const email = document.getElementById('grEmail').value.trim();
+    try{
+      const res = await apiFetch('/admin/generate-reset-link', { method: 'POST', body: JSON.stringify({ email }) });
+      genResetLink.textContent = res.link;
+      genResetResult.hidden = false;
+      genResetMsg.textContent = `Link generado para ${res.name} (${res.accountType}). Vence en 1 hora.`;
+      genResetMsg.classList.add('success');
+    }catch(err){
+      genResetMsg.textContent = err.message;
+      genResetMsg.classList.add('error');
+    }
+  });
+
+  copyResetLinkBtn.addEventListener('click', async () => {
+    try{
+      await navigator.clipboard.writeText(genResetLink.textContent);
+      copyResetLinkBtn.textContent = '¡Copiado!';
+      setTimeout(() => { copyResetLinkBtn.textContent = 'Copiar link'; }, 1800);
+    }catch(err){
+      // si el navegador bloquea el portapapeles, el texto ya queda seleccionable a mano
     }
   });
 
