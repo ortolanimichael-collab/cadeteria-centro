@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root{
     --ink:#14181B;
@@ -336,6 +337,13 @@
   /* ---------- AUTH / REGISTRO ---------- */
   .auth-view{padding:72px 0 96px;}
   .auth-panel{max-width:480px;margin:0 auto;}
+  .google-btn-wrap{display:flex; justify-content:center; margin-top:6px;}
+  .google-btn-wrap > div{ width:100% !important; }
+  .auth-divider{
+    display:flex; align-items:center; gap:12px; margin:20px 0;
+    color:var(--ink-soft); font-size:0.82rem;
+  }
+  .auth-divider::before, .auth-divider::after{content:'';flex:1;height:1px;background:var(--line);}
   .back-link{
     display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft);
     text-decoration:none;font-size:0.9rem;font-weight:500;margin-bottom:24px;
@@ -730,6 +738,8 @@
         <div class="panel auth-panel">
           <h3>Registro de cliente</h3>
           <p class="sub">Creá tu cuenta para pedir más rápido la próxima vez.</p>
+          <div id="googleBtnRegister" class="google-btn-wrap"></div>
+          <div class="auth-divider"><span>o con tu email</span></div>
           <form id="clientForm">
             <div class="form-row full">
               <div>
@@ -823,6 +833,9 @@
       <div class="panel auth-panel">
         <h3>Iniciar sesión</h3>
         <p class="sub">Entrá con el email y la contraseña que usaste al registrarte.</p>
+        <div id="googleBtnLogin" class="google-btn-wrap"></div>
+        <p class="field-hint" style="text-align:center; margin:6px 0 0;">El acceso con Google es para cuentas de cliente. Si tenés un negocio, entrá con tu email y contraseña.</p>
+        <div class="auth-divider"><span>o con tu email</span></div>
         <form id="loginForm">
           <div class="form-row full">
             <div>
@@ -1185,6 +1198,7 @@
 <script>
 (function(){
   const API_BASE = 'https://cadeteria-centro-backend.onrender.com/api';
+  const GOOGLE_CLIENT_ID = '199362785841-9ad0p83m6vsks02i5a0aoagkv2gt95kg.apps.googleusercontent.com';
   const SESSION_KEY = 'cc_session';
   const CATEGORIES = ['Todos','Rotisería','Pizzería','Panadería','Parrilla','Comida china','Heladería','Otro'];
   const AVATAR_COLORS = ['#14213D','#E6462A','#8A5F00','#1E7A3D'];
@@ -2550,12 +2564,55 @@
   if(brandHomeLink) brandHomeLink.addEventListener('click', resetHomeFilters);
   if(footerBrandHomeLink) footerBrandHomeLink.addEventListener('click', resetHomeFilters);
 
+  /* ---------- LOGIN CON GOOGLE ---------- */
+  async function handleGoogleCredential(response){
+    try{
+      const res = await apiFetch('/auth/google', {
+        method: 'POST',
+        body: JSON.stringify({ credential: response.credential })
+      });
+      session = { token: res.token, type: 'cliente', name: res.client.name };
+      saveSession();
+      location.hash = '#/';
+      renderHeaderAuthUI();
+      await render();
+    }catch(err){
+      alert('No pudimos iniciar sesión con Google: ' + err.message);
+    }
+  }
+
+  function initGoogleButtons(){
+    if(!window.google || !google.accounts || !google.accounts.id) return;
+    if(GOOGLE_CLIENT_ID.indexOf('TU_GOOGLE_CLIENT_ID_ACA') === 0) return; // todavía no configurado
+
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential
+    });
+
+    const loginWrap = document.getElementById('googleBtnLogin');
+    const registerWrap = document.getElementById('googleBtnRegister');
+    if(loginWrap) google.accounts.id.renderButton(loginWrap, { theme:'outline', size:'large', text:'continue_with', shape:'pill' });
+    if(registerWrap) google.accounts.id.renderButton(registerWrap, { theme:'outline', size:'large', text:'signup_with', shape:'pill' });
+  }
+
   async function init(){
     loadSession();
     await loadSiteSettings();
     applySiteSettings();
     renderPromoBar();
     await render();
+    // el script de Google carga async — reintentamos un toque hasta que esté listo
+    let tries = 0;
+    const tryInitGoogle = setInterval(() => {
+      tries++;
+      if(window.google && google.accounts && google.accounts.id){
+        initGoogleButtons();
+        clearInterval(tryInitGoogle);
+      } else if(tries > 20){
+        clearInterval(tryInitGoogle);
+      }
+    }, 250);
   }
   init();
 })();
