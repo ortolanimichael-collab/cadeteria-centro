@@ -1355,6 +1355,7 @@
         await saveSession();
         location.hash = '#/';
         renderHeaderAuthUI();
+        render();
       });
     }
   }
@@ -2227,7 +2228,7 @@
 
   /* ---------- VIAJE PARTICULAR ---------- */
   function renderMyTrips(){
-    if(myTripIds.length === 0){
+    if(!session || myTripIds.length === 0){
       myTripsBlock.hidden = true;
       return;
     }
@@ -2280,8 +2281,10 @@
     trips[id] = { id, origin, dest, description, phone, status: 'Pendiente', createdAt: Date.now() };
 
     await saveTrips();
-    myTripIds.push(id);
-    await saveMyTrips();
+    if(session){
+      myTripIds.push(id);
+      await saveMyTrips();
+    }
 
     tripForm.reset();
 
