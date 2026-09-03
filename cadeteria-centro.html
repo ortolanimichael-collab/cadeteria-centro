@@ -372,6 +372,12 @@
   }
   .panel-header h1{font-family:var(--font-display);font-size:1.9rem;margin:0 0 6px;}
   .panel-header p{color:var(--ink-soft);margin:0;font-size:0.95rem;}
+  .membership-banner{
+    background:rgba(230,70,42,0.08);border:1.5px solid rgba(230,70,42,0.3);
+    border-radius:12px;padding:16px 20px;margin-bottom:24px;
+    color:var(--flame-dark);font-size:0.92rem;font-weight:500;
+  }
+  fieldset.locked{opacity:0.55;pointer-events:none;}
   .panel-two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
   .avatar-preview-row{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
   .avatar-preview{
@@ -394,6 +400,30 @@
     padding:12px 14px;background:var(--bg);border-radius:9px;font-size:0.9rem;
   }
   .stat-item strong{font-family:var(--font-display);font-size:1.1rem;}
+
+  .membership-row{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:14px 0;border-bottom:1px solid var(--line);
+  }
+  .membership-row:last-child{border-bottom:none;}
+  .membership-info{flex:1;min-width:180px;}
+  .membership-info strong{display:block;font-size:0.95rem;}
+  .membership-info span{font-size:0.82rem;color:var(--ink-soft);}
+  .membership-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .status-pill{
+    font-size:0.72rem;font-weight:700;padding:4px 11px;border-radius:var(--radius-pill);
+    text-transform:uppercase;letter-spacing:0.02em;white-space:nowrap;
+  }
+  .status-pill.trial{background:rgba(244,183,64,0.22);color:#8A5F00;}
+  .status-pill.active{background:rgba(30,122,61,0.14);color:#1E7A3D;}
+  .status-pill.suspended{background:rgba(230,70,42,0.12);color:var(--flame-dark);}
+  .status-pill.cancelled{background:rgba(20,24,27,0.1);color:var(--ink-soft);}
+  .mship-btn{
+    font-size:0.78rem;font-weight:600;padding:6px 12px;border-radius:var(--radius-pill);
+    border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;
+  }
+  .mship-btn:hover{border-color:var(--ink);}
+  .mship-btn.active-state{border-color:var(--navy);background:var(--navy);color:#fff;}
 
   .banner-img-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
   .banner-img-item{position:relative;width:84px;height:60px;border-radius:8px;overflow:hidden;border:1px solid var(--line);}
@@ -931,6 +961,8 @@
         </div>
       </div>
 
+      <div class="membership-banner" id="membershipBanner" hidden></div>
+
       <div class="panel-two-col">
         <div class="panel">
           <h3>Perfil comercial</h3>
@@ -1196,6 +1228,12 @@
           <h3>Resumen del sitio</h3>
           <div class="stat-row" id="adminStats"></div>
         </div>
+      </div>
+
+      <div class="panel" style="margin-top:24px;">
+        <h3>Membresías de negocios</h3>
+        <p class="sub">Activá, suspendé o dá de baja el acceso de cada negocio. Al suspender, su página pública sigue funcionando igual — solo se le bloquea guardar cambios en su panel. Al dar de baja, desaparece del todo de las búsquedas.</p>
+        <div id="membershipList"></div>
       </div>
     </div>
   </section>
@@ -1829,12 +1867,6 @@
     try{
       biz = await apiFetch('/business/me');
     }catch(err){
-      if(err.status === 403 && err.body && err.body.error === 'membership_inactive'){
-        panelTitle.textContent = 'Acceso suspendido';
-        document.querySelector('.panel-header p').textContent = err.body.message;
-        document.querySelectorAll('.panel-two-col')[0].hidden = true;
-        return;
-      }
       if(err.status === 401){
         session = null;
         saveSession();
@@ -1848,6 +1880,8 @@
     currentBusinessCache = biz;
     panelTitle.textContent = `Panel de ${biz.name}`;
     viewPublicLink.href = '#/negocio/' + biz.id;
+
+    setPanelEditable(biz.canEdit !== false);
 
     document.getElementById('pfDesc').value = biz.description || '';
     document.getElementById('pfAddress').value = biz.address || '';
@@ -1864,6 +1898,19 @@
 
     renderAvatarPreview(biz);
     renderMyProductList(biz);
+  }
+
+  function setPanelEditable(canEdit){
+    const banner = document.getElementById('membershipBanner');
+    if(canEdit){
+      banner.hidden = true;
+    } else {
+      banner.hidden = false;
+      banner.textContent = 'Tu membresía no está al día: podés ver todo tu negocio, pero no vas a poder guardar cambios ni cargar productos hasta regularizarla. Contactá a Cadetería Centro para reactivar tu cuenta.';
+    }
+    [profileForm, productForm].forEach(form => {
+      form.querySelectorAll('input, select, textarea, button').forEach(el => { el.disabled = !canEdit; });
+    });
   }
 
   function renderAvatarPreview(biz){
@@ -1931,6 +1978,7 @@
   });
 
   function renderMyProductList(biz){
+    const canEdit = biz.canEdit !== false;
     myProductList.innerHTML = '';
     if(!biz.products || biz.products.length === 0){
       myProductList.innerHTML = `<p class="sub" style="margin:16px 0 0;">Este negocio todavía no tiene productos cargados.</p>`;
@@ -1942,31 +1990,36 @@
       const thumb = p.image
         ? `<img class="prod-thumb" src="${p.image}" alt="">`
         : `<div class="prod-thumb"></div>`;
+      const actionsHtml = canEdit ? `
+        <div style="display:flex; gap:12px; align-items:center;">
+          <button class="del" type="button" data-action="edit" data-id="${p.id}">Editar</button>
+          <button class="del" type="button" data-action="del" data-id="${p.id}">Quitar</button>
+        </div>
+      ` : '';
       row.innerHTML = `
         <div class="product-item-text">
           ${thumb}
           <span>${escapeHtml(p.name)} — $${escapeHtml(String(p.price))}</span>
         </div>
-        <div style="display:flex; gap:12px; align-items:center;">
-          <button class="del" type="button" data-action="edit" data-id="${p.id}">Editar</button>
-          <button class="del" type="button" data-action="del" data-id="${p.id}">Quitar</button>
-        </div>
+        ${actionsHtml}
       `;
-      row.querySelector('[data-action="del"]').addEventListener('click', async () => {
-        try{
-          await apiFetch('/business/me/products/' + p.id, { method: 'DELETE' });
-          if(editingProductId === p.id) exitEditMode();
-          const fresh = await apiFetch('/business/me');
-          currentBusinessCache = fresh;
-          renderMyProductList(fresh);
-        }catch(err){
-          productMsg.textContent = err.message;
-          productMsg.className = 'form-msg error';
-        }
-      });
-      row.querySelector('[data-action="edit"]').addEventListener('click', () => {
-        enterEditMode(p);
-      });
+      if(canEdit){
+        row.querySelector('[data-action="del"]').addEventListener('click', async () => {
+          try{
+            await apiFetch('/business/me/products/' + p.id, { method: 'DELETE' });
+            if(editingProductId === p.id) exitEditMode();
+            const fresh = await apiFetch('/business/me');
+            currentBusinessCache = fresh;
+            renderMyProductList(fresh);
+          }catch(err){
+            productMsg.textContent = err.message;
+            productMsg.className = 'form-msg error';
+          }
+        });
+        row.querySelector('[data-action="edit"]').addEventListener('click', () => {
+          enterEditMode(p);
+        });
+      }
       myProductList.appendChild(row);
     });
   }
@@ -2328,6 +2381,22 @@
   const adminPromoMsg = document.getElementById('adminPromoMsg');
 
   async function renderAdmin(){
+    // Chequeo real contra el servidor antes de mostrar nada — si el admin
+    // fue desactivado desde panel-membresías, esto corta acá y te saca al
+    // login, en vez de dejarte viendo una pantalla que ya no podés usar.
+    try{
+      await apiFetch('/admin/stats');
+    }catch(err){
+      if(err.status === 401 || err.status === 403){
+        session = null;
+        saveSession();
+        renderHeaderAuthUI();
+        alert('Tu acceso de administrador ya no está activo. Iniciá sesión de nuevo, o contactá a soporte si esto no debería haber pasado.');
+        location.hash = '#/ingresar';
+        return;
+      }
+    }
+
     document.getElementById('ahTitle').value = siteSettings.heroTitle || '';
     document.getElementById('ahSubtitle').value = siteSettings.heroSubtitle || '';
     document.getElementById('apEnabled').checked = !!siteSettings.promoEnabled;
@@ -2358,6 +2427,62 @@
     }catch(err){
       document.getElementById('adminStats').innerHTML = `<p class="sub" style="margin:0;">No pudimos cargar las estadísticas.</p>`;
     }
+
+    await renderMembershipList();
+  }
+
+  const STATUS_LABELS = { trial: 'Prueba', active: 'Activo', suspended: 'Suspendido', cancelled: 'Dado de baja' };
+
+  async function renderMembershipList(){
+    const wrap = document.getElementById('membershipList');
+    wrap.innerHTML = `<p class="sub" style="margin:0;">Cargando negocios…</p>`;
+    let businesses;
+    try{
+      businesses = await apiFetch('/admin/businesses');
+    }catch(err){
+      wrap.innerHTML = `<p class="sub" style="margin:0;">No pudimos cargar los negocios.</p>`;
+      return;
+    }
+
+    if(businesses.length === 0){
+      wrap.innerHTML = `<p class="sub" style="margin:0;">Todavía no hay negocios registrados.</p>`;
+      return;
+    }
+
+    wrap.innerHTML = '';
+    businesses.forEach(biz => {
+      const status = biz.subscriptionStatus || 'trial';
+      const row = document.createElement('div');
+      row.className = 'membership-row';
+      row.innerHTML = `
+        <div class="membership-info">
+          <strong>${escapeHtml(biz.name)}</strong>
+          <span>${escapeHtml(biz.email)} — ${escapeHtml(biz.category)}</span>
+        </div>
+        <span class="status-pill ${status}">${STATUS_LABELS[status] || status}</span>
+        <div class="membership-actions">
+          <button type="button" class="mship-btn${status==='active'?' active-state':''}" data-status="active">Activar</button>
+          <button type="button" class="mship-btn${status==='suspended'?' active-state':''}" data-status="suspended">Suspender</button>
+          <button type="button" class="mship-btn${status==='cancelled'?' active-state':''}" data-status="cancelled">Dar de baja</button>
+        </div>
+      `;
+      row.querySelectorAll('.mship-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const newStatus = btn.dataset.status;
+          if(newStatus === status) return;
+          if(newStatus === 'cancelled' && !confirm(`¿Seguro que querés dar de baja a "${biz.name}"? Va a desaparecer por completo de las búsquedas.`)) return;
+          try{
+            await apiFetch('/admin/businesses/' + biz.id + '/subscription', {
+              method: 'PUT', body: JSON.stringify({ status: newStatus })
+            });
+            await renderMembershipList();
+          }catch(err){
+            alert('No se pudo actualizar: ' + err.message);
+          }
+        });
+      });
+      wrap.appendChild(row);
+    });
   }
 
   function renderBannerImgList(){
