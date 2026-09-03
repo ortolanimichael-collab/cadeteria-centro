@@ -676,6 +676,36 @@
               <textarea id="tDesc" required placeholder="Ej. Un sobre con documentos"></textarea>
             </div>
           </div>
+          <div class="form-row">
+            <div>
+              <label for="tSolicitanteRol">Vos en este pedido sos...</label>
+              <select id="tSolicitanteRol">
+                <option value="emisor">Quien envía</option>
+                <option value="destinatario">Quien recibe</option>
+              </select>
+            </div>
+            <div>
+              <label for="tQuienPaga">¿Quién paga el viaje?</label>
+              <select id="tQuienPaga">
+                <option value="emisor">Quien envía</option>
+                <option value="destinatario">Quien recibe</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div>
+              <label style="display:flex; align-items:center; gap:8px; font-weight:500;">
+                <input type="checkbox" id="tRequiereEfectivo" style="width:auto;">
+                El cadete tiene que pagar algo al retirarlo (se lo cobra a quien lo recibe)
+              </label>
+            </div>
+          </div>
+          <div class="form-row full" id="tMontoWrap" hidden>
+            <div>
+              <label for="tMontoEfectivo">¿Cuánto tiene que llevar el cadete?</label>
+              <input type="text" id="tMontoEfectivo" placeholder="Ej. $3.500">
+            </div>
+          </div>
           <div class="form-row full">
             <div>
               <label for="tPhone">Teléfono de contacto</label>
@@ -2663,12 +2693,16 @@
       const row = document.createElement('div');
       row.className = 'trip-item';
       const badgeClass = trip.status === 'cancelado' ? 'cancelado' : 'pendiente';
+      const extraLine = trip.requiereEfectivo
+        ? `<span class="desc">Paga: ${rolLabel(trip.quienPaga)} · Cadete lleva ${escapeHtml(trip.montoEfectivo || '')} para pagar</span>`
+        : `<span class="desc">Paga: ${rolLabel(trip.quienPaga)}</span>`;
       row.innerHTML = `
         <div class="trip-item-top">
           <span class="route">${escapeHtml(trip.origin)} → ${escapeHtml(trip.dest)}</span>
           <span class="status-badge ${badgeClass}">${escapeHtml(capitalize(trip.status))}</span>
         </div>
         <span class="desc">${escapeHtml(trip.description)}</span>
+        ${extraLine}
         ${trip.status === 'pendiente' ? `<button type="button" class="cancel-trip" data-id="${trip.id}">Cancelar pedido</button>` : ''}
       `;
       const cancelBtn = row.querySelector('.cancel-trip');
@@ -2684,6 +2718,16 @@
     });
   }
 
+  const tRequiereEfectivoInput = document.getElementById('tRequiereEfectivo');
+  const tMontoWrap = document.getElementById('tMontoWrap');
+  const tMontoEfectivoInput = document.getElementById('tMontoEfectivo');
+  tRequiereEfectivoInput.addEventListener('change', () => {
+    tMontoWrap.hidden = !tRequiereEfectivoInput.checked;
+    if(!tRequiereEfectivoInput.checked) tMontoEfectivoInput.value = '';
+  });
+
+  function rolLabel(rol){ return rol === 'destinatario' ? 'Quien recibe' : 'Quien envía'; }
+
   tripForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     tripMsg.textContent = '';
@@ -2693,20 +2737,46 @@
     const dest = document.getElementById('tDest').value.trim();
     const description = document.getElementById('tDesc').value.trim();
     const phone = document.getElementById('tPhone').value.trim();
+    const solicitanteRol = document.getElementById('tSolicitanteRol').value;
+    const quienPaga = document.getElementById('tQuienPaga').value;
+    const requiereEfectivo = tRequiereEfectivoInput.checked;
+    const montoEfectivo = tMontoEfectivoInput.value.trim();
 
     if(!origin || !dest || !description || !phone){
       tripMsg.textContent = 'Completá todos los campos.';
       tripMsg.classList.add('error');
       return;
     }
+    if(requiereEfectivo && !montoEfectivo){
+      tripMsg.textContent = 'Indicá cuánto tiene que llevar el cadete, o destildá esa opción.';
+      tripMsg.classList.add('error');
+      return;
+    }
 
     try{
-      await apiFetch('/trips', { method: 'POST', body: JSON.stringify({ origin, dest, description, phone }) });
+      await apiFetch('/trips', {
+        method: 'POST',
+        body: JSON.stringify({
+          origin, dest, description, phone,
+          solicitanteRol, quienPaga, requiereEfectivo,
+          montoEfectivo: requiereEfectivo ? montoEfectivo : ''
+        })
+      });
       tripForm.reset();
+      tMontoWrap.hidden = true;
 
       if(siteSettings.cadeteriaWhatsapp){
         const digits = siteSettings.cadeteriaWhatsapp.replace(/[^0-9]/g,'');
-        const message = `Hola! Quiero pedir un viaje particular por Cadetería Centro.\nOrigen: ${origin}\nDestino: ${dest}\nQué hay que llevar: ${description}\nMi teléfono: ${phone}`;
+        let message = `Hola! Quiero pedir un viaje particular por Cadetería Centro.\n`
+          + `Origen: ${origin}\n`
+          + `Destino: ${dest}\n`
+          + `Qué hay que llevar: ${description}\n`
+          + `Quien completa este pedido: ${rolLabel(solicitanteRol)}\n`
+          + `Paga el viaje: ${rolLabel(quienPaga)}`;
+        if(requiereEfectivo){
+          message += `\n⚠️ El cadete tiene que pagar ${montoEfectivo} al retirarlo, y cobrárselo a quien lo recibe.`;
+        }
+        message += `\nMi teléfono: ${phone}`;
         window.open(`https://wa.me/${digits}?text=${encodeURIComponent(message)}`, '_blank');
         tripMsg.textContent = 'Pedido guardado. Te llevamos a WhatsApp para coordinar con un cadete.';
       } else {
