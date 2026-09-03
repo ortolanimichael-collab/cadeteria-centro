@@ -244,6 +244,16 @@
     text-transform:uppercase;letter-spacing:0.03em;border:1px solid rgba(230,70,42,0.22);
   }
   .biz-cat::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--flame-dark);flex-shrink:0;}
+  .open-badge{
+    font-size:0.7rem;font-weight:700;padding:3px 9px;border-radius:var(--radius-pill);
+    text-transform:uppercase;letter-spacing:0.02em;white-space:nowrap;display:inline-block;
+  }
+  .open-badge.open-yes{background:rgba(30,122,61,0.14);color:#1E7A3D;}
+  .open-badge.open-no{background:rgba(20,24,27,0.1);color:var(--ink-soft);}
+  .open-badge-float{
+    position:absolute;top:10px;left:10px;z-index:2;
+    box-shadow:0 2px 6px rgba(20,24,27,0.15);
+  }
   .biz-desc{color:var(--ink-soft);font-size:0.92rem;margin:0;flex:1;}
   .biz-meta{display:flex;flex-direction:column;gap:4px;font-size:0.85rem;color:var(--ink-soft);}
   .biz-products{
@@ -445,6 +455,52 @@
   .mship-btn.active-state{border-color:var(--navy);background:var(--navy);color:#fff;}
 
   .banner-img-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  .prod-gallery{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+  .prod-gallery-item{position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:1px solid var(--line);}
+  .prod-gallery-item img{width:100%;height:100%;object-fit:cover;display:block;}
+  .prod-gallery-item button{
+    position:absolute;top:2px;right:2px;width:17px;height:17px;border-radius:50%;
+    background:rgba(20,24,27,0.75);color:#fff;border:none;cursor:pointer;
+    font-size:0.65rem;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;
+  }
+  .map-preview{
+    height:180px;border-radius:10px;overflow:hidden;border:1px solid var(--line);
+    background:var(--bg);
+  }
+  .map-preview iframe{width:100%;height:100%;border:0;display:block;}
+  .hours-row{
+    display:flex;align-items:center;gap:10px;padding:7px 0;
+    border-bottom:1px solid var(--line);flex-wrap:wrap;
+  }
+  .hours-row:last-child{border-bottom:none;}
+  .hours-day{width:78px;font-size:0.86rem;font-weight:600;flex-shrink:0;}
+  .hours-closed-label{display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--ink-soft);}
+  .hours-times{display:flex;align-items:center;gap:6px;}
+  .hours-times input[type=time]{width:110px;padding:7px 8px;font-size:0.85rem;}
+  .variant-group-card{
+    border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px;background:var(--bg);
+  }
+  .variant-group-head{display:flex;gap:10px;align-items:flex-end;margin-bottom:10px;}
+  .variant-group-head input{flex:1;}
+  .variant-group-head select{width:170px;flex-shrink:0;}
+  .variant-remove-group{
+    background:none;border:none;color:var(--flame-dark);font-size:0.8rem;cursor:pointer;
+    text-decoration:underline;flex-shrink:0;padding-bottom:11px;
+  }
+  .variant-option-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .variant-option-row input[type=text]{flex:1;}
+  .variant-option-row input[type=number]{width:100px;}
+  .variant-option-row button{
+    background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:0.9rem;
+    padding:4px;flex-shrink:0;
+  }
+  .variant-option-row button:hover{color:var(--flame-dark);}
+  .hours-display{display:flex;flex-direction:column;gap:2px;margin-top:12px;font-size:0.9rem;}
+  .hours-display-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);}
+  .hours-display-row:last-child{border-bottom:none;}
+  .hours-display-row.today{font-weight:700;color:var(--flame-dark);}
+  .hours-display-row .val{color:var(--ink-soft);}
+  .hours-display-row.today .val{color:var(--flame-dark);}
   .banner-img-item{position:relative;width:84px;height:60px;border-radius:8px;overflow:hidden;border:1px solid var(--line);}
   .banner-img-item img{width:100%;height:100%;object-fit:cover;display:block;}
   .banner-img-item button{
@@ -526,10 +582,25 @@
   .product-modal-biz strong{color:var(--ink);}
   .product-modal-cta{margin-top:20px;}
 
+  .modal-thumbs{display:flex;gap:8px;padding:12px 26px 0;flex-wrap:wrap;}
+  .modal-thumb{
+    width:52px;height:52px;object-fit:cover;border-radius:8px;cursor:pointer;
+    border:2px solid transparent;opacity:0.65;
+  }
+  .modal-thumb.active{border-color:var(--flame);opacity:1;}
+
+  .modal-variant-group{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);}
+  .modal-variant-group-name{font-weight:700;font-size:0.92rem;margin:0 0 8px;}
+  .modal-variant-option{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:7px 0;font-size:0.9rem;cursor:pointer;
+  }
+  .modal-variant-option input{width:auto;margin:0;}
+
   a.result-card{
     background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-card);
     overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:var(--ink);
-    transition:transform .15s ease, box-shadow .15s ease;
+    transition:transform .15s ease, box-shadow .15s ease;position:relative;
   }
   a.result-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,24,27,0.08);}
   .result-img{width:100%;height:140px;object-fit:cover;background:var(--bg);}
@@ -1051,10 +1122,17 @@
               <div>
                 <label for="pfAddress">Dirección</label>
                 <input type="text" id="pfAddress" placeholder="Calle y número">
+                <span class="field-hint">Al guardar, la ubicamos sola en el mapa.</span>
               </div>
               <div>
                 <label for="pfPhone">Teléfono</label>
                 <input type="tel" id="pfPhone" placeholder="Ej. 351 555 1234">
+              </div>
+            </div>
+            <div class="form-row full" id="pfMapWrap" hidden>
+              <div>
+                <div class="map-preview" id="pfMapPreview"></div>
+                <a href="#" target="_blank" rel="noopener" class="field-hint" id="pfMapLink" style="display:inline-block; margin-top:6px;">Ver en Google Maps</a>
               </div>
             </div>
             <div class="form-row">
@@ -1085,6 +1163,16 @@
                 <input type="text" id="pfFacebook" placeholder="usuario o link">
               </div>
             </div>
+            <div class="form-row full">
+              <div>
+                <label for="pfWebsite">Página oficial</label>
+                <input type="text" id="pfWebsite" placeholder="https://tunegocio.com">
+              </div>
+            </div>
+            <div class="divider"></div>
+            <label style="margin-bottom:10px;">Horarios de atención</label>
+            <div id="pfHoursEditor"></div>
+            <div class="divider"></div>
             <div class="form-actions">
               <button type="submit" class="btn btn-navy">Guardar perfil</button>
               <span class="form-msg" id="profileMsg"></span>
@@ -1114,15 +1202,17 @@
             </div>
             <div class="form-row full">
               <div>
-                <div class="avatar-preview-row" style="margin-bottom:8px;">
-                  <div class="prod-thumb" id="productImgPreview" style="width:48px;height:48px;"></div>
-                  <div style="flex:1;">
-                    <label for="pImage" style="margin-bottom:4px;">Foto del producto (opcional)</label>
-                    <input type="file" id="pImage" accept="image/*">
-                  </div>
-                </div>
+                <label for="pImage" style="margin-bottom:4px;">Fotos del producto (opcional, podés subir varias)</label>
+                <input type="file" id="pImage" accept="image/*" multiple>
+                <div class="prod-gallery" id="productImgGallery"></div>
               </div>
             </div>
+            <div class="divider"></div>
+            <label style="margin-bottom:6px;">Opciones para variar el producto (opcional)</label>
+            <p class="field-hint" style="margin-bottom:10px;">Ej. "¿Con papas?" con las opciones "Con papas" (+$800) y "Sin papas" (+$0). El precio de cada opción se suma al precio base.</p>
+            <div id="variantGroupsEditor"></div>
+            <button type="button" class="btn btn-outline btn-sm" id="addVariantGroupBtn" style="margin-top:6px;">+ Agregar grupo de opciones</button>
+            <div class="divider"></div>
             <div class="form-actions">
               <button type="submit" class="btn btn-flame" id="productSubmitBtn">Agregar producto</button>
               <button type="button" class="btn-link" id="cancelEditBtn" hidden>Cancelar edición</button>
@@ -1151,6 +1241,7 @@
           <h1 id="pubName"></h1>
           <div class="profile-meta-row">
             <span class="biz-cat" id="pubCat" style="margin-top:0;"></span>
+            <span id="pubOpenBadge"></span>
             <span class="dot-sep" id="pubMetaDot1">·</span>
             <span id="pubAddress"></span>
             <span class="dot-sep" id="pubMetaDot2">·</span>
@@ -1160,6 +1251,18 @@
         </div>
       </div>
       <p class="profile-desc" id="pubDesc"></p>
+
+      <div id="pubHoursWrap" hidden>
+        <h2 class="section-title" style="font-size:1.1rem; margin-top:28px;">Horarios de atención</h2>
+        <div class="hours-display" id="pubHours"></div>
+      </div>
+
+      <div id="pubMapSectionWrap" hidden>
+        <h2 class="section-title" style="font-size:1.1rem; margin-top:28px;">Ubicación</h2>
+        <div class="map-preview" id="pubMapPreview" style="height:220px;"></div>
+        <a href="#" target="_blank" rel="noopener" class="field-hint" id="pubMapLink" style="display:inline-block; margin-top:6px;">Ver en Google Maps</a>
+      </div>
+
       <hr class="feed-divider">
     </div>
 
@@ -1405,6 +1508,13 @@
 
   function capitalize(s){
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  }
+
+  function openStatusBadge(isOpenNow){
+    if(isOpenNow === null || isOpenNow === undefined) return '';
+    return isOpenNow
+      ? `<span class="open-badge open-yes">Abierto</span>`
+      : `<span class="open-badge open-no">Cerrado</span>`;
   }
 
   function fileToResizedDataUrl(file, maxDim, quality){
@@ -1692,6 +1802,7 @@
             <h3 class="biz-name">${escapeHtml(biz.name)}</h3>
             <span class="biz-cat">${escapeHtml(biz.category)}</span>
           </div>
+          ${openStatusBadge(biz.isOpenNow)}
         </div>
         <p class="biz-desc">${escapeHtml(biz.description || 'Sin descripción todavía.')}</p>
         <div class="biz-meta">
@@ -1742,6 +1853,7 @@
       card.className = 'result-card';
       card.href = 'javascript:void(0)';
       card.innerHTML = `
+        ${openStatusBadge(item.bizIsOpenNow).replace('open-badge', 'open-badge open-badge-float')}
         ${item.image ? `<img class="result-img" src="${item.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
           <p class="pname">${escapeHtml(item.name)}</p>
@@ -1974,8 +2086,6 @@
     panelTitle.textContent = `Panel de ${biz.name}`;
     viewPublicLink.href = '#/negocio/' + biz.id;
 
-    setPanelEditable(biz.canEdit !== false);
-
     document.getElementById('pfDesc').value = biz.description || '';
     document.getElementById('pfAddress').value = biz.address || '';
     document.getElementById('pfPhone').value = biz.phone || '';
@@ -1983,6 +2093,12 @@
     document.getElementById('pfCategory').value = biz.category || 'Otro';
     document.getElementById('pfInstagram').value = biz.instagram || '';
     document.getElementById('pfFacebook').value = biz.facebook || '';
+    document.getElementById('pfWebsite').value = biz.website || '';
+
+    renderHoursEditor(biz.hours || {});
+    renderMapPreview(biz.lat, biz.lng, document.getElementById('pfMapWrap'), document.getElementById('pfMapPreview'), document.getElementById('pfMapLink'));
+
+    setPanelEditable(biz.canEdit !== false);
 
     pendingAvatarDataUrl = '';
     pendingCoverDataUrl = '';
@@ -1991,6 +2107,70 @@
 
     renderAvatarPreview(biz);
     renderMyProductList(biz);
+  }
+
+  const DIAS_SEMANA = [
+    { key: 'lun', label: 'Lunes' }, { key: 'mar', label: 'Martes' }, { key: 'mie', label: 'Miércoles' },
+    { key: 'jue', label: 'Jueves' }, { key: 'vie', label: 'Viernes' }, { key: 'sab', label: 'Sábado' },
+    { key: 'dom', label: 'Domingo' },
+  ];
+
+  function renderHoursEditor(hours){
+    const wrap = document.getElementById('pfHoursEditor');
+    wrap.innerHTML = '';
+    DIAS_SEMANA.forEach(dia => {
+      const cfg = hours[dia.key] || {};
+      const closed = !!cfg.closed;
+      const row = document.createElement('div');
+      row.className = 'hours-row';
+      row.dataset.day = dia.key;
+      row.innerHTML = `
+        <span class="hours-day">${dia.label}</span>
+        <label class="hours-closed-label">
+          <input type="checkbox" class="hours-closed-check" style="width:auto;" ${closed ? 'checked' : ''}>
+          Cerrado
+        </label>
+        <div class="hours-times" ${closed ? 'hidden' : ''}>
+          <input type="time" class="hours-open" value="${cfg.open || '09:00'}">
+          <span class="field-hint">a</span>
+          <input type="time" class="hours-close" value="${cfg.close || '20:00'}">
+        </div>
+      `;
+      const check = row.querySelector('.hours-closed-check');
+      const times = row.querySelector('.hours-times');
+      check.addEventListener('change', () => { times.hidden = check.checked; });
+      wrap.appendChild(row);
+    });
+  }
+
+  function collectHoursFromEditor(){
+    const hours = {};
+    document.querySelectorAll('#pfHoursEditor .hours-row').forEach(row => {
+      const day = row.dataset.day;
+      const closed = row.querySelector('.hours-closed-check').checked;
+      if(closed){
+        hours[day] = { closed: true };
+      } else {
+        hours[day] = {
+          closed: false,
+          open: row.querySelector('.hours-open').value || '09:00',
+          close: row.querySelector('.hours-close').value || '20:00',
+        };
+      }
+    });
+    return hours;
+  }
+
+  function renderMapPreview(lat, lng, wrapEl, previewEl, linkEl){
+    if(lat == null || lng == null){
+      wrapEl.hidden = true;
+      return;
+    }
+    wrapEl.hidden = false;
+    const delta = 0.006;
+    const bbox = `${lng - delta},${lat - delta},${lng + delta},${lat + delta}`;
+    previewEl.innerHTML = `<iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&marker=${lat},${lng}" title="Ubicación en el mapa"></iframe>`;
+    linkEl.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   }
 
   function setPanelEditable(canEdit){
@@ -2054,6 +2234,8 @@
       category: document.getElementById('pfCategory').value,
       instagram: document.getElementById('pfInstagram').value.trim(),
       facebook: document.getElementById('pfFacebook').value.trim(),
+      website: document.getElementById('pfWebsite').value.trim(),
+      hours: collectHoursFromEditor(),
     };
     if(pendingAvatarDataUrl) payload.avatarUrl = pendingAvatarDataUrl;
     if(pendingCoverDataUrl) payload.coverUrl = pendingCoverDataUrl;
@@ -2064,6 +2246,7 @@
       profileMsg.textContent = 'Perfil guardado.';
       profileMsg.classList.add('success');
       renderAvatarPreview(biz);
+      renderMapPreview(biz.lat, biz.lng, document.getElementById('pfMapWrap'), document.getElementById('pfMapPreview'), document.getElementById('pfMapLink'));
     }catch(err){
       profileMsg.textContent = err.message;
       profileMsg.classList.add('error');
@@ -2092,7 +2275,7 @@
       row.innerHTML = `
         <div class="product-item-text">
           ${thumb}
-          <span>${escapeHtml(p.name)} — $${escapeHtml(String(p.price))}</span>
+          <span>${escapeHtml(p.name)} — $${escapeHtml(String(p.price))}${(p.images && p.images.length > 1) ? ` · ${p.images.length} fotos` : ''}${(p.variantGroups && p.variantGroups.length) ? ` · ${p.variantGroups.length} opciones` : ''}</span>
         </div>
         ${actionsHtml}
       `;
@@ -2118,19 +2301,100 @@
   }
 
   const pImageInput = document.getElementById('pImage');
-  const productImgPreview = document.getElementById('productImgPreview');
+  const productImgGallery = document.getElementById('productImgGallery');
   const productSubmitBtn = document.getElementById('productSubmitBtn');
   const cancelEditBtn = document.getElementById('cancelEditBtn');
-  let pendingProductImageDataUrl = '';
+  const variantGroupsEditor = document.getElementById('variantGroupsEditor');
+  const addVariantGroupBtn = document.getElementById('addVariantGroupBtn');
+  let pendingProductImages = [];
+  let pendingVariantGroups = [];
+
+  function renderProductGallery(){
+    productImgGallery.innerHTML = pendingProductImages.map((img, i) => `
+      <div class="prod-gallery-item">
+        <img src="${img}" alt="">
+        <button type="button" data-i="${i}" aria-label="Quitar imagen">✕</button>
+      </div>
+    `).join('');
+    productImgGallery.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pendingProductImages.splice(parseInt(btn.dataset.i, 10), 1);
+        renderProductGallery();
+      });
+    });
+  }
+
+  function renderVariantGroupsEditor(){
+    variantGroupsEditor.innerHTML = '';
+    pendingVariantGroups.forEach((group, gi) => {
+      const card = document.createElement('div');
+      card.className = 'variant-group-card';
+      const optionsHtml = group.options.map((opt, oi) => `
+        <div class="variant-option-row" data-oi="${oi}">
+          <input type="text" class="opt-name" placeholder="Nombre de la opción" value="${escapeHtml(opt.name)}">
+          <input type="number" class="opt-price" placeholder="+$" step="1" value="${opt.price}">
+          <button type="button" class="opt-remove" aria-label="Quitar opción">✕</button>
+        </div>
+      `).join('');
+      card.innerHTML = `
+        <div class="variant-group-head">
+          <div style="flex:1;">
+            <label style="margin-bottom:4px;">Nombre del grupo</label>
+            <input type="text" class="group-name" placeholder="Ej. ¿Con papas?" value="${escapeHtml(group.name)}">
+          </div>
+          <div>
+            <label style="margin-bottom:4px;">Tipo</label>
+            <select class="group-type">
+              <option value="single" ${group.type==='single'?'selected':''}>Elegí una opción</option>
+              <option value="multiple" ${group.type==='multiple'?'selected':''}>Elegí una o más</option>
+            </select>
+          </div>
+          <button type="button" class="variant-remove-group">Quitar grupo</button>
+        </div>
+        <div class="variant-options-list">${optionsHtml}</div>
+        <button type="button" class="btn btn-outline btn-sm add-option-btn">+ Agregar opción</button>
+      `;
+
+      card.querySelector('.group-name').addEventListener('input', (e) => { group.name = e.target.value; });
+      card.querySelector('.group-type').addEventListener('change', (e) => { group.type = e.target.value; });
+      card.querySelector('.variant-remove-group').addEventListener('click', () => {
+        pendingVariantGroups.splice(gi, 1);
+        renderVariantGroupsEditor();
+      });
+      card.querySelector('.add-option-btn').addEventListener('click', () => {
+        group.options.push({ name: '', price: 0 });
+        renderVariantGroupsEditor();
+      });
+      card.querySelectorAll('.variant-option-row').forEach(row => {
+        const oi = parseInt(row.dataset.oi, 10);
+        row.querySelector('.opt-name').addEventListener('input', (e) => { group.options[oi].name = e.target.value; });
+        row.querySelector('.opt-price').addEventListener('input', (e) => { group.options[oi].price = parseFloat(e.target.value) || 0; });
+        row.querySelector('.opt-remove').addEventListener('click', () => {
+          group.options.splice(oi, 1);
+          renderVariantGroupsEditor();
+        });
+      });
+      variantGroupsEditor.appendChild(card);
+    });
+  }
+
+  addVariantGroupBtn.addEventListener('click', () => {
+    pendingVariantGroups.push({ name: '', type: 'single', options: [{ name: '', price: 0 }] });
+    renderVariantGroupsEditor();
+  });
 
   function enterEditMode(p){
     editingProductId = p.id;
     document.getElementById('pName').value = p.name;
     document.getElementById('pPrice').value = p.price;
     document.getElementById('pDesc').value = p.desc || '';
-    pendingProductImageDataUrl = '';
     pImageInput.value = '';
-    productImgPreview.innerHTML = p.image ? `<img class="prod-thumb" style="width:48px;height:48px;" src="${p.image}" alt="">` : '';
+    pendingProductImages = (p.images && p.images.length) ? p.images.slice() : (p.image ? [p.image] : []);
+    renderProductGallery();
+    pendingVariantGroups = (p.variantGroups || []).map(g => ({
+      name: g.name, type: g.type, options: g.options.map(o => ({ name: o.name, price: o.price }))
+    }));
+    renderVariantGroupsEditor();
     productSubmitBtn.textContent = 'Guardar cambios';
     cancelEditBtn.hidden = false;
     document.getElementById('pName').scrollIntoView({behavior:'smooth', block:'center'});
@@ -2138,10 +2402,12 @@
 
   function exitEditMode(){
     editingProductId = null;
-    pendingProductImageDataUrl = '';
+    pendingProductImages = [];
+    pendingVariantGroups = [];
     productForm.reset();
     pImageInput.value = '';
-    productImgPreview.innerHTML = '';
+    renderProductGallery();
+    renderVariantGroupsEditor();
     productSubmitBtn.textContent = 'Agregar producto';
     cancelEditBtn.hidden = true;
   }
@@ -2149,13 +2415,15 @@
   cancelEditBtn.addEventListener('click', exitEditMode);
 
   pImageInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
+    const files = Array.from(e.target.files || []);
+    if(files.length === 0) return;
     try{
-      pendingProductImageDataUrl = await fileToResizedDataUrl(file, 500, 0.8);
-      productImgPreview.innerHTML = `<img class="prod-thumb" style="width:48px;height:48px;" src="${pendingProductImageDataUrl}" alt="">`;
+      const dataUrls = await Promise.all(files.map(f => fileToResizedDataUrl(f, 700, 0.8)));
+      pendingProductImages.push(...dataUrls);
+      renderProductGallery();
+      pImageInput.value = '';
     }catch(err){
-      productMsg.textContent = 'No pudimos procesar esa imagen.';
+      productMsg.textContent = 'No pudimos procesar alguna de esas imágenes.';
       productMsg.className = 'form-msg error';
     }
   });
@@ -2175,8 +2443,11 @@
       return;
     }
 
-    const payload = { name, price, desc };
-    if(pendingProductImageDataUrl) payload.image = pendingProductImageDataUrl;
+    const cleanGroups = pendingVariantGroups
+      .map(g => ({ name: g.name.trim(), type: g.type, options: g.options.filter(o => o.name.trim()).map(o => ({ name: o.name.trim(), price: o.price })) }))
+      .filter(g => g.name && g.options.length > 0);
+
+    const payload = { name, price, desc, images: pendingProductImages, variantGroups: cleanGroups };
 
     try{
       if(editingProductId){
@@ -2203,6 +2474,7 @@
     const avatar = document.getElementById('pubAvatar');
     const nameEl = document.getElementById('pubName');
     const catEl = document.getElementById('pubCat');
+    const openBadgeEl = document.getElementById('pubOpenBadge');
     const addrEl = document.getElementById('pubAddress');
     const phoneEl = document.getElementById('pubPhone');
     const dot1 = document.getElementById('pubMetaDot1');
@@ -2210,6 +2482,9 @@
     const contactRow = document.getElementById('pubContactRow');
     const descEl = document.getElementById('pubDesc');
     const catalog = document.getElementById('pubCatalog');
+    const hoursWrap = document.getElementById('pubHoursWrap');
+    const hoursEl = document.getElementById('pubHours');
+    const mapWrap = document.getElementById('pubMapSectionWrap');
 
     let biz = null;
     try{
@@ -2221,6 +2496,7 @@
       avatar.innerHTML = '';
       nameEl.textContent = 'No encontramos este negocio';
       catEl.textContent = '';
+      openBadgeEl.innerHTML = '';
       addrEl.textContent = '';
       phoneEl.textContent = '';
       dot1.hidden = true;
@@ -2228,6 +2504,8 @@
       contactRow.innerHTML = '';
       descEl.textContent = 'Puede que se haya dado de baja o que el link esté mal escrito.';
       catalog.innerHTML = '';
+      hoursWrap.hidden = true;
+      mapWrap.hidden = true;
       return;
     }
 
@@ -2240,6 +2518,7 @@
 
     nameEl.textContent = biz.name;
     catEl.textContent = biz.category;
+    openBadgeEl.innerHTML = openStatusBadge(biz.isOpenNow);
     addrEl.textContent = biz.address || '';
     phoneEl.textContent = biz.phone || '';
     dot1.hidden = !biz.address;
@@ -2278,6 +2557,37 @@
       a.textContent = 'Facebook';
       contactRow.appendChild(a);
     }
+    if(biz.website){
+      const a = document.createElement('a');
+      a.className = 'contact-btn';
+      const url = biz.website.startsWith('http') ? biz.website : `https://${biz.website}`;
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = 'Página oficial';
+      contactRow.appendChild(a);
+    }
+
+    const hoursEntries = DIAS_SEMANA.filter(d => biz.hours && biz.hours[d.key]);
+    if(hoursEntries.length){
+      hoursWrap.hidden = false;
+      const hoyIdx = (new Date().getDay() + 6) % 7; // 0=lunes
+      hoursEl.innerHTML = hoursEntries.map((d, i) => {
+        const cfg = biz.hours[d.key];
+        const isToday = DIAS_SEMANA[hoyIdx].key === d.key;
+        const val = cfg.closed ? 'Cerrado' : `${cfg.open} a ${cfg.close}`;
+        return `<div class="hours-display-row${isToday ? ' today' : ''}"><span>${d.label}</span><span class="val">${val}</span></div>`;
+      }).join('');
+    } else {
+      hoursWrap.hidden = true;
+    }
+
+    if(biz.lat != null && biz.lng != null){
+      mapWrap.hidden = false;
+      renderMapPreview(biz.lat, biz.lng, mapWrap, document.getElementById('pubMapPreview'), document.getElementById('pubMapLink'));
+    } else {
+      mapWrap.hidden = true;
+    }
 
     catalog.innerHTML = '';
     const products = biz.products || [];
@@ -2290,6 +2600,7 @@
       card.href = 'javascript:void(0)';
       card.className = 'result-card';
       card.innerHTML = `
+        ${openStatusBadge(biz.isOpenNow).replace('open-badge', 'open-badge open-badge-float')}
         ${p.image ? `<img class="result-img" src="${p.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
           <p class="pname">${escapeHtml(p.name)}</p>
@@ -2305,35 +2616,95 @@
   /* ---------- MODAL DE PRODUCTO ---------- */
   function openProductModal(product, biz){
     const root = document.getElementById('productModalRoot');
-    const imgHtml = product.image
-      ? `<img class="product-modal-img" src="${product.image}" alt="">`
-      : `<div class="product-modal-noimg">Sin foto</div>`;
+    const images = (product.images && product.images.length) ? product.images : (product.image ? [product.image] : []);
+    const groups = product.variantGroups || [];
 
-    let ctaHtml = '';
-    if(biz.whatsapp){
-      const digits = biz.whatsapp.replace(/[^0-9]/g,'');
-      const message = `Hola ${biz.name}! Quiero pedir "${product.name}" ($${product.price}) que vi en la página de Cadetería Centro.`;
-      ctaHtml = `<a class="contact-btn whatsapp btn-block product-modal-cta" style="justify-content:center;" href="https://wa.me/${digits}?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">Pedir por WhatsApp</a>`;
-    } else {
-      ctaHtml = `<p class="sub product-modal-cta" style="margin:0;">Este negocio todavía no cargó un WhatsApp de contacto.</p>`;
-    }
+    const badgeHtml = openStatusBadge(biz.isOpenNow).replace('open-badge', 'open-badge open-badge-float');
+    const mainImgHtml = images.length
+      ? `<img class="product-modal-img" id="modalMainImg" src="${images[0]}" alt="">`
+      : `<div class="product-modal-noimg">Sin foto</div>`;
+    const thumbsHtml = images.length > 1
+      ? `<div class="modal-thumbs">${images.map((img, i) => `<img src="${img}" data-i="${i}" class="modal-thumb${i===0?' active':''}" alt="">`).join('')}</div>`
+      : '';
+
+    const groupsHtml = groups.map((group, gi) => `
+      <div class="modal-variant-group">
+        <p class="modal-variant-group-name">${escapeHtml(group.name)}<span class="field-hint"> — ${group.type === 'multiple' ? 'elegí una o más' : 'elegí una'}</span></p>
+        ${group.options.map((opt, oi) => `
+          <label class="modal-variant-option">
+            <span style="display:flex; align-items:center; gap:8px;">
+              <input type="${group.type === 'multiple' ? 'checkbox' : 'radio'}" name="modalGroup${gi}" data-gi="${gi}" data-oi="${oi}" data-price="${opt.price}" ${oi===0 && group.type!=='multiple' ? 'checked' : ''}>
+              ${escapeHtml(opt.name)}
+            </span>
+            <span class="mono">${opt.price ? `+$${opt.price}` : ''}</span>
+          </label>
+        `).join('')}
+      </div>
+    `).join('');
 
     root.innerHTML = `
       <div class="product-modal-overlay" id="productModalOverlay">
         <div class="product-modal" role="dialog" aria-modal="true" aria-label="${escapeHtml(product.name)}">
           <button type="button" class="product-modal-close" id="productModalClose" aria-label="Cerrar">✕</button>
-          ${imgHtml}
+          <div style="position:relative;">
+            ${badgeHtml}
+            ${mainImgHtml}
+          </div>
+          ${thumbsHtml}
           <div class="product-modal-body">
             <h3>${escapeHtml(product.name)}</h3>
-            <span class="pprice">$${escapeHtml(String(product.price))}</span>
+            <span class="pprice" id="modalTotalPrice">$${escapeHtml(String(product.price))}</span>
             ${product.desc ? `<p class="pdesc">${escapeHtml(product.desc)}</p>` : ''}
             <div class="product-modal-biz">De <strong>${escapeHtml(biz.name)}</strong> — ${escapeHtml(biz.category)}</div>
-            ${ctaHtml}
+            ${groupsHtml}
+            <div id="modalCtaWrap"></div>
           </div>
         </div>
       </div>
     `;
     document.body.style.overflow = 'hidden';
+
+    root.querySelectorAll('.modal-thumb').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        document.getElementById('modalMainImg').src = images[parseInt(thumb.dataset.i, 10)];
+        root.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+      });
+    });
+
+    function currentSelections(){
+      const chosen = [];
+      let extra = 0;
+      groups.forEach((group, gi) => {
+        root.querySelectorAll(`input[data-gi="${gi}"]:checked`).forEach(input => {
+          const opt = group.options[parseInt(input.dataset.oi, 10)];
+          chosen.push(`${group.name}: ${opt.name}`);
+          extra += opt.price;
+        });
+      });
+      return { chosen, total: product.price + extra };
+    }
+
+    function updateModal(){
+      const { chosen, total } = currentSelections();
+      document.getElementById('modalTotalPrice').textContent = '$' + total;
+
+      const ctaWrap = document.getElementById('modalCtaWrap');
+      if(biz.whatsapp){
+        const digits = biz.whatsapp.replace(/[^0-9]/g,'');
+        let message = `Hola ${biz.name}! Quiero pedir "${product.name}"`;
+        if(chosen.length) message += ` (${chosen.join(', ')})`;
+        message += ` — $${total} — que vi en la página de Cadetería Centro.`;
+        ctaWrap.innerHTML = `<a class="contact-btn whatsapp btn-block product-modal-cta" style="justify-content:center;" href="https://wa.me/${digits}?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">Pedir por WhatsApp</a>`;
+      } else {
+        ctaWrap.innerHTML = `<p class="sub product-modal-cta" style="margin:0;">Este negocio todavía no cargó un WhatsApp de contacto.</p>`;
+      }
+    }
+
+    root.querySelectorAll('.modal-variant-group input').forEach(input => {
+      input.addEventListener('change', updateModal);
+    });
+    updateModal();
 
     const overlay = document.getElementById('productModalOverlay');
     overlay.addEventListener('click', (e) => {
