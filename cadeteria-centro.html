@@ -187,6 +187,25 @@
   .carousel-dot.active{background:#fff;}
 
   /* ---------- LISTINGS ---------- */
+  section.category-nav{padding:8px 0 28px;}
+  .category-nav-row{
+    display:flex;gap:22px;overflow-x:auto;padding-bottom:4px;
+    scrollbar-width:none;
+  }
+  .category-nav-row::-webkit-scrollbar{display:none;}
+  .category-tile{
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    flex-shrink:0;background:none;border:none;cursor:pointer;
+    font-family:var(--font-body);padding:0;width:78px;
+  }
+  .category-tile-icon{
+    width:66px;height:66px;border-radius:20px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.8rem;transition:transform .15s ease;
+  }
+  .category-tile:hover .category-tile-icon{transform:translateY(-3px);}
+  .category-tile.active .category-tile-icon{box-shadow:0 0 0 2.5px var(--navy);}
+  .category-tile-label{font-size:0.8rem;font-weight:600;color:var(--ink);text-align:center;}
   section.listings{padding:56px 0 64px;}
   .section-head{
     display:flex;align-items:baseline;justify-content:space-between;
@@ -625,6 +644,12 @@
           </g>
         </svg>
       </div>
+    </div>
+  </section>
+
+  <section class="category-nav">
+    <div class="wrap">
+      <div class="category-nav-row" id="categoryNavRow"></div>
     </div>
   </section>
 
@@ -1550,6 +1575,7 @@
     } else {
       showView('home');
       renderChips();
+      renderCategoryNav();
       await renderListings();
       await renderMyTrips();
     }
@@ -1567,9 +1593,44 @@
       chip.addEventListener('click', async () => {
         activeCategory = cat;
         renderChips();
+        renderCategoryNav();
         await renderListings();
       });
       chipRow.appendChild(chip);
+    });
+  }
+
+  const CATEGORY_ICONS = {
+    'Todos': { icon: '🛍️', bg: '#F1F3EE' },
+    'Rotisería': { icon: '🍗', bg: 'rgba(230,70,42,0.14)' },
+    'Pizzería': { icon: '🍕', bg: 'rgba(244,183,64,0.22)' },
+    'Panadería': { icon: '🥖', bg: 'rgba(196,58,33,0.1)' },
+    'Parrilla': { icon: '🥩', bg: 'rgba(20,33,61,0.1)' },
+    'Comida china': { icon: '🥡', bg: 'rgba(30,122,61,0.14)' },
+    'Heladería': { icon: '🍦', bg: 'rgba(45,140,220,0.14)' },
+    'Otro': { icon: '🛒', bg: '#EDEAE3' },
+  };
+
+  function renderCategoryNav(){
+    const row = document.getElementById('categoryNavRow');
+    row.innerHTML = '';
+    CATEGORIES.forEach(cat => {
+      const meta = CATEGORY_ICONS[cat] || { icon: '📦', bg: '#EDEAE3' };
+      const tile = document.createElement('button');
+      tile.type = 'button';
+      tile.className = 'category-tile' + (cat === activeCategory ? ' active' : '');
+      tile.innerHTML = `
+        <span class="category-tile-icon" style="background:${meta.bg};">${meta.icon}</span>
+        <span class="category-tile-label">${escapeHtml(cat)}</span>
+      `;
+      tile.addEventListener('click', async () => {
+        activeCategory = cat;
+        renderChips();
+        renderCategoryNav();
+        await renderListings();
+        document.getElementById('listings').scrollIntoView({behavior:'smooth'});
+      });
+      row.appendChild(tile);
     });
   }
 
