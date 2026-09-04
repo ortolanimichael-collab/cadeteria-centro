@@ -293,6 +293,14 @@
   .vb-pos-btn.active{background:var(--flame,#e2472a);border-color:var(--flame,#e2472a);}
 
   .store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:12px;}
+
+  .store-row-wrap{padding-top:40px;}
+  .store-row-title{margin:0 0 4px;}
+  .store-row{
+    display:flex;gap:18px;overflow-x:auto;padding:6px 2px 10px;
+    scrollbar-width:thin;
+  }
+  .store-row .store-card{flex:0 0 auto;width:88px;}
   .store-card{
     border:none;border-radius:14px;padding:6px;text-align:center;cursor:pointer;
     background:transparent;
@@ -897,6 +905,14 @@
   </section>
 
   <section class="split-cta trip-cta" id="hacer-compras">
+    <div class="wrap store-row-wrap">
+      <h3 class="store-row-title">Elegí dónde comprar</h3>
+      <p class="sub" style="margin-bottom:14px;">Tocá el negocio y completá el resto más abajo.</p>
+      <div class="store-row" id="storeGrid">
+        <p class="vip-banner-empty">Cargando negocios…</p>
+      </div>
+    </div>
+
     <div class="wrap biz-grid">
       <div class="biz-copy">
         <h2>Hacé tus compras acá</h2>
@@ -911,11 +927,8 @@
       <div class="panel">
         <div class="shopping-panel-grid">
           <div>
-            <h3>Elegí dónde comprar</h3>
-            <p class="sub">Tocá el negocio y completá el resto.</p>
-            <div class="store-grid" id="storeGrid">
-              <p class="vip-banner-empty">Cargando negocios…</p>
-            </div>
+            <h3>Tu pedido</h3>
+            <p class="sub">Completá los datos para mandarlo.</p>
 
             <form id="shoppingForm" style="margin-top:18px;">
               <input type="hidden" id="scStoreId" value="">
