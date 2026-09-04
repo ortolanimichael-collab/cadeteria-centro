@@ -279,6 +279,18 @@
   .vip-top-section .vip-hero-banner{border-radius:0;}
   .vip-hero-section{margin-bottom:8px;}
   .vip-bottom-section{margin:20px auto 24px;}
+
+  .vb-pos-grid{
+    display:grid;grid-template-columns:repeat(3,32px);grid-template-rows:repeat(3,32px);
+    gap:4px;margin-top:8px;
+  }
+  .vb-pos-btn{
+    width:32px;height:32px;border-radius:8px;
+    border:1.5px solid var(--line);background:var(--panel);cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  .vb-pos-btn:hover{border-color:var(--flame,#e2472a);}
+  .vb-pos-btn.active{background:var(--flame,#e2472a);border-color:var(--flame,#e2472a);}
   .vip-hero-banner{
     display:block;border-radius:var(--radius-card);overflow:hidden;
     position:relative;background:var(--line);
@@ -718,17 +730,17 @@
   <div class="promo-bar-track" id="promoBarText"></div>
 </div>
 
-<section class="vip-top-section" id="vipTopSection" hidden>
-  <a class="vip-hero-banner" id="vipTopBanner" href="#" target="_blank" rel="noopener">
-    <span class="vip-ad-tag">Publicidad</span>
-    <img id="vipTopBannerImg" src="" alt="Publicidad">
-  </a>
-</section>
-
 <main id="app">
 
 <!-- ============ HOME ============ -->
 <div class="view" id="view-home">
+
+  <section class="vip-top-section" id="vipTopSection" hidden>
+    <a class="vip-hero-banner" id="vipTopBanner" href="#" target="_blank" rel="noopener">
+      <span class="vip-ad-tag">Publicidad</span>
+      <img id="vipTopBannerImg" src="" alt="Publicidad">
+    </a>
+  </section>
 
   <section class="hero">
     <div class="wrap hero-grid">
@@ -1477,6 +1489,22 @@
               <input type="file" id="vbImage" accept="image/*">
               <span class="field-hint">Se ajusta sola al tamaño del cartel. Funciona mejor una imagen ancha (ej. 1200x400) en las 3 posiciones.</span>
               <div id="vbImagePreview" style="margin-top:10px;"></div>
+              <div style="margin-top:14px;">
+                <label>Qué parte de la imagen se ve si no entra completa</label>
+                <div class="vb-pos-grid" id="vbPosGrid">
+                  <button type="button" class="vb-pos-btn" data-pos="left top" title="Arriba, izquierda"></button>
+                  <button type="button" class="vb-pos-btn" data-pos="center top" title="Arriba, centro"></button>
+                  <button type="button" class="vb-pos-btn" data-pos="right top" title="Arriba, derecha"></button>
+                  <button type="button" class="vb-pos-btn" data-pos="left center" title="Centro, izquierda"></button>
+                  <button type="button" class="vb-pos-btn active" data-pos="center center" title="Centro"></button>
+                  <button type="button" class="vb-pos-btn" data-pos="right center" title="Centro, derecha"></button>
+                  <button type="button" class="vb-pos-btn" data-pos="left bottom" title="Abajo, izquierda"></button>
+                  <button type="button" class="vb-pos-btn" data-pos="center bottom" title="Abajo, centro"></button>
+                  <button type="button" class="vb-pos-btn" data-pos="right bottom" title="Abajo, derecha"></button>
+                </div>
+                <input type="hidden" id="vbImagePosition" value="center center">
+                <span class="field-hint">Por defecto queda centrada. Tocá un cuadrito para elegir qué parte de la imagen se prioriza si el cartel le recorta algo.</span>
+              </div>
             </div>
           </div>
           <div class="form-row">
@@ -2951,7 +2979,9 @@
     section.hidden = false;
     const applyBanner = () => {
       const banner = topVipBanners[vipBannerTopIndex % topVipBanners.length];
-      document.getElementById('vipTopBannerImg').src = banner.imageUrl;
+      const imgTop = document.getElementById('vipTopBannerImg');
+      imgTop.src = banner.imageUrl;
+      imgTop.style.objectPosition = banner.imagePosition || 'center center';
       const link = document.getElementById('vipTopBanner');
       if(banner.linkUrl){
         link.href = banner.linkUrl;
@@ -2983,7 +3013,9 @@
     section.hidden = false;
     const applyBanner = () => {
       const banner = heroVipBanners[vipBannerHeroIndex % heroVipBanners.length];
-      document.getElementById('vipHeroBannerImg').src = banner.imageUrl;
+      const imgHero = document.getElementById('vipHeroBannerImg');
+      imgHero.src = banner.imageUrl;
+      imgHero.style.objectPosition = banner.imagePosition || 'center center';
       const link = document.getElementById('vipHeroBanner');
       if(banner.linkUrl){
         link.href = banner.linkUrl;
@@ -3015,7 +3047,9 @@
     section.hidden = false;
     const applyBanner = () => {
       const banner = gridVipBanners[vipBannerBottomIndex % gridVipBanners.length];
-      document.getElementById('vipBottomBannerImg').src = banner.imageUrl;
+      const imgBottom = document.getElementById('vipBottomBannerImg');
+      imgBottom.src = banner.imageUrl;
+      imgBottom.style.objectPosition = banner.imagePosition || 'center center';
       const link = document.getElementById('vipBottomBanner');
       if(banner.linkUrl){
         link.href = banner.linkUrl;
@@ -3266,6 +3300,7 @@
     document.getElementById('vbAdvertiser').value = b.advertiserName || '';
     document.getElementById('vbLink').value = b.linkUrl || '';
     document.getElementById('vbPosition').value = b.position;
+    setVbImagePosition(b.imagePosition || 'center center');
     document.getElementById('vbActive').checked = !!b.active;
     document.getElementById('vbStart').value = b.startDate ? b.startDate.slice(0,10) : '';
     document.getElementById('vbEnd').value = b.endDate ? b.endDate.slice(0,10) : '';
@@ -3286,6 +3321,7 @@
     vipBannerForm.reset();
     document.getElementById('vbId').value = '';
     document.getElementById('vbActive').checked = true;
+    setVbImagePosition('center center');
     vbImagePreview.innerHTML = '';
     document.getElementById('vipBannerFormTitle').textContent = 'Agregar banner nuevo';
     vbSubmitBtn.textContent = 'Guardar banner';
@@ -3295,6 +3331,17 @@
   }
 
   vbCancelEditBtn.addEventListener('click', resetVipBannerForm);
+
+  function setVbImagePosition(pos){
+    document.getElementById('vbImagePosition').value = pos;
+    document.querySelectorAll('#vbPosGrid .vb-pos-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.pos === pos);
+    });
+  }
+
+  document.querySelectorAll('#vbPosGrid .vb-pos-btn').forEach(btn => {
+    btn.addEventListener('click', () => setVbImagePosition(btn.dataset.pos));
+  });
 
   vbImageInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -3338,6 +3385,7 @@
       advertiserName: document.getElementById('vbAdvertiser').value.trim(),
       linkUrl: document.getElementById('vbLink').value.trim(),
       position: document.getElementById('vbPosition').value,
+      imagePosition: document.getElementById('vbImagePosition').value,
       active: document.getElementById('vbActive').checked,
       startDate: startVal || null,
       endDate: endVal || null,
