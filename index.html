@@ -291,6 +291,17 @@
   }
   .vb-pos-btn:hover{border-color:var(--flame,#e2472a);}
   .vb-pos-btn.active{background:var(--flame,#e2472a);border-color:var(--flame,#e2472a);}
+
+  .store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;}
+  .store-card{
+    border:2px solid var(--line);border-radius:12px;padding:8px;text-align:center;cursor:pointer;
+    background:var(--panel);transition:border-color .15s;
+  }
+  .store-card:hover{border-color:var(--ink-soft);}
+  .store-card.selected{border-color:var(--flame);}
+  .store-card img{width:100%;height:64px;object-fit:cover;border-radius:8px;margin-bottom:6px;background:var(--line);display:block;}
+  .store-card .store-card-name{font-size:0.8rem;font-weight:700;display:block;line-height:1.2;}
+  .store-card .store-card-cat{font-size:0.7rem;color:var(--ink-soft);}
   .vip-hero-banner{
     display:block;border-radius:var(--radius-card);overflow:hidden;
     position:relative;background:var(--line);
@@ -537,24 +548,6 @@
   .hours-closed-label{display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--ink-soft);}
   .hours-times{display:flex;align-items:center;gap:6px;}
   .hours-times input[type=time]{width:110px;padding:7px 8px;font-size:0.85rem;}
-  .variant-group-card{
-    border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px;background:var(--bg);
-  }
-  .variant-group-head{display:flex;gap:10px;align-items:flex-end;margin-bottom:10px;}
-  .variant-group-head input{flex:1;}
-  .variant-group-head select{width:170px;flex-shrink:0;}
-  .variant-remove-group{
-    background:none;border:none;color:var(--flame-dark);font-size:0.8rem;cursor:pointer;
-    text-decoration:underline;flex-shrink:0;padding-bottom:11px;
-  }
-  .variant-option-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
-  .variant-option-row input[type=text]{flex:1;}
-  .variant-option-row input[type=number]{width:100px;}
-  .variant-option-row button{
-    background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:0.9rem;
-    padding:4px;flex-shrink:0;
-  }
-  .variant-option-row button:hover{color:var(--flame-dark);}
   .hours-display{display:flex;flex-direction:column;gap:2px;margin-top:12px;font-size:0.9rem;}
   .hours-display-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);}
   .hours-display-row:last-child{border-bottom:none;}
@@ -649,14 +642,6 @@
   }
   .modal-thumb.active{border-color:var(--flame);opacity:1;}
 
-  .modal-variant-group{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);}
-  .modal-variant-group-name{font-weight:700;font-size:0.92rem;margin:0 0 8px;}
-  .modal-variant-option{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:7px 0;font-size:0.9rem;cursor:pointer;
-  }
-  .modal-variant-option input{width:auto;margin:0;}
-
   a.result-card{
     background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-card);
     overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:var(--ink);
@@ -721,6 +706,7 @@
     <nav class="main-nav">
       <a href="#/">Buscar</a>
       <a href="#viaje-particular">Viaje particular</a>
+      <a href="#hacer-compras">Hacé tus compras acá</a>
       <a href="#como-funciona">Cómo funciona</a>
     </nav>
     <div id="headerAuthArea" class="header-auth-area"></div>
@@ -889,6 +875,54 @@
           <h3>Tus pedidos</h3>
           <div class="trip-list" id="myTripList"></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="split-cta trip-cta" id="hacer-compras">
+    <div class="wrap biz-grid">
+      <div class="biz-copy">
+        <h2>Hacé tus compras acá</h2>
+        <p>Elegí el súper, kiosco u otro negocio del listado, mandanos tu lista y un cadete te la trae a domicilio.</p>
+        <ul class="benefit-list">
+          <li><span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#14181B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Elegís el negocio de una lista cargada por Cadetería Centro</li>
+          <li><span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#14181B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Escribís tu lista de compras como quieras, sin vueltas</li>
+          <li><span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#14181B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Un cadete la retira y te la lleva a domicilio</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h3>Elegí dónde comprar</h3>
+        <p class="sub">Tocá el negocio y completá el resto.</p>
+        <div class="store-grid" id="storeGrid">
+          <p class="vip-banner-empty">Cargando negocios…</p>
+        </div>
+
+        <form id="shoppingForm" style="margin-top:18px;">
+          <input type="hidden" id="scStoreId" value="">
+          <div class="form-row full">
+            <div>
+              <label for="scAddress">Dirección de entrega</label>
+              <input type="text" id="scAddress" required placeholder="¿Dónde te lo llevamos?">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div>
+              <label for="scList">Lista de compras</label>
+              <textarea id="scList" required placeholder="Ej. 1 leche, 1 paquete de fideos, 2 pan francés..."></textarea>
+            </div>
+          </div>
+          <div class="form-row full">
+            <div>
+              <label for="scPhone">Teléfono de contacto</label>
+              <input type="tel" id="scPhone" required placeholder="Ej. 351 555 1234">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-flame">Pedir compras</button>
+            <span class="form-msg" id="shoppingMsg"></span>
+          </div>
+        </form>
       </div>
     </div>
   </section>
@@ -1283,11 +1317,6 @@
               </div>
             </div>
             <div class="divider"></div>
-            <label style="margin-bottom:6px;">Opciones para variar el producto (opcional)</label>
-            <p class="field-hint" style="margin-bottom:10px;">Ej. "¿Con papas?" con las opciones "Con papas" (+$800) y "Sin papas" (+$0). El precio de cada opción se suma al precio base.</p>
-            <div id="variantGroupsEditor"></div>
-            <button type="button" class="btn btn-outline btn-sm" id="addVariantGroupBtn" style="margin-top:6px;">+ Agregar grupo de opciones</button>
-            <div class="divider"></div>
             <div class="form-actions">
               <button type="submit" class="btn btn-flame" id="productSubmitBtn">Agregar producto</button>
               <button type="button" class="btn-link" id="cancelEditBtn" hidden>Cancelar edición</button>
@@ -1549,6 +1578,62 @@
             <button type="submit" class="btn btn-navy" id="vbSubmitBtn">Guardar banner</button>
             <button type="button" class="btn btn-outline" id="vbCancelEdit" hidden>Cancelar edición</button>
             <span class="form-msg" id="vbFormMsg"></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel" style="margin-top:24px;">
+        <h3>Súper y kioscos ("Hacé tus compras acá")</h3>
+        <p class="sub">Cargá acá los negocios que el cliente puede elegir para mandarle una lista de compras (súper, kiosco, verdulería, etc.).</p>
+
+        <div id="storeList" class="vip-banner-list">
+          <p class="vip-banner-empty">Cargando…</p>
+        </div>
+
+        <div class="divider"></div>
+        <h3 id="storeFormTitle">Agregar negocio nuevo</h3>
+        <form id="storeForm">
+          <input type="hidden" id="stId" value="">
+          <div class="form-row full">
+            <div>
+              <label for="stImage">Foto de perfil</label>
+              <input type="file" id="stImage" accept="image/*">
+              <div id="stImagePreview" style="margin-top:10px;"></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="stName">Nombre</label>
+              <input type="text" id="stName" required placeholder="Ej. Supermercado La Esquina">
+            </div>
+            <div>
+              <label for="stCategory">Categoría</label>
+              <select id="stCategory">
+                <option value="Supermercado">Supermercado</option>
+                <option value="Kiosco">Kiosco</option>
+                <option value="Verdulería">Verdulería</option>
+                <option value="Carnicería">Carnicería</option>
+                <option value="Farmacia">Farmacia</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="stAddress">Dirección / zona (opcional)</label>
+              <input type="text" id="stAddress" placeholder="Ej. San Martín 450">
+            </div>
+            <div>
+              <label style="display:flex; align-items:center; gap:8px; font-weight:500; margin-top:26px;">
+                <input type="checkbox" id="stActive" style="width:auto;" checked>
+                Activo
+              </label>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-flame" id="stSubmitBtn">Guardar negocio</button>
+            <button type="button" class="btn-link" id="stCancelEditBtn" hidden>Cancelar edición</button>
+            <span class="form-msg" id="stFormMsg"></span>
           </div>
         </form>
       </div>
@@ -2402,7 +2487,7 @@
       row.innerHTML = `
         <div class="product-item-text">
           ${thumb}
-          <span>${escapeHtml(p.name)} — $${escapeHtml(String(p.price))}${(p.images && p.images.length > 1) ? ` · ${p.images.length} fotos` : ''}${(p.variantGroups && p.variantGroups.length) ? ` · ${p.variantGroups.length} opciones` : ''}</span>
+          <span>${escapeHtml(p.name)} — $${escapeHtml(String(p.price))}${(p.images && p.images.length > 1) ? ` · ${p.images.length} fotos` : ''}</span>
         </div>
         ${actionsHtml}
       `;
@@ -2431,10 +2516,7 @@
   const productImgGallery = document.getElementById('productImgGallery');
   const productSubmitBtn = document.getElementById('productSubmitBtn');
   const cancelEditBtn = document.getElementById('cancelEditBtn');
-  const variantGroupsEditor = document.getElementById('variantGroupsEditor');
-  const addVariantGroupBtn = document.getElementById('addVariantGroupBtn');
   let pendingProductImages = [];
-  let pendingVariantGroups = [];
 
   function renderProductGallery(){
     productImgGallery.innerHTML = pendingProductImages.map((img, i) => `
@@ -2451,65 +2533,6 @@
     });
   }
 
-  function renderVariantGroupsEditor(){
-    variantGroupsEditor.innerHTML = '';
-    pendingVariantGroups.forEach((group, gi) => {
-      const card = document.createElement('div');
-      card.className = 'variant-group-card';
-      const optionsHtml = group.options.map((opt, oi) => `
-        <div class="variant-option-row" data-oi="${oi}">
-          <input type="text" class="opt-name" placeholder="Nombre de la opción" value="${escapeHtml(opt.name)}">
-          <input type="number" class="opt-price" placeholder="+$" step="1" value="${opt.price}">
-          <button type="button" class="opt-remove" aria-label="Quitar opción">✕</button>
-        </div>
-      `).join('');
-      card.innerHTML = `
-        <div class="variant-group-head">
-          <div style="flex:1;">
-            <label style="margin-bottom:4px;">Nombre del grupo</label>
-            <input type="text" class="group-name" placeholder="Ej. ¿Con papas?" value="${escapeHtml(group.name)}">
-          </div>
-          <div>
-            <label style="margin-bottom:4px;">Tipo</label>
-            <select class="group-type">
-              <option value="single" ${group.type==='single'?'selected':''}>Elegí una opción</option>
-              <option value="multiple" ${group.type==='multiple'?'selected':''}>Elegí una o más</option>
-            </select>
-          </div>
-          <button type="button" class="variant-remove-group">Quitar grupo</button>
-        </div>
-        <div class="variant-options-list">${optionsHtml}</div>
-        <button type="button" class="btn btn-outline btn-sm add-option-btn">+ Agregar opción</button>
-      `;
-
-      card.querySelector('.group-name').addEventListener('input', (e) => { group.name = e.target.value; });
-      card.querySelector('.group-type').addEventListener('change', (e) => { group.type = e.target.value; });
-      card.querySelector('.variant-remove-group').addEventListener('click', () => {
-        pendingVariantGroups.splice(gi, 1);
-        renderVariantGroupsEditor();
-      });
-      card.querySelector('.add-option-btn').addEventListener('click', () => {
-        group.options.push({ name: '', price: 0 });
-        renderVariantGroupsEditor();
-      });
-      card.querySelectorAll('.variant-option-row').forEach(row => {
-        const oi = parseInt(row.dataset.oi, 10);
-        row.querySelector('.opt-name').addEventListener('input', (e) => { group.options[oi].name = e.target.value; });
-        row.querySelector('.opt-price').addEventListener('input', (e) => { group.options[oi].price = parseFloat(e.target.value) || 0; });
-        row.querySelector('.opt-remove').addEventListener('click', () => {
-          group.options.splice(oi, 1);
-          renderVariantGroupsEditor();
-        });
-      });
-      variantGroupsEditor.appendChild(card);
-    });
-  }
-
-  addVariantGroupBtn.addEventListener('click', () => {
-    pendingVariantGroups.push({ name: '', type: 'single', options: [{ name: '', price: 0 }] });
-    renderVariantGroupsEditor();
-  });
-
   function enterEditMode(p){
     editingProductId = p.id;
     document.getElementById('pName').value = p.name;
@@ -2518,10 +2541,6 @@
     pImageInput.value = '';
     pendingProductImages = (p.images && p.images.length) ? p.images.slice() : (p.image ? [p.image] : []);
     renderProductGallery();
-    pendingVariantGroups = (p.variantGroups || []).map(g => ({
-      name: g.name, type: g.type, options: g.options.map(o => ({ name: o.name, price: o.price }))
-    }));
-    renderVariantGroupsEditor();
     productSubmitBtn.textContent = 'Guardar cambios';
     cancelEditBtn.hidden = false;
     document.getElementById('pName').scrollIntoView({behavior:'smooth', block:'center'});
@@ -2530,11 +2549,9 @@
   function exitEditMode(){
     editingProductId = null;
     pendingProductImages = [];
-    pendingVariantGroups = [];
     productForm.reset();
     pImageInput.value = '';
     renderProductGallery();
-    renderVariantGroupsEditor();
     productSubmitBtn.textContent = 'Agregar producto';
     cancelEditBtn.hidden = true;
   }
@@ -2570,11 +2587,7 @@
       return;
     }
 
-    const cleanGroups = pendingVariantGroups
-      .map(g => ({ name: g.name.trim(), type: g.type, options: g.options.filter(o => o.name.trim()).map(o => ({ name: o.name.trim(), price: o.price })) }))
-      .filter(g => g.name && g.options.length > 0);
-
-    const payload = { name, price, desc, images: pendingProductImages, variantGroups: cleanGroups };
+    const payload = { name, price, desc, images: pendingProductImages };
 
     try{
       if(editingProductId){
@@ -2744,7 +2757,6 @@
   function openProductModal(product, biz){
     const root = document.getElementById('productModalRoot');
     const images = (product.images && product.images.length) ? product.images : (product.image ? [product.image] : []);
-    const groups = product.variantGroups || [];
 
     const badgeHtml = openStatusBadge(biz.isOpenNow).replace('open-badge', 'open-badge open-badge-float');
     const mainImgHtml = images.length
@@ -2753,21 +2765,6 @@
     const thumbsHtml = images.length > 1
       ? `<div class="modal-thumbs">${images.map((img, i) => `<img src="${img}" data-i="${i}" class="modal-thumb${i===0?' active':''}" alt="">`).join('')}</div>`
       : '';
-
-    const groupsHtml = groups.map((group, gi) => `
-      <div class="modal-variant-group">
-        <p class="modal-variant-group-name">${escapeHtml(group.name)}<span class="field-hint"> — ${group.type === 'multiple' ? 'elegí una o más' : 'elegí una'}</span></p>
-        ${group.options.map((opt, oi) => `
-          <label class="modal-variant-option">
-            <span style="display:flex; align-items:center; gap:8px;">
-              <input type="${group.type === 'multiple' ? 'checkbox' : 'radio'}" name="modalGroup${gi}" data-gi="${gi}" data-oi="${oi}" data-price="${opt.price}" ${oi===0 && group.type!=='multiple' ? 'checked' : ''}>
-              ${escapeHtml(opt.name)}
-            </span>
-            <span class="mono">${opt.price ? `+$${opt.price}` : ''}</span>
-          </label>
-        `).join('')}
-      </div>
-    `).join('');
 
     root.innerHTML = `
       <div class="product-modal-overlay" id="productModalOverlay">
@@ -2783,7 +2780,6 @@
             <span class="pprice" id="modalTotalPrice">$${escapeHtml(String(product.price))}</span>
             ${product.desc ? `<p class="pdesc">${escapeHtml(product.desc)}</p>` : ''}
             <div class="product-modal-biz">De <strong>${escapeHtml(biz.name)}</strong> — ${escapeHtml(biz.category)}</div>
-            ${groupsHtml}
             <div id="modalCtaWrap"></div>
           </div>
         </div>
@@ -2800,16 +2796,7 @@
     });
 
     function currentSelections(){
-      const chosen = [];
-      let extra = 0;
-      groups.forEach((group, gi) => {
-        root.querySelectorAll(`input[data-gi="${gi}"]:checked`).forEach(input => {
-          const opt = group.options[parseInt(input.dataset.oi, 10)];
-          chosen.push(`${group.name}: ${opt.name}`);
-          extra += opt.price;
-        });
-      });
-      return { chosen, total: product.price + extra };
+      return { chosen: [], total: product.price };
     }
 
     function updateModal(){
@@ -2828,9 +2815,6 @@
       }
     }
 
-    root.querySelectorAll('.modal-variant-group input').forEach(input => {
-      input.addEventListener('change', updateModal);
-    });
     updateModal();
 
     const overlay = document.getElementById('productModalOverlay');
@@ -2968,6 +2952,97 @@
   }
 
   let vipBannerTopTimer = null;
+
+  /* ---------- HACÉ TUS COMPRAS ACÁ ---------- */
+  let publicStores = [];
+  let selectedStoreId = '';
+
+  async function loadPublicStores(){
+    try{
+      publicStores = await apiFetch('/stores');
+    }catch(e){
+      publicStores = [];
+    }
+    renderStoreGrid();
+  }
+
+  function renderStoreGrid(){
+    const grid = document.getElementById('storeGrid');
+    if(!grid) return;
+    if(publicStores.length === 0){
+      grid.innerHTML = `<p class="vip-banner-empty">Todavía no hay negocios cargados acá.</p>`;
+      return;
+    }
+    grid.innerHTML = publicStores.map(s => `
+      <div class="store-card${s.id === selectedStoreId ? ' selected' : ''}" data-id="${s.id}">
+        ${s.imageUrl ? `<img src="${s.imageUrl}" alt="">` : `<div class="store-card-noimg" style="height:64px;border-radius:8px;background:var(--line);margin-bottom:6px;"></div>`}
+        <span class="store-card-name">${escapeHtml(s.name)}</span>
+        <span class="store-card-cat">${escapeHtml(s.category)}</span>
+      </div>
+    `).join('');
+    grid.querySelectorAll('.store-card').forEach(card => {
+      card.addEventListener('click', () => {
+        selectedStoreId = card.dataset.id;
+        document.getElementById('scStoreId').value = selectedStoreId;
+        grid.querySelectorAll('.store-card').forEach(c => c.classList.toggle('selected', c.dataset.id === selectedStoreId));
+      });
+    });
+  }
+
+  const shoppingForm = document.getElementById('shoppingForm');
+  const shoppingMsg = document.getElementById('shoppingMsg');
+
+  shoppingForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    shoppingMsg.textContent = '';
+    shoppingMsg.className = 'form-msg';
+
+    const storeId = selectedStoreId;
+    const address = document.getElementById('scAddress').value.trim();
+    const shoppingList = document.getElementById('scList').value.trim();
+    const phone = document.getElementById('scPhone').value.trim();
+
+    if(!storeId){
+      shoppingMsg.textContent = 'Elegí un negocio de la lista.';
+      shoppingMsg.classList.add('error');
+      return;
+    }
+    if(!address || !shoppingList || !phone){
+      shoppingMsg.textContent = 'Completá todos los campos.';
+      shoppingMsg.classList.add('error');
+      return;
+    }
+
+    try{
+      await apiFetch('/shopping-trips', {
+        method: 'POST',
+        body: JSON.stringify({ storeId, address, shoppingList, phone })
+      });
+
+      const store = publicStores.find(s => s.id === storeId);
+
+      if(siteSettings.cadeteriaWhatsapp){
+        const digits = siteSettings.cadeteriaWhatsapp.replace(/[^0-9]/g,'');
+        let message = `Hola! Quiero pedir compras por Cadetería Centro.\n`
+          + `Negocio: ${store ? store.name : ''}\n`
+          + `Dirección de entrega: ${address}\n`
+          + `Lista: ${shoppingList}\n`
+          + `Mi teléfono: ${phone}`;
+        window.open(`https://wa.me/${digits}?text=${encodeURIComponent(message)}`, '_blank');
+        shoppingMsg.textContent = 'Pedido guardado. Te llevamos a WhatsApp para coordinar con un cadete.';
+      } else {
+        shoppingMsg.textContent = 'Pedido enviado. Un cadete se va a contactar con vos.';
+      }
+      shoppingMsg.classList.add('success');
+      shoppingForm.reset();
+      selectedStoreId = '';
+      document.getElementById('scStoreId').value = '';
+      renderStoreGrid();
+    }catch(err){
+      shoppingMsg.textContent = err.message;
+      shoppingMsg.classList.add('error');
+    }
+  });
 
   function renderVipTopBanner(){
     const section = document.getElementById('vipTopSection');
@@ -3137,6 +3212,7 @@
 
     await renderMembershipList();
     loadVipBanners();
+    loadStores();
   }
 
   const STATUS_LABELS = { trial: 'Prueba', active: 'Activo', suspended: 'Suspendido', cancelled: 'Dado de baja' };
@@ -3411,6 +3487,162 @@
     }finally{
       vbSubmitBtn.disabled = false;
       vbSubmitBtn.textContent = textoOriginal;
+    }
+  });
+
+  /* ---------- Panel admin: gestión del catálogo de súper/kioscos ---------- */
+  let stores = [];          // listado completo (admin) traído del backend
+  let storeEditId = null;   // si no es null, el form está editando este negocio en vez de crear uno nuevo
+  let storeImageDataUrl = ''; // imagen elegida en el form, ya convertida a data URL
+
+  const storeForm = document.getElementById('storeForm');
+  const stFormMsg = document.getElementById('stFormMsg');
+  const stSubmitBtn = document.getElementById('stSubmitBtn');
+  const stCancelEditBtn = document.getElementById('stCancelEditBtn');
+  const stImageInput = document.getElementById('stImage');
+  const stImagePreview = document.getElementById('stImagePreview');
+
+  async function loadStores(){
+    const listEl = document.getElementById('storeList');
+    listEl.innerHTML = `<p class="vip-banner-empty">Cargando…</p>`;
+    try{
+      stores = await apiFetch('/admin/stores');
+      renderStoreList();
+    }catch(err){
+      listEl.innerHTML = `<p class="vip-banner-empty">No pudimos cargar el catálogo.</p>`;
+    }
+  }
+
+  function renderStoreList(){
+    const listEl = document.getElementById('storeList');
+    if(stores.length === 0){
+      listEl.innerHTML = `<p class="vip-banner-empty">Todavía no cargaste ningún negocio.</p>`;
+      return;
+    }
+    listEl.innerHTML = stores.map(s => `
+      <div class="vip-banner-row" data-id="${s.id}">
+        <div class="vip-banner-thumb"><img src="${s.imageUrl}" alt=""></div>
+        <div class="vip-banner-info">
+          <p class="name">${escapeHtml(s.name)}</p>
+          <p class="meta">${escapeHtml(s.category)}${s.address ? ' · ' + escapeHtml(s.address) : ''}</p>
+          <span class="vip-banner-badge ${s.active ? 'live' : 'off'}">${s.active ? 'Visible' : 'Desactivado'}</span>
+        </div>
+        <div class="vip-banner-actions">
+          <button type="button" class="st-edit" data-id="${s.id}">Editar</button>
+          <button type="button" class="danger st-delete" data-id="${s.id}">Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+
+    listEl.querySelectorAll('.st-edit').forEach(btn => {
+      btn.addEventListener('click', () => cargarStoreEnForm(btn.dataset.id));
+    });
+    listEl.querySelectorAll('.st-delete').forEach(btn => {
+      btn.addEventListener('click', () => eliminarStore(btn.dataset.id));
+    });
+  }
+
+  function cargarStoreEnForm(id){
+    const s = stores.find(x => x.id === id);
+    if(!s) return;
+    storeEditId = id;
+    storeImageDataUrl = s.imageUrl;
+
+    document.getElementById('stId').value = s.id;
+    document.getElementById('stName').value = s.name;
+    document.getElementById('stCategory').value = s.category;
+    document.getElementById('stAddress').value = s.address || '';
+    document.getElementById('stActive').checked = !!s.active;
+    stImagePreview.innerHTML = s.imageUrl ? `<div class="banner-img-item"><img src="${s.imageUrl}" alt=""></div>` : '';
+    stImageInput.value = '';
+
+    document.getElementById('storeFormTitle').textContent = 'Editar negocio';
+    stSubmitBtn.textContent = 'Guardar cambios';
+    stCancelEditBtn.hidden = false;
+    stFormMsg.textContent = '';
+    stFormMsg.className = 'form-msg';
+    storeForm.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function resetStoreForm(){
+    storeEditId = null;
+    storeImageDataUrl = '';
+    storeForm.reset();
+    document.getElementById('stId').value = '';
+    document.getElementById('stActive').checked = true;
+    stImagePreview.innerHTML = '';
+    document.getElementById('storeFormTitle').textContent = 'Agregar negocio nuevo';
+    stSubmitBtn.textContent = 'Guardar negocio';
+    stCancelEditBtn.hidden = true;
+    stFormMsg.textContent = '';
+    stFormMsg.className = 'form-msg';
+  }
+
+  stCancelEditBtn.addEventListener('click', resetStoreForm);
+
+  stImageInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      storeImageDataUrl = await fileToResizedDataUrl(file, 700, 0.8);
+      stImagePreview.innerHTML = `<div class="banner-img-item"><img src="${storeImageDataUrl}" alt=""></div>`;
+    }catch(err){
+      stFormMsg.textContent = 'No pudimos leer esa imagen.';
+      stFormMsg.className = 'form-msg error';
+    }
+  });
+
+  async function eliminarStore(id){
+    if(!confirm('¿Eliminar este negocio del catálogo? No se puede deshacer.')) return;
+    try{
+      await apiFetch('/admin/stores/' + id, { method: 'DELETE' });
+      if(storeEditId === id) resetStoreForm();
+      await loadStores();
+    }catch(err){
+      alert('No pudimos eliminar el negocio: ' + err.message);
+    }
+  }
+
+  storeForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    stFormMsg.textContent = '';
+    stFormMsg.className = 'form-msg';
+
+    const name = document.getElementById('stName').value.trim();
+    if(!name){
+      stFormMsg.textContent = 'Completá el nombre del negocio.';
+      stFormMsg.className = 'form-msg error';
+      return;
+    }
+
+    const payload = {
+      name,
+      category: document.getElementById('stCategory').value,
+      address: document.getElementById('stAddress').value.trim(),
+      imageUrl: storeImageDataUrl,
+      active: document.getElementById('stActive').checked,
+    };
+
+    stSubmitBtn.disabled = true;
+    const textoOriginalSt = stSubmitBtn.textContent;
+    stSubmitBtn.textContent = 'Guardando…';
+
+    try{
+      if(storeEditId){
+        await apiFetch('/admin/stores/' + storeEditId, { method: 'PUT', body: JSON.stringify(payload) });
+      } else {
+        await apiFetch('/admin/stores', { method: 'POST', body: JSON.stringify(payload) });
+      }
+      resetStoreForm();
+      await loadStores();
+      // Refresca también el catálogo público, por si el admin quiere chequear el resultado sin recargar.
+      await loadPublicStores();
+    }catch(err){
+      stFormMsg.textContent = err.message || 'No pudimos guardar el negocio.';
+      stFormMsg.className = 'form-msg error';
+    }finally{
+      stSubmitBtn.disabled = false;
+      stSubmitBtn.textContent = textoOriginalSt;
     }
   });
 
@@ -3730,6 +3962,7 @@
     renderVipTopBanner();
     renderVipHeroBanner();
     renderVipBottomBanner();
+    await loadPublicStores();
     await render();
     // el script de Google carga async — reintentamos un toque hasta que esté listo
     let tries = 0;
