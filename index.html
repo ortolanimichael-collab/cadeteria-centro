@@ -292,16 +292,33 @@
   .vb-pos-btn:hover{border-color:var(--flame,#e2472a);}
   .vb-pos-btn.active{background:var(--flame,#e2472a);border-color:var(--flame,#e2472a);}
 
-  .store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:10px;}
+  .store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:12px;}
   .store-card{
-    border:2px solid var(--line);border-radius:12px;padding:8px;text-align:center;cursor:pointer;
-    background:var(--panel);transition:border-color .15s;
+    border:none;border-radius:14px;padding:6px;text-align:center;cursor:pointer;
+    background:transparent;
   }
-  .store-card:hover{border-color:var(--ink-soft);}
-  .store-card.selected{border-color:var(--flame);}
-  .store-card img{width:100%;height:64px;object-fit:cover;border-radius:8px;margin-bottom:6px;background:var(--line);display:block;}
-  .store-card .store-card-name{font-size:0.8rem;font-weight:700;display:block;line-height:1.2;}
-  .store-card .store-card-cat{font-size:0.7rem;color:var(--ink-soft);}
+  .store-card-avatar{
+    width:72px;height:72px;border-radius:50%;margin:0 auto 6px;overflow:hidden;
+    border:3px solid transparent;transition:border-color .15s, box-shadow .15s;
+    display:flex;align-items:center;justify-content:center;background:var(--line);
+  }
+  .store-card.selected .store-card-avatar{border-color:var(--flame,#e2472a);box-shadow:0 0 0 2px rgba(226,71,42,0.18);}
+  .store-card-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
+  .store-card .store-card-name{font-size:0.78rem;font-weight:700;display:block;line-height:1.2;}
+  .store-card .store-card-cat{font-size:0.68rem;color:var(--ink-soft);}
+
+  .shopping-panel-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:24px;align-items:start;}
+  @media (max-width:760px){ .shopping-panel-grid{grid-template-columns:1fr;} }
+  .quick-product-list{
+    max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;
+    padding:6px;display:flex;flex-direction:column;gap:2px;
+  }
+  .quick-product-btn{
+    display:block;width:100%;text-align:left;background:none;border:none;border-radius:8px;
+    padding:9px 10px;font-size:0.88rem;cursor:pointer;color:var(--ink);
+  }
+  .quick-product-btn:hover{background:var(--bg);}
+  .quick-product-btn:active{background:var(--line);}
   .vip-hero-banner{
     display:block;border-radius:var(--radius-card);overflow:hidden;
     position:relative;background:var(--line);
@@ -892,37 +909,49 @@
       </div>
 
       <div class="panel">
-        <h3>Elegí dónde comprar</h3>
-        <p class="sub">Tocá el negocio y completá el resto.</p>
-        <div class="store-grid" id="storeGrid">
-          <p class="vip-banner-empty">Cargando negocios…</p>
-        </div>
+        <div class="shopping-panel-grid">
+          <div>
+            <h3>Elegí dónde comprar</h3>
+            <p class="sub">Tocá el negocio y completá el resto.</p>
+            <div class="store-grid" id="storeGrid">
+              <p class="vip-banner-empty">Cargando negocios…</p>
+            </div>
 
-        <form id="shoppingForm" style="margin-top:18px;">
-          <input type="hidden" id="scStoreId" value="">
-          <div class="form-row full">
-            <div>
-              <label for="scAddress">Dirección de entrega</label>
-              <input type="text" id="scAddress" required placeholder="¿Dónde te lo llevamos?">
+            <form id="shoppingForm" style="margin-top:18px;">
+              <input type="hidden" id="scStoreId" value="">
+              <div class="form-row full">
+                <div>
+                  <label for="scAddress">Dirección de entrega</label>
+                  <input type="text" id="scAddress" required placeholder="¿Dónde te lo llevamos?">
+                </div>
+              </div>
+              <div class="form-row full">
+                <div>
+                  <label for="scList">Lista de compras</label>
+                  <textarea id="scList" required placeholder="Ej. 1 leche, 1 paquete de fideos, 2 pan francés..."></textarea>
+                </div>
+              </div>
+              <div class="form-row full">
+                <div>
+                  <label for="scPhone">Teléfono de contacto</label>
+                  <input type="tel" id="scPhone" required placeholder="Ej. 351 555 1234">
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-flame">Pedir compras</button>
+                <span class="form-msg" id="shoppingMsg"></span>
+              </div>
+            </form>
+          </div>
+
+          <div>
+            <h3>Productos rápidos</h3>
+            <p class="sub">Tocá uno para agregarlo a tu lista.</p>
+            <div class="quick-product-list" id="quickProductList">
+              <p class="vip-banner-empty">Cargando…</p>
             </div>
           </div>
-          <div class="form-row full">
-            <div>
-              <label for="scList">Lista de compras</label>
-              <textarea id="scList" required placeholder="Ej. 1 leche, 1 paquete de fideos, 2 pan francés..."></textarea>
-            </div>
-          </div>
-          <div class="form-row full">
-            <div>
-              <label for="scPhone">Teléfono de contacto</label>
-              <input type="tel" id="scPhone" required placeholder="Ej. 351 555 1234">
-            </div>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="btn btn-flame">Pedir compras</button>
-            <span class="form-msg" id="shoppingMsg"></span>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   </section>
@@ -1634,6 +1663,37 @@
             <button type="submit" class="btn btn-flame" id="stSubmitBtn">Guardar negocio</button>
             <button type="button" class="btn-link" id="stCancelEditBtn" hidden>Cancelar edición</button>
             <span class="form-msg" id="stFormMsg"></span>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel" style="margin-top:24px;">
+        <h3>Productos rápidos ("Hacé tus compras acá")</h3>
+        <p class="sub">Lista general (no es por negocio) que el cliente ve al lado del formulario — toca uno y se agrega solo a su lista.</p>
+
+        <div id="qpList" class="vip-banner-list">
+          <p class="vip-banner-empty">Cargando…</p>
+        </div>
+
+        <div class="divider"></div>
+        <form id="qpForm">
+          <input type="hidden" id="qpId" value="">
+          <div class="form-row">
+            <div>
+              <label for="qpName">Nombre del producto</label>
+              <input type="text" id="qpName" required placeholder="Ej. Leche">
+            </div>
+            <div>
+              <label style="display:flex; align-items:center; gap:8px; font-weight:500; margin-top:26px;">
+                <input type="checkbox" id="qpActive" style="width:auto;" checked>
+                Activo
+              </label>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-flame" id="qpSubmitBtn">Agregar producto</button>
+            <button type="button" class="btn-link" id="qpCancelEditBtn" hidden>Cancelar edición</button>
+            <span class="form-msg" id="qpFormMsg"></span>
           </div>
         </form>
       </div>
@@ -2975,7 +3035,9 @@
     }
     grid.innerHTML = publicStores.map(s => `
       <div class="store-card${s.id === selectedStoreId ? ' selected' : ''}" data-id="${s.id}">
-        ${s.imageUrl ? `<img src="${s.imageUrl}" alt="">` : `<div class="store-card-noimg" style="height:64px;border-radius:8px;background:var(--line);margin-bottom:6px;"></div>`}
+        <div class="store-card-avatar">
+          ${s.imageUrl ? `<img src="${s.imageUrl}" alt="">` : ''}
+        </div>
         <span class="store-card-name">${escapeHtml(s.name)}</span>
         <span class="store-card-cat">${escapeHtml(s.category)}</span>
       </div>
@@ -2991,6 +3053,39 @@
 
   const shoppingForm = document.getElementById('shoppingForm');
   const shoppingMsg = document.getElementById('shoppingMsg');
+
+  let quickProducts = [];
+
+  async function loadQuickProducts(){
+    try{
+      quickProducts = await apiFetch('/shopping-products');
+    }catch(e){
+      quickProducts = [];
+    }
+    renderQuickProductList();
+  }
+
+  function renderQuickProductList(){
+    const list = document.getElementById('quickProductList');
+    if(!list) return;
+    if(quickProducts.length === 0){
+      list.innerHTML = `<p class="vip-banner-empty">Todavía no hay productos cargados.</p>`;
+      return;
+    }
+    list.innerHTML = quickProducts.map(p => `
+      <button type="button" class="quick-product-btn" data-name="${escapeHtml(p.name)}">${escapeHtml(p.name)}</button>
+    `).join('');
+    list.querySelectorAll('.quick-product-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const textarea = document.getElementById('scList');
+        const actual = textarea.value;
+        const linea = btn.dataset.name;
+        textarea.value = actual && !actual.endsWith('\n') && actual.trim() !== '' ? `${actual}\n${linea}` : `${actual}${linea}`;
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = textarea.value.length;
+      });
+    });
+  }
 
   shoppingForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -3213,6 +3308,7 @@
     await renderMembershipList();
     loadVipBanners();
     loadStores();
+    loadQuickProductsAdmin();
   }
 
   const STATUS_LABELS = { trial: 'Prueba', active: 'Activo', suspended: 'Suspendido', cancelled: 'Dado de baja' };
@@ -3646,6 +3742,127 @@
     }
   });
 
+  /* ---------- Panel admin: gestión de productos rápidos ---------- */
+  let quickProductsAdmin = [];
+  let qpEditId = null;
+
+  const qpForm = document.getElementById('qpForm');
+  const qpFormMsg = document.getElementById('qpFormMsg');
+  const qpSubmitBtn = document.getElementById('qpSubmitBtn');
+  const qpCancelEditBtn = document.getElementById('qpCancelEditBtn');
+
+  async function loadQuickProductsAdmin(){
+    const listEl = document.getElementById('qpList');
+    listEl.innerHTML = `<p class="vip-banner-empty">Cargando…</p>`;
+    try{
+      quickProductsAdmin = await apiFetch('/admin/shopping-products');
+      renderQuickProductsAdminList();
+    }catch(err){
+      listEl.innerHTML = `<p class="vip-banner-empty">No pudimos cargar los productos.</p>`;
+    }
+  }
+
+  function renderQuickProductsAdminList(){
+    const listEl = document.getElementById('qpList');
+    if(quickProductsAdmin.length === 0){
+      listEl.innerHTML = `<p class="vip-banner-empty">Todavía no cargaste ningún producto.</p>`;
+      return;
+    }
+    listEl.innerHTML = quickProductsAdmin.map(p => `
+      <div class="vip-banner-row" data-id="${p.id}">
+        <div class="vip-banner-info">
+          <p class="name">${escapeHtml(p.name)}</p>
+          <span class="vip-banner-badge ${p.active ? 'live' : 'off'}">${p.active ? 'Visible' : 'Desactivado'}</span>
+        </div>
+        <div class="vip-banner-actions">
+          <button type="button" class="qp-edit" data-id="${p.id}">Editar</button>
+          <button type="button" class="danger qp-delete" data-id="${p.id}">Eliminar</button>
+        </div>
+      </div>
+    `).join('');
+
+    listEl.querySelectorAll('.qp-edit').forEach(btn => {
+      btn.addEventListener('click', () => cargarQuickProductEnForm(btn.dataset.id));
+    });
+    listEl.querySelectorAll('.qp-delete').forEach(btn => {
+      btn.addEventListener('click', () => eliminarQuickProduct(btn.dataset.id));
+    });
+  }
+
+  function cargarQuickProductEnForm(id){
+    const p = quickProductsAdmin.find(x => x.id === id);
+    if(!p) return;
+    qpEditId = id;
+    document.getElementById('qpId').value = p.id;
+    document.getElementById('qpName').value = p.name;
+    document.getElementById('qpActive').checked = !!p.active;
+    qpSubmitBtn.textContent = 'Guardar cambios';
+    qpCancelEditBtn.hidden = false;
+    qpFormMsg.textContent = '';
+    qpFormMsg.className = 'form-msg';
+    qpForm.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function resetQuickProductForm(){
+    qpEditId = null;
+    qpForm.reset();
+    document.getElementById('qpId').value = '';
+    document.getElementById('qpActive').checked = true;
+    qpSubmitBtn.textContent = 'Agregar producto';
+    qpCancelEditBtn.hidden = true;
+    qpFormMsg.textContent = '';
+    qpFormMsg.className = 'form-msg';
+  }
+
+  qpCancelEditBtn.addEventListener('click', resetQuickProductForm);
+
+  async function eliminarQuickProduct(id){
+    if(!confirm('¿Eliminar este producto de la lista rápida? No se puede deshacer.')) return;
+    try{
+      await apiFetch('/admin/shopping-products/' + id, { method: 'DELETE' });
+      if(qpEditId === id) resetQuickProductForm();
+      await loadQuickProductsAdmin();
+    }catch(err){
+      alert('No pudimos eliminar el producto: ' + err.message);
+    }
+  }
+
+  qpForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    qpFormMsg.textContent = '';
+    qpFormMsg.className = 'form-msg';
+
+    const name = document.getElementById('qpName').value.trim();
+    if(!name){
+      qpFormMsg.textContent = 'Completá el nombre del producto.';
+      qpFormMsg.className = 'form-msg error';
+      return;
+    }
+
+    const payload = { name, active: document.getElementById('qpActive').checked };
+
+    qpSubmitBtn.disabled = true;
+    const textoOriginalQp = qpSubmitBtn.textContent;
+    qpSubmitBtn.textContent = 'Guardando…';
+
+    try{
+      if(qpEditId){
+        await apiFetch('/admin/shopping-products/' + qpEditId, { method: 'PUT', body: JSON.stringify(payload) });
+      } else {
+        await apiFetch('/admin/shopping-products', { method: 'POST', body: JSON.stringify(payload) });
+      }
+      resetQuickProductForm();
+      await loadQuickProductsAdmin();
+      await loadQuickProducts();
+    }catch(err){
+      qpFormMsg.textContent = err.message || 'No pudimos guardar el producto.';
+      qpFormMsg.className = 'form-msg error';
+    }finally{
+      qpSubmitBtn.disabled = false;
+      qpSubmitBtn.textContent = textoOriginalQp;
+    }
+  });
+
   ahImageInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files || []);
     if(files.length === 0) return;
@@ -3963,6 +4180,7 @@
     renderVipHeroBanner();
     renderVipBottomBanner();
     await loadPublicStores();
+    await loadQuickProducts();
     await render();
     // el script de Google carga async — reintentamos un toque hasta que esté listo
     let tries = 0;
