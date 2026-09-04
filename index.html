@@ -61,13 +61,13 @@
     padding:16px 0;
   }
   .brand{
-    display:flex;align-items:center;gap:14px;
+    display:flex;align-items:center;gap:10px;
     font-family:var(--font-display);
-    font-weight:700;font-size:1.5rem;
+    font-weight:700;font-size:1.3rem;
     text-decoration:none;color:var(--ink);
   }
   .brand-mark{
-    width:60px;height:60px;border-radius:15px;
+    width:34px;height:34px;border-radius:9px;
     background:var(--flame);
     display:flex;align-items:center;justify-content:center;
     flex-shrink:0;overflow:hidden;
@@ -88,7 +88,7 @@
   }
   .btn-link:hover{color:var(--ink);}
 
-  .promo-bar{background:var(--navy);color:#fff;font-size:1.7rem;font-weight:600;padding:18px 0;overflow:hidden;white-space:nowrap;position:relative;}
+  .promo-bar{background:var(--navy);color:#fff;font-size:0.85rem;padding:9px 0;overflow:hidden;white-space:nowrap;position:relative;}
   .promo-bar-track{display:inline-block;padding-left:100%;animation:promoMarquee 18s linear infinite;}
   @keyframes promoMarquee{
     from{ transform:translateX(0); }
@@ -187,25 +187,6 @@
   .carousel-dot.active{background:#fff;}
 
   /* ---------- LISTINGS ---------- */
-  section.category-nav{padding:8px 0 28px;}
-  .category-nav-row{
-    display:flex;gap:22px;overflow-x:auto;padding-bottom:4px;
-    scrollbar-width:none;
-  }
-  .category-nav-row::-webkit-scrollbar{display:none;}
-  .category-tile{
-    display:flex;flex-direction:column;align-items:center;gap:8px;
-    flex-shrink:0;background:none;border:none;cursor:pointer;
-    font-family:var(--font-body);padding:0;width:78px;
-  }
-  .category-tile-icon{
-    width:66px;height:66px;border-radius:20px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:1.8rem;transition:transform .15s ease;
-  }
-  .category-tile:hover .category-tile-icon{transform:translateY(-3px);}
-  .category-tile.active .category-tile-icon{box-shadow:0 0 0 2.5px var(--navy);}
-  .category-tile-label{font-size:0.8rem;font-weight:600;color:var(--ink);text-align:center;}
   section.listings{padding:56px 0 64px;}
   .section-head{
     display:flex;align-items:baseline;justify-content:space-between;
@@ -244,16 +225,6 @@
     text-transform:uppercase;letter-spacing:0.03em;border:1px solid rgba(230,70,42,0.22);
   }
   .biz-cat::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--flame-dark);flex-shrink:0;}
-  .open-badge{
-    font-size:0.7rem;font-weight:700;padding:3px 9px;border-radius:var(--radius-pill);
-    text-transform:uppercase;letter-spacing:0.02em;white-space:nowrap;display:inline-block;
-  }
-  .open-badge.open-yes{background:rgba(30,122,61,0.14);color:#1E7A3D;}
-  .open-badge.open-no{background:rgba(20,24,27,0.1);color:var(--ink-soft);}
-  .open-badge-float{
-    position:absolute;top:10px;left:10px;z-index:2;
-    box-shadow:0 2px 6px rgba(20,24,27,0.15);
-  }
   .biz-desc{color:var(--ink-soft);font-size:0.92rem;margin:0;flex:1;}
   .biz-meta{display:flex;flex-direction:column;gap:4px;font-size:0.85rem;color:var(--ink-soft);}
   .biz-products{
@@ -273,6 +244,56 @@
   }
   .empty-state p{color:var(--ink-soft);margin:8px 0 20px;}
   .empty-state h3{font-family:var(--font-display);margin:0;font-size:1.3rem;}
+
+  /* ---------- BANNERS VIP (publicidad paga) ---------- */
+  .vip-hero-section{margin-bottom:8px;}
+  .vip-hero-banner{
+    display:block;border-radius:var(--radius-card);overflow:hidden;
+    position:relative;background:var(--line);
+  }
+  .vip-hero-banner img{width:100%;max-height:220px;object-fit:cover;display:block;}
+  .vip-ad-tag{
+    position:absolute;top:10px;left:10px;
+    background:rgba(20,24,27,0.62);color:#fff;
+    font-size:0.68rem;font-weight:600;letter-spacing:0.03em;text-transform:uppercase;
+    padding:4px 9px;border-radius:var(--radius-pill);
+  }
+  a.vip-grid-banner{
+    grid-column:1/-1;display:block;border-radius:var(--radius-card);overflow:hidden;
+    position:relative;background:var(--line);
+  }
+  a.vip-grid-banner img{width:100%;max-height:180px;object-fit:cover;display:block;}
+
+  /* ---------- Panel admin: gestión de banners VIP ---------- */
+  .vip-banner-row{
+    display:flex;align-items:center;gap:14px;
+    padding:12px 0;border-bottom:1px solid var(--line);
+  }
+  .vip-banner-row:last-child{border-bottom:none;}
+  .vip-banner-thumb{
+    width:84px;height:60px;border-radius:8px;overflow:hidden;flex-shrink:0;
+    border:1px solid var(--line);background:var(--bg);
+  }
+  .vip-banner-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .vip-banner-info{flex:1;min-width:0;}
+  .vip-banner-info .name{font-weight:600;font-size:0.92rem;margin:0 0 3px;}
+  .vip-banner-info .meta{font-size:0.78rem;color:var(--ink-soft);margin:0;}
+  .vip-banner-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:0.7rem;font-weight:700;padding:3px 9px;border-radius:var(--radius-pill);
+    text-transform:uppercase;letter-spacing:0.02em;margin-top:4px;
+  }
+  .vip-banner-badge.live{background:rgba(30,122,61,0.12);color:#1E7A3D;}
+  .vip-banner-badge.off{background:rgba(75,82,89,0.1);color:var(--ink-soft);}
+  .vip-banner-actions{display:flex;gap:8px;flex-shrink:0;}
+  .vip-banner-actions button{
+    background:transparent;border:1px solid var(--line);border-radius:6px;
+    padding:6px 10px;font-size:0.78rem;cursor:pointer;color:var(--ink);
+  }
+  .vip-banner-actions button:hover{border-color:var(--ink);}
+  .vip-banner-actions button.danger{color:var(--flame-dark);border-color:rgba(230,70,42,0.3);}
+  .vip-banner-empty{font-size:0.85rem;color:var(--ink-soft);padding:12px 0;}
+  #vipBannerForm .form-row.dates{grid-template-columns:1fr 1fr;}
 
   /* ---------- HOW IT WORKS ---------- */
   section.how{background:var(--navy);color:#fff;padding:64px 0;}
@@ -401,12 +422,6 @@
   }
   .panel-header h1{font-family:var(--font-display);font-size:1.9rem;margin:0 0 6px;}
   .panel-header p{color:var(--ink-soft);margin:0;font-size:0.95rem;}
-  .membership-banner{
-    background:rgba(230,70,42,0.08);border:1.5px solid rgba(230,70,42,0.3);
-    border-radius:12px;padding:16px 20px;margin-bottom:24px;
-    color:var(--flame-dark);font-size:0.92rem;font-weight:500;
-  }
-  fieldset.locked{opacity:0.55;pointer-events:none;}
   .panel-two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
   .avatar-preview-row{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
   .avatar-preview{
@@ -430,77 +445,7 @@
   }
   .stat-item strong{font-family:var(--font-display);font-size:1.1rem;}
 
-  .membership-row{
-    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-    padding:14px 0;border-bottom:1px solid var(--line);
-  }
-  .membership-row:last-child{border-bottom:none;}
-  .membership-info{flex:1;min-width:180px;}
-  .membership-info strong{display:block;font-size:0.95rem;}
-  .membership-info span{font-size:0.82rem;color:var(--ink-soft);}
-  .membership-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-  .status-pill{
-    font-size:0.72rem;font-weight:700;padding:4px 11px;border-radius:var(--radius-pill);
-    text-transform:uppercase;letter-spacing:0.02em;white-space:nowrap;
-  }
-  .status-pill.trial{background:rgba(244,183,64,0.22);color:#8A5F00;}
-  .status-pill.active{background:rgba(30,122,61,0.14);color:#1E7A3D;}
-  .status-pill.suspended{background:rgba(230,70,42,0.12);color:var(--flame-dark);}
-  .status-pill.cancelled{background:rgba(20,24,27,0.1);color:var(--ink-soft);}
-  .mship-btn{
-    font-size:0.78rem;font-weight:600;padding:6px 12px;border-radius:var(--radius-pill);
-    border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;
-  }
-  .mship-btn:hover{border-color:var(--ink);}
-  .mship-btn.active-state{border-color:var(--navy);background:var(--navy);color:#fff;}
-
   .banner-img-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
-  .prod-gallery{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
-  .prod-gallery-item{position:relative;width:64px;height:64px;border-radius:8px;overflow:hidden;border:1px solid var(--line);}
-  .prod-gallery-item img{width:100%;height:100%;object-fit:cover;display:block;}
-  .prod-gallery-item button{
-    position:absolute;top:2px;right:2px;width:17px;height:17px;border-radius:50%;
-    background:rgba(20,24,27,0.75);color:#fff;border:none;cursor:pointer;
-    font-size:0.65rem;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;
-  }
-  .map-preview{
-    height:180px;border-radius:10px;overflow:hidden;border:1px solid var(--line);
-    background:var(--bg);
-  }
-  .map-preview iframe{width:100%;height:100%;border:0;display:block;}
-  .hours-row{
-    display:flex;align-items:center;gap:10px;padding:7px 0;
-    border-bottom:1px solid var(--line);flex-wrap:wrap;
-  }
-  .hours-row:last-child{border-bottom:none;}
-  .hours-day{width:78px;font-size:0.86rem;font-weight:600;flex-shrink:0;}
-  .hours-closed-label{display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--ink-soft);}
-  .hours-times{display:flex;align-items:center;gap:6px;}
-  .hours-times input[type=time]{width:110px;padding:7px 8px;font-size:0.85rem;}
-  .variant-group-card{
-    border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px;background:var(--bg);
-  }
-  .variant-group-head{display:flex;gap:10px;align-items:flex-end;margin-bottom:10px;}
-  .variant-group-head input{flex:1;}
-  .variant-group-head select{width:170px;flex-shrink:0;}
-  .variant-remove-group{
-    background:none;border:none;color:var(--flame-dark);font-size:0.8rem;cursor:pointer;
-    text-decoration:underline;flex-shrink:0;padding-bottom:11px;
-  }
-  .variant-option-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
-  .variant-option-row input[type=text]{flex:1;}
-  .variant-option-row input[type=number]{width:100px;}
-  .variant-option-row button{
-    background:none;border:none;color:var(--ink-soft);cursor:pointer;font-size:0.9rem;
-    padding:4px;flex-shrink:0;
-  }
-  .variant-option-row button:hover{color:var(--flame-dark);}
-  .hours-display{display:flex;flex-direction:column;gap:2px;margin-top:12px;font-size:0.9rem;}
-  .hours-display-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);}
-  .hours-display-row:last-child{border-bottom:none;}
-  .hours-display-row.today{font-weight:700;color:var(--flame-dark);}
-  .hours-display-row .val{color:var(--ink-soft);}
-  .hours-display-row.today .val{color:var(--flame-dark);}
   .banner-img-item{position:relative;width:84px;height:60px;border-radius:8px;overflow:hidden;border:1px solid var(--line);}
   .banner-img-item img{width:100%;height:100%;object-fit:cover;display:block;}
   .banner-img-item button{
@@ -582,25 +527,10 @@
   .product-modal-biz strong{color:var(--ink);}
   .product-modal-cta{margin-top:20px;}
 
-  .modal-thumbs{display:flex;gap:8px;padding:12px 26px 0;flex-wrap:wrap;}
-  .modal-thumb{
-    width:52px;height:52px;object-fit:cover;border-radius:8px;cursor:pointer;
-    border:2px solid transparent;opacity:0.65;
-  }
-  .modal-thumb.active{border-color:var(--flame);opacity:1;}
-
-  .modal-variant-group{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);}
-  .modal-variant-group-name{font-weight:700;font-size:0.92rem;margin:0 0 8px;}
-  .modal-variant-option{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:7px 0;font-size:0.9rem;cursor:pointer;
-  }
-  .modal-variant-option input{width:auto;margin:0;}
-
   a.result-card{
     background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-card);
     overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:var(--ink);
-    transition:transform .15s ease, box-shadow .15s ease;position:relative;
+    transition:transform .15s ease, box-shadow .15s ease;
   }
   a.result-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,24,27,0.08);}
   .result-img{width:100%;height:140px;object-fit:cover;background:var(--bg);}
@@ -643,8 +573,6 @@
     .profile-head{margin-top:-80px;gap:12px;}
     .profile-avatar{width:200px;height:200px;font-size:3.8rem;border-width:4px;margin-left:-8px;}
     .result-img{height:120px;}
-    .brand-mark{width:44px;height:44px;border-radius:11px;}
-    .promo-bar{font-size:1.05rem;padding:12px 0;}
   }
 </style>
 </head>
@@ -654,7 +582,7 @@
   <div class="wrap header-inner">
     <a href="#/" class="brand" id="brandHomeLink">
       <span class="brand-mark" id="headerBrandMark">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 17a2 2 0 100-4 2 2 0 000 4zM19 17a2 2 0 100-4 2 2 0 000 4z" stroke="#fff" stroke-width="2"/><path d="M5 15V8a1 1 0 011-1h5l5 5h3v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 17a2 2 0 100-4 2 2 0 000 4zM19 17a2 2 0 100-4 2 2 0 000 4z" stroke="#fff" stroke-width="2"/><path d="M5 15V8a1 1 0 011-1h5l5 5h3v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
       </span>
       Cadetería Centro
     </a>
@@ -718,10 +646,11 @@
     </div>
   </section>
 
-  <section class="category-nav">
-    <div class="wrap">
-      <div class="category-nav-row" id="categoryNavRow"></div>
-    </div>
+  <section class="vip-hero-section wrap" id="vipHeroSection" hidden>
+    <a class="vip-hero-banner" id="vipHeroBanner" href="#" target="_blank" rel="noopener">
+      <span class="vip-ad-tag">Publicidad</span>
+      <img id="vipHeroBannerImg" src="" alt="Publicidad">
+    </a>
   </section>
 
   <section class="listings" id="listings">
@@ -772,36 +701,6 @@
             <div>
               <label for="tDesc">Qué hay que llevar</label>
               <textarea id="tDesc" required placeholder="Ej. Un sobre con documentos"></textarea>
-            </div>
-          </div>
-          <div class="form-row">
-            <div>
-              <label for="tSolicitanteRol">Vos en este pedido sos...</label>
-              <select id="tSolicitanteRol">
-                <option value="emisor">Quien envía</option>
-                <option value="destinatario">Quien recibe</option>
-              </select>
-            </div>
-            <div>
-              <label for="tQuienPaga">¿Quién paga el viaje?</label>
-              <select id="tQuienPaga">
-                <option value="emisor">Quien envía</option>
-                <option value="destinatario">Quien recibe</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row full">
-            <div>
-              <label style="display:flex; align-items:center; gap:8px; font-weight:500;">
-                <input type="checkbox" id="tRequiereEfectivo" style="width:auto;">
-                El cadete tiene que pagar algo al retirarlo (se lo cobra a quien lo recibe)
-              </label>
-            </div>
-          </div>
-          <div class="form-row full" id="tMontoWrap" hidden>
-            <div>
-              <label for="tMontoEfectivo">¿Cuánto tiene que llevar el cadete?</label>
-              <input type="text" id="tMontoEfectivo" placeholder="Ej. $3.500">
             </div>
           </div>
           <div class="form-row full">
@@ -1089,8 +988,6 @@
         </div>
       </div>
 
-      <div class="membership-banner" id="membershipBanner" hidden></div>
-
       <div class="panel-two-col">
         <div class="panel">
           <h3>Perfil comercial</h3>
@@ -1122,17 +1019,10 @@
               <div>
                 <label for="pfAddress">Dirección</label>
                 <input type="text" id="pfAddress" placeholder="Calle y número">
-                <span class="field-hint">Al guardar, la ubicamos sola en el mapa.</span>
               </div>
               <div>
                 <label for="pfPhone">Teléfono</label>
                 <input type="tel" id="pfPhone" placeholder="Ej. 351 555 1234">
-              </div>
-            </div>
-            <div class="form-row full" id="pfMapWrap" hidden>
-              <div>
-                <div class="map-preview" id="pfMapPreview"></div>
-                <a href="#" target="_blank" rel="noopener" class="field-hint" id="pfMapLink" style="display:inline-block; margin-top:6px;">Ver en Google Maps</a>
               </div>
             </div>
             <div class="form-row">
@@ -1163,16 +1053,6 @@
                 <input type="text" id="pfFacebook" placeholder="usuario o link">
               </div>
             </div>
-            <div class="form-row full">
-              <div>
-                <label for="pfWebsite">Página oficial</label>
-                <input type="text" id="pfWebsite" placeholder="https://tunegocio.com">
-              </div>
-            </div>
-            <div class="divider"></div>
-            <label style="margin-bottom:10px;">Horarios de atención</label>
-            <div id="pfHoursEditor"></div>
-            <div class="divider"></div>
             <div class="form-actions">
               <button type="submit" class="btn btn-navy">Guardar perfil</button>
               <span class="form-msg" id="profileMsg"></span>
@@ -1202,17 +1082,15 @@
             </div>
             <div class="form-row full">
               <div>
-                <label for="pImage" style="margin-bottom:4px;">Fotos del producto (opcional, podés subir varias)</label>
-                <input type="file" id="pImage" accept="image/*" multiple>
-                <div class="prod-gallery" id="productImgGallery"></div>
+                <div class="avatar-preview-row" style="margin-bottom:8px;">
+                  <div class="prod-thumb" id="productImgPreview" style="width:48px;height:48px;"></div>
+                  <div style="flex:1;">
+                    <label for="pImage" style="margin-bottom:4px;">Foto del producto (opcional)</label>
+                    <input type="file" id="pImage" accept="image/*">
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="divider"></div>
-            <label style="margin-bottom:6px;">Opciones para variar el producto (opcional)</label>
-            <p class="field-hint" style="margin-bottom:10px;">Ej. "¿Con papas?" con las opciones "Con papas" (+$800) y "Sin papas" (+$0). El precio de cada opción se suma al precio base.</p>
-            <div id="variantGroupsEditor"></div>
-            <button type="button" class="btn btn-outline btn-sm" id="addVariantGroupBtn" style="margin-top:6px;">+ Agregar grupo de opciones</button>
-            <div class="divider"></div>
             <div class="form-actions">
               <button type="submit" class="btn btn-flame" id="productSubmitBtn">Agregar producto</button>
               <button type="button" class="btn-link" id="cancelEditBtn" hidden>Cancelar edición</button>
@@ -1241,7 +1119,6 @@
           <h1 id="pubName"></h1>
           <div class="profile-meta-row">
             <span class="biz-cat" id="pubCat" style="margin-top:0;"></span>
-            <span id="pubOpenBadge"></span>
             <span class="dot-sep" id="pubMetaDot1">·</span>
             <span id="pubAddress"></span>
             <span class="dot-sep" id="pubMetaDot2">·</span>
@@ -1251,18 +1128,6 @@
         </div>
       </div>
       <p class="profile-desc" id="pubDesc"></p>
-
-      <div id="pubHoursWrap" hidden>
-        <h2 class="section-title" style="font-size:1.1rem; margin-top:28px;">Horarios de atención</h2>
-        <div class="hours-display" id="pubHours"></div>
-      </div>
-
-      <div id="pubMapSectionWrap" hidden>
-        <h2 class="section-title" style="font-size:1.1rem; margin-top:28px;">Ubicación</h2>
-        <div class="map-preview" id="pubMapPreview" style="height:220px;"></div>
-        <a href="#" target="_blank" rel="noopener" class="field-hint" id="pubMapLink" style="display:inline-block; margin-top:6px;">Ver en Google Maps</a>
-      </div>
-
       <hr class="feed-divider">
     </div>
 
@@ -1365,35 +1230,74 @@
           </form>
 
           <div class="divider"></div>
-          <h3>Recuperar contraseña de un usuario</h3>
-          <p class="sub">Para cuando el email no le llega — generá el link acá y mandáselo vos por WhatsApp o donde prefieras. Vence en 1 hora.</p>
-          <form id="genResetForm">
-            <div class="form-row full">
-              <div>
-                <label for="grEmail">Email del negocio o cliente</label>
-                <input type="email" id="grEmail" required placeholder="tu@email.com">
-              </div>
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="btn btn-navy">Generar link</button>
-              <span class="form-msg" id="genResetMsg"></span>
-            </div>
-          </form>
-          <div id="genResetResult" hidden>
-            <div class="banner-img-empty" style="margin-top:10px; word-break:break-all; font-size:0.82rem; user-select:all;" id="genResetLink"></div>
-            <button type="button" class="btn btn-outline btn-sm" id="copyResetLinkBtn" style="margin-top:8px;">Copiar link</button>
-          </div>
-
-          <div class="divider"></div>
           <h3>Resumen del sitio</h3>
           <div class="stat-row" id="adminStats"></div>
         </div>
       </div>
 
       <div class="panel" style="margin-top:24px;">
-        <h3>Membresías de negocios</h3>
-        <p class="sub">Activá, suspendé o dá de baja el acceso de cada negocio. Al suspender, su página pública sigue funcionando igual — solo se le bloquea guardar cambios en su panel. Al dar de baja, desaparece del todo de las búsquedas.</p>
-        <div id="membershipList"></div>
+        <h3>Banners VIP (publicidad paga)</h3>
+        <p class="sub">Cuando un negocio se contacta para publicitar, cargá acá su banner. Vos gestionás todo a mano -- no hay cobro ni alta automática.</p>
+
+        <div id="vipBannerList" class="vip-banner-list">
+          <p class="vip-banner-empty">Cargando…</p>
+        </div>
+
+        <div class="divider"></div>
+        <h3 id="vipBannerFormTitle">Agregar banner nuevo</h3>
+        <form id="vipBannerForm">
+          <input type="hidden" id="vbId" value="">
+          <div class="form-row full">
+            <div>
+              <label for="vbImage">Imagen del banner</label>
+              <input type="file" id="vbImage" accept="image/*">
+              <span class="field-hint">Se ajusta sola al tamaño del cartel. Para el banner grande (hero) funciona mejor una imagen ancha (ej. 1200x400); para el intercalado, cualquier proporción sirve.</span>
+              <div id="vbImagePreview" style="margin-top:10px;"></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="vbAdvertiser">Nombre del anunciante (nota interna, no se muestra)</label>
+              <input type="text" id="vbAdvertiser" placeholder="Ej. Pizzería Don Mario">
+            </div>
+            <div>
+              <label for="vbLink">Link al hacer click (opcional)</label>
+              <input type="url" id="vbLink" placeholder="https://wa.me/549...">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="vbPosition">Dónde se muestra</label>
+              <select id="vbPosition">
+                <option value="grid">Intercalado entre los negocios</option>
+                <option value="hero">Banner grande arriba de todo</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:flex; align-items:center; gap:8px; font-weight:500; margin-top:26px;">
+                <input type="checkbox" id="vbActive" style="width:auto;" checked>
+                Activo
+              </label>
+            </div>
+          </div>
+          <div class="form-row dates">
+            <div>
+              <label for="vbStart">Desde (opcional)</label>
+              <input type="date" id="vbStart">
+              <span class="field-hint">Vacío = ya está mostrándose.</span>
+            </div>
+            <div>
+              <label for="vbEnd">Hasta (opcional)</label>
+              <input type="date" id="vbEnd">
+              <span class="field-hint">Vacío = sin fecha de vencimiento.</span>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-navy" id="vbSubmitBtn">Guardar banner</button>
+            <button type="button" class="btn btn-outline" id="vbCancelEdit" hidden>Cancelar edición</button>
+            <span class="form-msg" id="vbFormMsg"></span>
+          </div>
+        </form>
       </div>
     </div>
   </section>
@@ -1403,9 +1307,9 @@
 
 <footer>
   <div class="wrap footer-inner">
-    <a href="#/" class="brand" id="footerBrandHomeLink" style="font-size:1.2rem;">
-      <span class="brand-mark" id="footerBrandMark" style="width:46px;height:46px;border-radius:12px;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 17a2 2 0 100-4 2 2 0 000 4zM19 17a2 2 0 100-4 2 2 0 000 4z" stroke="#fff" stroke-width="2"/><path d="M5 15V8a1 1 0 011-1h5l5 5h3v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+    <a href="#/" class="brand" id="footerBrandHomeLink" style="font-size:1.05rem;">
+      <span class="brand-mark" id="footerBrandMark" style="width:26px;height:26px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 17a2 2 0 100-4 2 2 0 000 4zM19 17a2 2 0 100-4 2 2 0 000 4z" stroke="#fff" stroke-width="2"/><path d="M5 15V8a1 1 0 011-1h5l5 5h3v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
       </span>
       Cadetería Centro
     </a>
@@ -1416,7 +1320,7 @@
 <script>
 (function(){
   const API_BASE = 'https://cadeteria-centro-backend.onrender.com/api';
-  const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_ACA.apps.googleusercontent.com';
+  const GOOGLE_CLIENT_ID = '199362785841-9ad0p83m6vsks02i5a0aoagkv2gt95kg.apps.googleusercontent.com';
   const SESSION_KEY = 'cc_session';
   const CATEGORIES = ['Todos','Rotisería','Pizzería','Panadería','Parrilla','Comida china','Heladería','Otro'];
   const AVATAR_COLORS = ['#14213D','#E6462A','#8A5F00','#1E7A3D'];
@@ -1426,6 +1330,9 @@
   let siteSettings = { heroTitle:'', heroSubtitle:'', heroImages:[], logoUrl:'', promoEnabled:false, promoText:'', cadeteriaWhatsapp:'' };
   let activeCategory = 'Todos';
   let searchTerm = '';
+  let heroVipBanners = [];   // banners activos con position:'hero', ya filtrados por el backend
+  let gridVipBanners = [];   // banners activos con position:'grid'
+  let vipBannerHeroIndex = 0;
   let editingProductId = null;
   let currentBusinessCache = null; // último negocio del panel, para no re-pedirlo en cada click
 
@@ -1508,13 +1415,6 @@
 
   function capitalize(s){
     return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
-  }
-
-  function openStatusBadge(isOpenNow){
-    if(isOpenNow === null || isOpenNow === undefined) return '';
-    return isOpenNow
-      ? `<span class="open-badge open-yes">Abierto</span>`
-      : `<span class="open-badge open-no">Cerrado</span>`;
   }
 
   function fileToResizedDataUrl(file, maxDim, quality){
@@ -1685,7 +1585,6 @@
     } else {
       showView('home');
       renderChips();
-      renderCategoryNav();
       await renderListings();
       await renderMyTrips();
     }
@@ -1703,44 +1602,9 @@
       chip.addEventListener('click', async () => {
         activeCategory = cat;
         renderChips();
-        renderCategoryNav();
         await renderListings();
       });
       chipRow.appendChild(chip);
-    });
-  }
-
-  const CATEGORY_ICONS = {
-    'Todos': { icon: '🛍️', bg: '#F1F3EE' },
-    'Rotisería': { icon: '🍗', bg: 'rgba(230,70,42,0.14)' },
-    'Pizzería': { icon: '🍕', bg: 'rgba(244,183,64,0.22)' },
-    'Panadería': { icon: '🥖', bg: 'rgba(196,58,33,0.1)' },
-    'Parrilla': { icon: '🥩', bg: 'rgba(20,33,61,0.1)' },
-    'Comida china': { icon: '🥡', bg: 'rgba(30,122,61,0.14)' },
-    'Heladería': { icon: '🍦', bg: 'rgba(45,140,220,0.14)' },
-    'Otro': { icon: '🛒', bg: '#EDEAE3' },
-  };
-
-  function renderCategoryNav(){
-    const row = document.getElementById('categoryNavRow');
-    row.innerHTML = '';
-    CATEGORIES.forEach(cat => {
-      const meta = CATEGORY_ICONS[cat] || { icon: '📦', bg: '#EDEAE3' };
-      const tile = document.createElement('button');
-      tile.type = 'button';
-      tile.className = 'category-tile' + (cat === activeCategory ? ' active' : '');
-      tile.innerHTML = `
-        <span class="category-tile-icon" style="background:${meta.bg};">${meta.icon}</span>
-        <span class="category-tile-label">${escapeHtml(cat)}</span>
-      `;
-      tile.addEventListener('click', async () => {
-        activeCategory = cat;
-        renderChips();
-        renderCategoryNav();
-        await renderListings();
-        document.getElementById('listings').scrollIntoView({behavior:'smooth'});
-      });
-      row.appendChild(tile);
     });
   }
 
@@ -1784,7 +1648,16 @@
       return;
     }
 
-    all.forEach(biz => {
+    const CADA_CUANTAS_TARJETAS_UN_BANNER = 6;
+    let bannerCursor = 0;
+
+    all.forEach((biz, i) => {
+      if(i > 0 && i % CADA_CUANTAS_TARJETAS_UN_BANNER === 0 && gridVipBanners.length > 0){
+        const banner = gridVipBanners[bannerCursor % gridVipBanners.length];
+        bannerCursor++;
+        cardGrid.insertAdjacentHTML('beforeend', vipGridBannerHtml(banner));
+      }
+
       const card = document.createElement('a');
       card.className = 'biz-card';
       card.href = '#/negocio/' + biz.id;
@@ -1802,7 +1675,6 @@
             <h3 class="biz-name">${escapeHtml(biz.name)}</h3>
             <span class="biz-cat">${escapeHtml(biz.category)}</span>
           </div>
-          ${openStatusBadge(biz.isOpenNow)}
         </div>
         <p class="biz-desc">${escapeHtml(biz.description || 'Sin descripción todavía.')}</p>
         <div class="biz-meta">
@@ -1853,7 +1725,6 @@
       card.className = 'result-card';
       card.href = 'javascript:void(0)';
       card.innerHTML = `
-        ${openStatusBadge(item.bizIsOpenNow).replace('open-badge', 'open-badge open-badge-float')}
         ${item.image ? `<img class="result-img" src="${item.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
           <p class="pname">${escapeHtml(item.name)}</p>
@@ -2072,6 +1943,12 @@
     try{
       biz = await apiFetch('/business/me');
     }catch(err){
+      if(err.status === 403 && err.body && err.body.error === 'membership_inactive'){
+        panelTitle.textContent = 'Acceso suspendido';
+        document.querySelector('.panel-header p').textContent = err.body.message;
+        document.querySelectorAll('.panel-two-col')[0].hidden = true;
+        return;
+      }
       if(err.status === 401){
         session = null;
         saveSession();
@@ -2093,12 +1970,6 @@
     document.getElementById('pfCategory').value = biz.category || 'Otro';
     document.getElementById('pfInstagram').value = biz.instagram || '';
     document.getElementById('pfFacebook').value = biz.facebook || '';
-    document.getElementById('pfWebsite').value = biz.website || '';
-
-    renderHoursEditor(biz.hours || {});
-    renderMapPreview(biz.lat, biz.lng, document.getElementById('pfMapWrap'), document.getElementById('pfMapPreview'), document.getElementById('pfMapLink'));
-
-    setPanelEditable(biz.canEdit !== false);
 
     pendingAvatarDataUrl = '';
     pendingCoverDataUrl = '';
@@ -2107,83 +1978,6 @@
 
     renderAvatarPreview(biz);
     renderMyProductList(biz);
-  }
-
-  const DIAS_SEMANA = [
-    { key: 'lun', label: 'Lunes' }, { key: 'mar', label: 'Martes' }, { key: 'mie', label: 'Miércoles' },
-    { key: 'jue', label: 'Jueves' }, { key: 'vie', label: 'Viernes' }, { key: 'sab', label: 'Sábado' },
-    { key: 'dom', label: 'Domingo' },
-  ];
-
-  function renderHoursEditor(hours){
-    const wrap = document.getElementById('pfHoursEditor');
-    wrap.innerHTML = '';
-    DIAS_SEMANA.forEach(dia => {
-      const cfg = hours[dia.key] || {};
-      const closed = !!cfg.closed;
-      const row = document.createElement('div');
-      row.className = 'hours-row';
-      row.dataset.day = dia.key;
-      row.innerHTML = `
-        <span class="hours-day">${dia.label}</span>
-        <label class="hours-closed-label">
-          <input type="checkbox" class="hours-closed-check" style="width:auto;" ${closed ? 'checked' : ''}>
-          Cerrado
-        </label>
-        <div class="hours-times" ${closed ? 'hidden' : ''}>
-          <input type="time" class="hours-open" value="${cfg.open || '09:00'}">
-          <span class="field-hint">a</span>
-          <input type="time" class="hours-close" value="${cfg.close || '20:00'}">
-        </div>
-      `;
-      const check = row.querySelector('.hours-closed-check');
-      const times = row.querySelector('.hours-times');
-      check.addEventListener('change', () => { times.hidden = check.checked; });
-      wrap.appendChild(row);
-    });
-  }
-
-  function collectHoursFromEditor(){
-    const hours = {};
-    document.querySelectorAll('#pfHoursEditor .hours-row').forEach(row => {
-      const day = row.dataset.day;
-      const closed = row.querySelector('.hours-closed-check').checked;
-      if(closed){
-        hours[day] = { closed: true };
-      } else {
-        hours[day] = {
-          closed: false,
-          open: row.querySelector('.hours-open').value || '09:00',
-          close: row.querySelector('.hours-close').value || '20:00',
-        };
-      }
-    });
-    return hours;
-  }
-
-  function renderMapPreview(lat, lng, wrapEl, previewEl, linkEl){
-    if(lat == null || lng == null){
-      wrapEl.hidden = true;
-      return;
-    }
-    wrapEl.hidden = false;
-    const delta = 0.006;
-    const bbox = `${lng - delta},${lat - delta},${lng + delta},${lat + delta}`;
-    previewEl.innerHTML = `<iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&marker=${lat},${lng}" title="Ubicación en el mapa"></iframe>`;
-    linkEl.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-  }
-
-  function setPanelEditable(canEdit){
-    const banner = document.getElementById('membershipBanner');
-    if(canEdit){
-      banner.hidden = true;
-    } else {
-      banner.hidden = false;
-      banner.textContent = 'Tu membresía no está al día: podés ver todo tu negocio, pero no vas a poder guardar cambios ni cargar productos hasta regularizarla. Contactá a Cadetería Centro para reactivar tu cuenta.';
-    }
-    [profileForm, productForm].forEach(form => {
-      form.querySelectorAll('input, select, textarea, button').forEach(el => { el.disabled = !canEdit; });
-    });
   }
 
   function renderAvatarPreview(biz){
@@ -2234,8 +2028,6 @@
       category: document.getElementById('pfCategory').value,
       instagram: document.getElementById('pfInstagram').value.trim(),
       facebook: document.getElementById('pfFacebook').value.trim(),
-      website: document.getElementById('pfWebsite').value.trim(),
-      hours: collectHoursFromEditor(),
     };
     if(pendingAvatarDataUrl) payload.avatarUrl = pendingAvatarDataUrl;
     if(pendingCoverDataUrl) payload.coverUrl = pendingCoverDataUrl;
@@ -2246,7 +2038,6 @@
       profileMsg.textContent = 'Perfil guardado.';
       profileMsg.classList.add('success');
       renderAvatarPreview(biz);
-      renderMapPreview(biz.lat, biz.lng, document.getElementById('pfMapWrap'), document.getElementById('pfMapPreview'), document.getElementById('pfMapLink'));
     }catch(err){
       profileMsg.textContent = err.message;
       profileMsg.classList.add('error');
@@ -2254,7 +2045,6 @@
   });
 
   function renderMyProductList(biz){
-    const canEdit = biz.canEdit !== false;
     myProductList.innerHTML = '';
     if(!biz.products || biz.products.length === 0){
       myProductList.innerHTML = `<p class="sub" style="margin:16px 0 0;">Este negocio todavía no tiene productos cargados.</p>`;
@@ -2266,135 +2056,49 @@
       const thumb = p.image
         ? `<img class="prod-thumb" src="${p.image}" alt="">`
         : `<div class="prod-thumb"></div>`;
-      const actionsHtml = canEdit ? `
+      row.innerHTML = `
+        <div class="product-item-text">
+          ${thumb}
+          <span>${escapeHtml(p.name)} — $${escapeHtml(String(p.price))}</span>
+        </div>
         <div style="display:flex; gap:12px; align-items:center;">
           <button class="del" type="button" data-action="edit" data-id="${p.id}">Editar</button>
           <button class="del" type="button" data-action="del" data-id="${p.id}">Quitar</button>
         </div>
-      ` : '';
-      row.innerHTML = `
-        <div class="product-item-text">
-          ${thumb}
-          <span>${escapeHtml(p.name)} — $${escapeHtml(String(p.price))}${(p.images && p.images.length > 1) ? ` · ${p.images.length} fotos` : ''}${(p.variantGroups && p.variantGroups.length) ? ` · ${p.variantGroups.length} opciones` : ''}</span>
-        </div>
-        ${actionsHtml}
       `;
-      if(canEdit){
-        row.querySelector('[data-action="del"]').addEventListener('click', async () => {
-          try{
-            await apiFetch('/business/me/products/' + p.id, { method: 'DELETE' });
-            if(editingProductId === p.id) exitEditMode();
-            const fresh = await apiFetch('/business/me');
-            currentBusinessCache = fresh;
-            renderMyProductList(fresh);
-          }catch(err){
-            productMsg.textContent = err.message;
-            productMsg.className = 'form-msg error';
-          }
-        });
-        row.querySelector('[data-action="edit"]').addEventListener('click', () => {
-          enterEditMode(p);
-        });
-      }
+      row.querySelector('[data-action="del"]').addEventListener('click', async () => {
+        try{
+          await apiFetch('/business/me/products/' + p.id, { method: 'DELETE' });
+          if(editingProductId === p.id) exitEditMode();
+          const fresh = await apiFetch('/business/me');
+          currentBusinessCache = fresh;
+          renderMyProductList(fresh);
+        }catch(err){
+          productMsg.textContent = err.message;
+          productMsg.className = 'form-msg error';
+        }
+      });
+      row.querySelector('[data-action="edit"]').addEventListener('click', () => {
+        enterEditMode(p);
+      });
       myProductList.appendChild(row);
     });
   }
 
   const pImageInput = document.getElementById('pImage');
-  const productImgGallery = document.getElementById('productImgGallery');
+  const productImgPreview = document.getElementById('productImgPreview');
   const productSubmitBtn = document.getElementById('productSubmitBtn');
   const cancelEditBtn = document.getElementById('cancelEditBtn');
-  const variantGroupsEditor = document.getElementById('variantGroupsEditor');
-  const addVariantGroupBtn = document.getElementById('addVariantGroupBtn');
-  let pendingProductImages = [];
-  let pendingVariantGroups = [];
-
-  function renderProductGallery(){
-    productImgGallery.innerHTML = pendingProductImages.map((img, i) => `
-      <div class="prod-gallery-item">
-        <img src="${img}" alt="">
-        <button type="button" data-i="${i}" aria-label="Quitar imagen">✕</button>
-      </div>
-    `).join('');
-    productImgGallery.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        pendingProductImages.splice(parseInt(btn.dataset.i, 10), 1);
-        renderProductGallery();
-      });
-    });
-  }
-
-  function renderVariantGroupsEditor(){
-    variantGroupsEditor.innerHTML = '';
-    pendingVariantGroups.forEach((group, gi) => {
-      const card = document.createElement('div');
-      card.className = 'variant-group-card';
-      const optionsHtml = group.options.map((opt, oi) => `
-        <div class="variant-option-row" data-oi="${oi}">
-          <input type="text" class="opt-name" placeholder="Nombre de la opción" value="${escapeHtml(opt.name)}">
-          <input type="number" class="opt-price" placeholder="+$" step="1" value="${opt.price}">
-          <button type="button" class="opt-remove" aria-label="Quitar opción">✕</button>
-        </div>
-      `).join('');
-      card.innerHTML = `
-        <div class="variant-group-head">
-          <div style="flex:1;">
-            <label style="margin-bottom:4px;">Nombre del grupo</label>
-            <input type="text" class="group-name" placeholder="Ej. ¿Con papas?" value="${escapeHtml(group.name)}">
-          </div>
-          <div>
-            <label style="margin-bottom:4px;">Tipo</label>
-            <select class="group-type">
-              <option value="single" ${group.type==='single'?'selected':''}>Elegí una opción</option>
-              <option value="multiple" ${group.type==='multiple'?'selected':''}>Elegí una o más</option>
-            </select>
-          </div>
-          <button type="button" class="variant-remove-group">Quitar grupo</button>
-        </div>
-        <div class="variant-options-list">${optionsHtml}</div>
-        <button type="button" class="btn btn-outline btn-sm add-option-btn">+ Agregar opción</button>
-      `;
-
-      card.querySelector('.group-name').addEventListener('input', (e) => { group.name = e.target.value; });
-      card.querySelector('.group-type').addEventListener('change', (e) => { group.type = e.target.value; });
-      card.querySelector('.variant-remove-group').addEventListener('click', () => {
-        pendingVariantGroups.splice(gi, 1);
-        renderVariantGroupsEditor();
-      });
-      card.querySelector('.add-option-btn').addEventListener('click', () => {
-        group.options.push({ name: '', price: 0 });
-        renderVariantGroupsEditor();
-      });
-      card.querySelectorAll('.variant-option-row').forEach(row => {
-        const oi = parseInt(row.dataset.oi, 10);
-        row.querySelector('.opt-name').addEventListener('input', (e) => { group.options[oi].name = e.target.value; });
-        row.querySelector('.opt-price').addEventListener('input', (e) => { group.options[oi].price = parseFloat(e.target.value) || 0; });
-        row.querySelector('.opt-remove').addEventListener('click', () => {
-          group.options.splice(oi, 1);
-          renderVariantGroupsEditor();
-        });
-      });
-      variantGroupsEditor.appendChild(card);
-    });
-  }
-
-  addVariantGroupBtn.addEventListener('click', () => {
-    pendingVariantGroups.push({ name: '', type: 'single', options: [{ name: '', price: 0 }] });
-    renderVariantGroupsEditor();
-  });
+  let pendingProductImageDataUrl = '';
 
   function enterEditMode(p){
     editingProductId = p.id;
     document.getElementById('pName').value = p.name;
     document.getElementById('pPrice').value = p.price;
     document.getElementById('pDesc').value = p.desc || '';
+    pendingProductImageDataUrl = '';
     pImageInput.value = '';
-    pendingProductImages = (p.images && p.images.length) ? p.images.slice() : (p.image ? [p.image] : []);
-    renderProductGallery();
-    pendingVariantGroups = (p.variantGroups || []).map(g => ({
-      name: g.name, type: g.type, options: g.options.map(o => ({ name: o.name, price: o.price }))
-    }));
-    renderVariantGroupsEditor();
+    productImgPreview.innerHTML = p.image ? `<img class="prod-thumb" style="width:48px;height:48px;" src="${p.image}" alt="">` : '';
     productSubmitBtn.textContent = 'Guardar cambios';
     cancelEditBtn.hidden = false;
     document.getElementById('pName').scrollIntoView({behavior:'smooth', block:'center'});
@@ -2402,12 +2106,10 @@
 
   function exitEditMode(){
     editingProductId = null;
-    pendingProductImages = [];
-    pendingVariantGroups = [];
+    pendingProductImageDataUrl = '';
     productForm.reset();
     pImageInput.value = '';
-    renderProductGallery();
-    renderVariantGroupsEditor();
+    productImgPreview.innerHTML = '';
     productSubmitBtn.textContent = 'Agregar producto';
     cancelEditBtn.hidden = true;
   }
@@ -2415,15 +2117,13 @@
   cancelEditBtn.addEventListener('click', exitEditMode);
 
   pImageInput.addEventListener('change', async (e) => {
-    const files = Array.from(e.target.files || []);
-    if(files.length === 0) return;
+    const file = e.target.files[0];
+    if(!file) return;
     try{
-      const dataUrls = await Promise.all(files.map(f => fileToResizedDataUrl(f, 700, 0.8)));
-      pendingProductImages.push(...dataUrls);
-      renderProductGallery();
-      pImageInput.value = '';
+      pendingProductImageDataUrl = await fileToResizedDataUrl(file, 500, 0.8);
+      productImgPreview.innerHTML = `<img class="prod-thumb" style="width:48px;height:48px;" src="${pendingProductImageDataUrl}" alt="">`;
     }catch(err){
-      productMsg.textContent = 'No pudimos procesar alguna de esas imágenes.';
+      productMsg.textContent = 'No pudimos procesar esa imagen.';
       productMsg.className = 'form-msg error';
     }
   });
@@ -2443,11 +2143,8 @@
       return;
     }
 
-    const cleanGroups = pendingVariantGroups
-      .map(g => ({ name: g.name.trim(), type: g.type, options: g.options.filter(o => o.name.trim()).map(o => ({ name: o.name.trim(), price: o.price })) }))
-      .filter(g => g.name && g.options.length > 0);
-
-    const payload = { name, price, desc, images: pendingProductImages, variantGroups: cleanGroups };
+    const payload = { name, price, desc };
+    if(pendingProductImageDataUrl) payload.image = pendingProductImageDataUrl;
 
     try{
       if(editingProductId){
@@ -2474,7 +2171,6 @@
     const avatar = document.getElementById('pubAvatar');
     const nameEl = document.getElementById('pubName');
     const catEl = document.getElementById('pubCat');
-    const openBadgeEl = document.getElementById('pubOpenBadge');
     const addrEl = document.getElementById('pubAddress');
     const phoneEl = document.getElementById('pubPhone');
     const dot1 = document.getElementById('pubMetaDot1');
@@ -2482,9 +2178,6 @@
     const contactRow = document.getElementById('pubContactRow');
     const descEl = document.getElementById('pubDesc');
     const catalog = document.getElementById('pubCatalog');
-    const hoursWrap = document.getElementById('pubHoursWrap');
-    const hoursEl = document.getElementById('pubHours');
-    const mapWrap = document.getElementById('pubMapSectionWrap');
 
     let biz = null;
     try{
@@ -2496,7 +2189,6 @@
       avatar.innerHTML = '';
       nameEl.textContent = 'No encontramos este negocio';
       catEl.textContent = '';
-      openBadgeEl.innerHTML = '';
       addrEl.textContent = '';
       phoneEl.textContent = '';
       dot1.hidden = true;
@@ -2504,8 +2196,6 @@
       contactRow.innerHTML = '';
       descEl.textContent = 'Puede que se haya dado de baja o que el link esté mal escrito.';
       catalog.innerHTML = '';
-      hoursWrap.hidden = true;
-      mapWrap.hidden = true;
       return;
     }
 
@@ -2518,7 +2208,6 @@
 
     nameEl.textContent = biz.name;
     catEl.textContent = biz.category;
-    openBadgeEl.innerHTML = openStatusBadge(biz.isOpenNow);
     addrEl.textContent = biz.address || '';
     phoneEl.textContent = biz.phone || '';
     dot1.hidden = !biz.address;
@@ -2557,37 +2246,6 @@
       a.textContent = 'Facebook';
       contactRow.appendChild(a);
     }
-    if(biz.website){
-      const a = document.createElement('a');
-      a.className = 'contact-btn';
-      const url = biz.website.startsWith('http') ? biz.website : `https://${biz.website}`;
-      a.href = url;
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.textContent = 'Página oficial';
-      contactRow.appendChild(a);
-    }
-
-    const hoursEntries = DIAS_SEMANA.filter(d => biz.hours && biz.hours[d.key]);
-    if(hoursEntries.length){
-      hoursWrap.hidden = false;
-      const hoyIdx = (new Date().getDay() + 6) % 7; // 0=lunes
-      hoursEl.innerHTML = hoursEntries.map((d, i) => {
-        const cfg = biz.hours[d.key];
-        const isToday = DIAS_SEMANA[hoyIdx].key === d.key;
-        const val = cfg.closed ? 'Cerrado' : `${cfg.open} a ${cfg.close}`;
-        return `<div class="hours-display-row${isToday ? ' today' : ''}"><span>${d.label}</span><span class="val">${val}</span></div>`;
-      }).join('');
-    } else {
-      hoursWrap.hidden = true;
-    }
-
-    if(biz.lat != null && biz.lng != null){
-      mapWrap.hidden = false;
-      renderMapPreview(biz.lat, biz.lng, mapWrap, document.getElementById('pubMapPreview'), document.getElementById('pubMapLink'));
-    } else {
-      mapWrap.hidden = true;
-    }
 
     catalog.innerHTML = '';
     const products = biz.products || [];
@@ -2600,7 +2258,6 @@
       card.href = 'javascript:void(0)';
       card.className = 'result-card';
       card.innerHTML = `
-        ${openStatusBadge(biz.isOpenNow).replace('open-badge', 'open-badge open-badge-float')}
         ${p.image ? `<img class="result-img" src="${p.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
           <p class="pname">${escapeHtml(p.name)}</p>
@@ -2616,95 +2273,35 @@
   /* ---------- MODAL DE PRODUCTO ---------- */
   function openProductModal(product, biz){
     const root = document.getElementById('productModalRoot');
-    const images = (product.images && product.images.length) ? product.images : (product.image ? [product.image] : []);
-    const groups = product.variantGroups || [];
-
-    const badgeHtml = openStatusBadge(biz.isOpenNow).replace('open-badge', 'open-badge open-badge-float');
-    const mainImgHtml = images.length
-      ? `<img class="product-modal-img" id="modalMainImg" src="${images[0]}" alt="">`
+    const imgHtml = product.image
+      ? `<img class="product-modal-img" src="${product.image}" alt="">`
       : `<div class="product-modal-noimg">Sin foto</div>`;
-    const thumbsHtml = images.length > 1
-      ? `<div class="modal-thumbs">${images.map((img, i) => `<img src="${img}" data-i="${i}" class="modal-thumb${i===0?' active':''}" alt="">`).join('')}</div>`
-      : '';
 
-    const groupsHtml = groups.map((group, gi) => `
-      <div class="modal-variant-group">
-        <p class="modal-variant-group-name">${escapeHtml(group.name)}<span class="field-hint"> — ${group.type === 'multiple' ? 'elegí una o más' : 'elegí una'}</span></p>
-        ${group.options.map((opt, oi) => `
-          <label class="modal-variant-option">
-            <span style="display:flex; align-items:center; gap:8px;">
-              <input type="${group.type === 'multiple' ? 'checkbox' : 'radio'}" name="modalGroup${gi}" data-gi="${gi}" data-oi="${oi}" data-price="${opt.price}" ${oi===0 && group.type!=='multiple' ? 'checked' : ''}>
-              ${escapeHtml(opt.name)}
-            </span>
-            <span class="mono">${opt.price ? `+$${opt.price}` : ''}</span>
-          </label>
-        `).join('')}
-      </div>
-    `).join('');
+    let ctaHtml = '';
+    if(biz.whatsapp){
+      const digits = biz.whatsapp.replace(/[^0-9]/g,'');
+      const message = `Hola ${biz.name}! Quiero pedir "${product.name}" ($${product.price}) que vi en la página de Cadetería Centro.`;
+      ctaHtml = `<a class="contact-btn whatsapp btn-block product-modal-cta" style="justify-content:center;" href="https://wa.me/${digits}?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">Pedir por WhatsApp</a>`;
+    } else {
+      ctaHtml = `<p class="sub product-modal-cta" style="margin:0;">Este negocio todavía no cargó un WhatsApp de contacto.</p>`;
+    }
 
     root.innerHTML = `
       <div class="product-modal-overlay" id="productModalOverlay">
         <div class="product-modal" role="dialog" aria-modal="true" aria-label="${escapeHtml(product.name)}">
           <button type="button" class="product-modal-close" id="productModalClose" aria-label="Cerrar">✕</button>
-          <div style="position:relative;">
-            ${badgeHtml}
-            ${mainImgHtml}
-          </div>
-          ${thumbsHtml}
+          ${imgHtml}
           <div class="product-modal-body">
             <h3>${escapeHtml(product.name)}</h3>
-            <span class="pprice" id="modalTotalPrice">$${escapeHtml(String(product.price))}</span>
+            <span class="pprice">$${escapeHtml(String(product.price))}</span>
             ${product.desc ? `<p class="pdesc">${escapeHtml(product.desc)}</p>` : ''}
             <div class="product-modal-biz">De <strong>${escapeHtml(biz.name)}</strong> — ${escapeHtml(biz.category)}</div>
-            ${groupsHtml}
-            <div id="modalCtaWrap"></div>
+            ${ctaHtml}
           </div>
         </div>
       </div>
     `;
     document.body.style.overflow = 'hidden';
-
-    root.querySelectorAll('.modal-thumb').forEach(thumb => {
-      thumb.addEventListener('click', () => {
-        document.getElementById('modalMainImg').src = images[parseInt(thumb.dataset.i, 10)];
-        root.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
-        thumb.classList.add('active');
-      });
-    });
-
-    function currentSelections(){
-      const chosen = [];
-      let extra = 0;
-      groups.forEach((group, gi) => {
-        root.querySelectorAll(`input[data-gi="${gi}"]:checked`).forEach(input => {
-          const opt = group.options[parseInt(input.dataset.oi, 10)];
-          chosen.push(`${group.name}: ${opt.name}`);
-          extra += opt.price;
-        });
-      });
-      return { chosen, total: product.price + extra };
-    }
-
-    function updateModal(){
-      const { chosen, total } = currentSelections();
-      document.getElementById('modalTotalPrice').textContent = '$' + total;
-
-      const ctaWrap = document.getElementById('modalCtaWrap');
-      if(biz.whatsapp){
-        const digits = biz.whatsapp.replace(/[^0-9]/g,'');
-        let message = `Hola ${biz.name}! Quiero pedir "${product.name}"`;
-        if(chosen.length) message += ` (${chosen.join(', ')})`;
-        message += ` — $${total} — que vi en la página de Cadetería Centro.`;
-        ctaWrap.innerHTML = `<a class="contact-btn whatsapp btn-block product-modal-cta" style="justify-content:center;" href="https://wa.me/${digits}?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">Pedir por WhatsApp</a>`;
-      } else {
-        ctaWrap.innerHTML = `<p class="sub product-modal-cta" style="margin:0;">Este negocio todavía no cargó un WhatsApp de contacto.</p>`;
-      }
-    }
-
-    root.querySelectorAll('.modal-variant-group input').forEach(input => {
-      input.addEventListener('change', updateModal);
-    });
-    updateModal();
 
     const overlay = document.getElementById('productModalOverlay');
     overlay.addEventListener('click', (e) => {
@@ -2826,6 +2423,57 @@
     }catch(e){ /* seguimos con los valores por defecto */ }
   }
 
+  /* ---------- Banners VIP (publicidad paga) — lado público ---------- */
+  let vipBannerHeroTimer = null;
+
+  async function loadPublicBanners(){
+    try{
+      const banners = await apiFetch('/banners');
+      heroVipBanners = banners.filter(b => b.position === 'hero');
+      gridVipBanners = banners.filter(b => b.position === 'grid');
+    }catch(e){
+      heroVipBanners = [];
+      gridVipBanners = [];
+    }
+  }
+
+  function renderVipHeroBanner(){
+    const section = document.getElementById('vipHeroSection');
+    if(heroVipBanners.length === 0){
+      section.hidden = true;
+      if(vipBannerHeroTimer) clearInterval(vipBannerHeroTimer);
+      return;
+    }
+    section.hidden = false;
+    const applyBanner = () => {
+      const banner = heroVipBanners[vipBannerHeroIndex % heroVipBanners.length];
+      document.getElementById('vipHeroBannerImg').src = banner.imageUrl;
+      const link = document.getElementById('vipHeroBanner');
+      if(banner.linkUrl){
+        link.href = banner.linkUrl;
+        link.style.cursor = 'pointer';
+      } else {
+        link.removeAttribute('href');
+        link.style.cursor = 'default';
+      }
+    };
+    applyBanner();
+    if(vipBannerHeroTimer) clearInterval(vipBannerHeroTimer);
+    if(heroVipBanners.length > 1){
+      vipBannerHeroTimer = setInterval(() => {
+        vipBannerHeroIndex = (vipBannerHeroIndex + 1) % heroVipBanners.length;
+        applyBanner();
+      }, 6000);
+    }
+  }
+
+  function vipGridBannerHtml(banner){
+    const inner = `<img src="${banner.imageUrl}" alt="Publicidad"><span class="vip-ad-tag">Publicidad</span>`;
+    return banner.linkUrl
+      ? `<a class="vip-grid-banner" href="${banner.linkUrl}" target="_blank" rel="noopener">${inner}</a>`
+      : `<div class="vip-grid-banner">${inner}</div>`;
+  }
+
   async function saveSiteSettingsPatch(patch){
     const updated = await apiFetch('/admin/site-settings', { method: 'PUT', body: JSON.stringify(patch) });
     siteSettings = Object.assign(siteSettings, updated);
@@ -2845,22 +2493,6 @@
   const adminPromoMsg = document.getElementById('adminPromoMsg');
 
   async function renderAdmin(){
-    // Chequeo real contra el servidor antes de mostrar nada — si el admin
-    // fue desactivado desde panel-membresías, esto corta acá y te saca al
-    // login, en vez de dejarte viendo una pantalla que ya no podés usar.
-    try{
-      await apiFetch('/admin/stats');
-    }catch(err){
-      if(err.status === 401 || err.status === 403){
-        session = null;
-        saveSession();
-        renderHeaderAuthUI();
-        alert('Tu acceso de administrador ya no está activo. Iniciá sesión de nuevo, o contactá a soporte si esto no debería haber pasado.');
-        location.hash = '#/ingresar';
-        return;
-      }
-    }
-
     document.getElementById('ahTitle').value = siteSettings.heroTitle || '';
     document.getElementById('ahSubtitle').value = siteSettings.heroSubtitle || '';
     document.getElementById('apEnabled').checked = !!siteSettings.promoEnabled;
@@ -2871,11 +2503,6 @@
 
     adminLogoPreview.style.background = siteSettings.logoUrl ? 'transparent' : 'var(--flame)';
     adminLogoPreview.innerHTML = siteSettings.logoUrl ? `<img src="${siteSettings.logoUrl}" alt="">` : '';
-
-    genResetForm.reset();
-    genResetResult.hidden = true;
-    genResetMsg.textContent = '';
-    genResetMsg.className = 'form-msg';
 
     renderBannerImgList();
 
@@ -2892,61 +2519,7 @@
       document.getElementById('adminStats').innerHTML = `<p class="sub" style="margin:0;">No pudimos cargar las estadísticas.</p>`;
     }
 
-    await renderMembershipList();
-  }
-
-  const STATUS_LABELS = { trial: 'Prueba', active: 'Activo', suspended: 'Suspendido', cancelled: 'Dado de baja' };
-
-  async function renderMembershipList(){
-    const wrap = document.getElementById('membershipList');
-    wrap.innerHTML = `<p class="sub" style="margin:0;">Cargando negocios…</p>`;
-    let businesses;
-    try{
-      businesses = await apiFetch('/admin/businesses');
-    }catch(err){
-      wrap.innerHTML = `<p class="sub" style="margin:0;">No pudimos cargar los negocios.</p>`;
-      return;
-    }
-
-    if(businesses.length === 0){
-      wrap.innerHTML = `<p class="sub" style="margin:0;">Todavía no hay negocios registrados.</p>`;
-      return;
-    }
-
-    wrap.innerHTML = '';
-    businesses.forEach(biz => {
-      const status = biz.subscriptionStatus || 'trial';
-      const row = document.createElement('div');
-      row.className = 'membership-row';
-      row.innerHTML = `
-        <div class="membership-info">
-          <strong>${escapeHtml(biz.name)}</strong>
-          <span>${escapeHtml(biz.email)} — ${escapeHtml(biz.category)}</span>
-        </div>
-        <span class="status-pill ${status}">${STATUS_LABELS[status] || status}</span>
-        <div class="membership-actions">
-          <button type="button" class="mship-btn${status==='active'?' active-state':''}" data-status="active">Activar</button>
-          <button type="button" class="mship-btn${status==='suspended'?' active-state':''}" data-status="suspended">Suspender</button>
-          <button type="button" class="mship-btn${status==='cancelled'?' active-state':''}" data-status="cancelled">Dar de baja</button>
-        </div>
-      `;
-      row.querySelectorAll('.mship-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const newStatus = btn.dataset.status;
-          if(newStatus === status) return;
-          if(newStatus === 'cancelled' && !confirm(`¿Seguro que querés dar de baja a "${biz.name}"? Va a desaparecer por completo de las búsquedas.`)) return;
-          try{
-            await apiFetch('/admin/businesses/' + biz.id + '/subscription', {
-              method: 'PUT', body: JSON.stringify({ status: newStatus })
-            });
-            await renderMembershipList();
-          }catch(err){
-            alert('No se pudo actualizar: ' + err.message);
-          }
-        });
-      });
-      wrap.appendChild(row);
-    });
+    loadVipBanners();
   }
 
   function renderBannerImgList(){
@@ -2978,6 +2551,183 @@
       });
     });
   }
+
+  /* ---------- Panel admin: gestión de Banners VIP ---------- */
+  let vipBanners = [];           // listado completo (admin) traído del backend
+  let vipBannerEditId = null;    // si no es null, el form está editando este banner en vez de crear uno nuevo
+  let vipBannerImageDataUrl = ''; // imagen elegida en el form, ya convertida a data URL
+
+  const vipBannerForm = document.getElementById('vipBannerForm');
+  const vbFormMsg = document.getElementById('vbFormMsg');
+  const vbSubmitBtn = document.getElementById('vbSubmitBtn');
+  const vbCancelEditBtn = document.getElementById('vbCancelEdit');
+  const vbImageInput = document.getElementById('vbImage');
+  const vbImagePreview = document.getElementById('vbImagePreview');
+
+  async function loadVipBanners(){
+    const listEl = document.getElementById('vipBannerList');
+    listEl.innerHTML = `<p class="vip-banner-empty">Cargando…</p>`;
+    try{
+      vipBanners = await apiFetch('/admin/banners');
+      renderVipBannerList();
+    }catch(err){
+      listEl.innerHTML = `<p class="vip-banner-empty">No pudimos cargar los banners.</p>`;
+    }
+  }
+
+  function fechaCorta(iso){
+    if(!iso) return null;
+    const d = new Date(iso);
+    return d.toLocaleDateString('es-AR');
+  }
+
+  function renderVipBannerList(){
+    const listEl = document.getElementById('vipBannerList');
+    if(vipBanners.length === 0){
+      listEl.innerHTML = `<p class="vip-banner-empty">Todavía no cargaste ningún banner.</p>`;
+      return;
+    }
+    listEl.innerHTML = vipBanners.map(b => {
+      const desde = fechaCorta(b.startDate);
+      const hasta = fechaCorta(b.endDate);
+      let rango = 'Sin fecha de inicio ni fin';
+      if(desde && hasta) rango = `${desde} — ${hasta}`;
+      else if(desde) rango = `Desde ${desde}`;
+      else if(hasta) rango = `Hasta ${hasta}`;
+      const posicionLabel = b.position === 'hero' ? 'Banner grande (hero)' : 'Intercalado entre negocios';
+      return `
+        <div class="vip-banner-row" data-id="${b.id}">
+          <div class="vip-banner-thumb"><img src="${b.imageUrl}" alt=""></div>
+          <div class="vip-banner-info">
+            <p class="name">${escapeHtml(b.advertiserName || '(sin nombre de anunciante)')}</p>
+            <p class="meta">${posicionLabel} · ${rango}</p>
+            <span class="vip-banner-badge ${b.isLive ? 'live' : 'off'}">${b.isLive ? 'Mostrándose ahora' : (b.active ? 'Fuera de fecha' : 'Desactivado')}</span>
+          </div>
+          <div class="vip-banner-actions">
+            <button type="button" class="vb-edit" data-id="${b.id}">Editar</button>
+            <button type="button" class="danger vb-delete" data-id="${b.id}">Eliminar</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    listEl.querySelectorAll('.vb-edit').forEach(btn => {
+      btn.addEventListener('click', () => cargarBannerEnForm(btn.dataset.id));
+    });
+    listEl.querySelectorAll('.vb-delete').forEach(btn => {
+      btn.addEventListener('click', () => eliminarBanner(btn.dataset.id));
+    });
+  }
+
+  function cargarBannerEnForm(id){
+    const b = vipBanners.find(x => x.id === id);
+    if(!b) return;
+    vipBannerEditId = id;
+    vipBannerImageDataUrl = b.imageUrl;
+
+    document.getElementById('vbId').value = b.id;
+    document.getElementById('vbAdvertiser').value = b.advertiserName || '';
+    document.getElementById('vbLink').value = b.linkUrl || '';
+    document.getElementById('vbPosition').value = b.position;
+    document.getElementById('vbActive').checked = !!b.active;
+    document.getElementById('vbStart').value = b.startDate ? b.startDate.slice(0,10) : '';
+    document.getElementById('vbEnd').value = b.endDate ? b.endDate.slice(0,10) : '';
+    vbImagePreview.innerHTML = `<div class="banner-img-item"><img src="${b.imageUrl}" alt=""></div>`;
+    vbImageInput.value = '';
+
+    document.getElementById('vipBannerFormTitle').textContent = 'Editar banner';
+    vbSubmitBtn.textContent = 'Guardar cambios';
+    vbCancelEditBtn.hidden = false;
+    vbFormMsg.textContent = '';
+    vbFormMsg.className = 'form-msg';
+    vipBannerForm.scrollIntoView({behavior:'smooth', block:'center'});
+  }
+
+  function resetVipBannerForm(){
+    vipBannerEditId = null;
+    vipBannerImageDataUrl = '';
+    vipBannerForm.reset();
+    document.getElementById('vbId').value = '';
+    document.getElementById('vbActive').checked = true;
+    vbImagePreview.innerHTML = '';
+    document.getElementById('vipBannerFormTitle').textContent = 'Agregar banner nuevo';
+    vbSubmitBtn.textContent = 'Guardar banner';
+    vbCancelEditBtn.hidden = true;
+    vbFormMsg.textContent = '';
+    vbFormMsg.className = 'form-msg';
+  }
+
+  vbCancelEditBtn.addEventListener('click', resetVipBannerForm);
+
+  vbImageInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    try{
+      vipBannerImageDataUrl = await fileToResizedDataUrl(file, 1400, 0.8);
+      vbImagePreview.innerHTML = `<div class="banner-img-item"><img src="${vipBannerImageDataUrl}" alt=""></div>`;
+    }catch(err){
+      vbFormMsg.textContent = 'No pudimos leer esa imagen.';
+      vbFormMsg.className = 'form-msg error';
+    }
+  });
+
+  async function eliminarBanner(id){
+    if(!confirm('¿Eliminar este banner? No se puede deshacer.')) return;
+    try{
+      await apiFetch('/admin/banners/' + id, { method: 'DELETE' });
+      if(vipBannerEditId === id) resetVipBannerForm();
+      await loadVipBanners();
+    }catch(err){
+      alert('No pudimos eliminar el banner: ' + err.message);
+    }
+  }
+
+  vipBannerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    vbFormMsg.textContent = '';
+    vbFormMsg.className = 'form-msg';
+
+    if(!vipBannerImageDataUrl){
+      vbFormMsg.textContent = 'Elegí una imagen para el banner.';
+      vbFormMsg.className = 'form-msg error';
+      return;
+    }
+
+    const startVal = document.getElementById('vbStart').value;
+    const endVal = document.getElementById('vbEnd').value;
+
+    const payload = {
+      imageUrl: vipBannerImageDataUrl,
+      advertiserName: document.getElementById('vbAdvertiser').value.trim(),
+      linkUrl: document.getElementById('vbLink').value.trim(),
+      position: document.getElementById('vbPosition').value,
+      active: document.getElementById('vbActive').checked,
+      startDate: startVal || null,
+      endDate: endVal || null,
+    };
+
+    vbSubmitBtn.disabled = true;
+    const textoOriginal = vbSubmitBtn.textContent;
+    vbSubmitBtn.textContent = 'Guardando…';
+
+    try{
+      if(vipBannerEditId){
+        await apiFetch('/admin/banners/' + vipBannerEditId, { method: 'PUT', body: JSON.stringify(payload) });
+      } else {
+        await apiFetch('/admin/banners', { method: 'POST', body: JSON.stringify(payload) });
+      }
+      resetVipBannerForm();
+      await loadVipBanners();
+      // Refresca también lo que ve el público, por si el admin quiere chequear el resultado sin recargar.
+      await loadPublicBanners();
+    }catch(err){
+      vbFormMsg.textContent = err.message || 'No pudimos guardar el banner.';
+      vbFormMsg.className = 'form-msg error';
+    }finally{
+      vbSubmitBtn.disabled = false;
+      vbSubmitBtn.textContent = textoOriginal;
+    }
+  });
 
   ahImageInput.addEventListener('change', async (e) => {
     const files = Array.from(e.target.files || []);
@@ -3065,42 +2815,6 @@
     }
   });
 
-  /* ---------- ADMIN: GENERAR LINK DE RECUPERACIÓN ---------- */
-  const genResetForm = document.getElementById('genResetForm');
-  const genResetMsg = document.getElementById('genResetMsg');
-  const genResetResult = document.getElementById('genResetResult');
-  const genResetLink = document.getElementById('genResetLink');
-  const copyResetLinkBtn = document.getElementById('copyResetLinkBtn');
-
-  genResetForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    genResetMsg.textContent = '';
-    genResetMsg.className = 'form-msg';
-    genResetResult.hidden = true;
-
-    const email = document.getElementById('grEmail').value.trim();
-    try{
-      const res = await apiFetch('/admin/generate-reset-link', { method: 'POST', body: JSON.stringify({ email }) });
-      genResetLink.textContent = res.link;
-      genResetResult.hidden = false;
-      genResetMsg.textContent = `Link generado para ${res.name} (${res.accountType}). Vence en 1 hora.`;
-      genResetMsg.classList.add('success');
-    }catch(err){
-      genResetMsg.textContent = err.message;
-      genResetMsg.classList.add('error');
-    }
-  });
-
-  copyResetLinkBtn.addEventListener('click', async () => {
-    try{
-      await navigator.clipboard.writeText(genResetLink.textContent);
-      copyResetLinkBtn.textContent = '¡Copiado!';
-      setTimeout(() => { copyResetLinkBtn.textContent = 'Copiar link'; }, 1800);
-    }catch(err){
-      // si el navegador bloquea el portapapeles, el texto ya queda seleccionable a mano
-    }
-  });
-
   /* ---------- VIAJE PARTICULAR ---------- */
   async function renderMyTrips(){
     if(!session){
@@ -3127,16 +2841,12 @@
       const row = document.createElement('div');
       row.className = 'trip-item';
       const badgeClass = trip.status === 'cancelado' ? 'cancelado' : 'pendiente';
-      const extraLine = trip.requiereEfectivo
-        ? `<span class="desc">Paga: ${rolLabel(trip.quienPaga)} · Cadete lleva ${escapeHtml(trip.montoEfectivo || '')} para pagar</span>`
-        : `<span class="desc">Paga: ${rolLabel(trip.quienPaga)}</span>`;
       row.innerHTML = `
         <div class="trip-item-top">
           <span class="route">${escapeHtml(trip.origin)} → ${escapeHtml(trip.dest)}</span>
           <span class="status-badge ${badgeClass}">${escapeHtml(capitalize(trip.status))}</span>
         </div>
         <span class="desc">${escapeHtml(trip.description)}</span>
-        ${extraLine}
         ${trip.status === 'pendiente' ? `<button type="button" class="cancel-trip" data-id="${trip.id}">Cancelar pedido</button>` : ''}
       `;
       const cancelBtn = row.querySelector('.cancel-trip');
@@ -3152,16 +2862,6 @@
     });
   }
 
-  const tRequiereEfectivoInput = document.getElementById('tRequiereEfectivo');
-  const tMontoWrap = document.getElementById('tMontoWrap');
-  const tMontoEfectivoInput = document.getElementById('tMontoEfectivo');
-  tRequiereEfectivoInput.addEventListener('change', () => {
-    tMontoWrap.hidden = !tRequiereEfectivoInput.checked;
-    if(!tRequiereEfectivoInput.checked) tMontoEfectivoInput.value = '';
-  });
-
-  function rolLabel(rol){ return rol === 'destinatario' ? 'Quien recibe' : 'Quien envía'; }
-
   tripForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     tripMsg.textContent = '';
@@ -3171,46 +2871,20 @@
     const dest = document.getElementById('tDest').value.trim();
     const description = document.getElementById('tDesc').value.trim();
     const phone = document.getElementById('tPhone').value.trim();
-    const solicitanteRol = document.getElementById('tSolicitanteRol').value;
-    const quienPaga = document.getElementById('tQuienPaga').value;
-    const requiereEfectivo = tRequiereEfectivoInput.checked;
-    const montoEfectivo = tMontoEfectivoInput.value.trim();
 
     if(!origin || !dest || !description || !phone){
       tripMsg.textContent = 'Completá todos los campos.';
       tripMsg.classList.add('error');
       return;
     }
-    if(requiereEfectivo && !montoEfectivo){
-      tripMsg.textContent = 'Indicá cuánto tiene que llevar el cadete, o destildá esa opción.';
-      tripMsg.classList.add('error');
-      return;
-    }
 
     try{
-      await apiFetch('/trips', {
-        method: 'POST',
-        body: JSON.stringify({
-          origin, dest, description, phone,
-          solicitanteRol, quienPaga, requiereEfectivo,
-          montoEfectivo: requiereEfectivo ? montoEfectivo : ''
-        })
-      });
+      await apiFetch('/trips', { method: 'POST', body: JSON.stringify({ origin, dest, description, phone }) });
       tripForm.reset();
-      tMontoWrap.hidden = true;
 
       if(siteSettings.cadeteriaWhatsapp){
         const digits = siteSettings.cadeteriaWhatsapp.replace(/[^0-9]/g,'');
-        let message = `Hola! Quiero pedir un viaje particular por Cadetería Centro.\n`
-          + `Origen: ${origin}\n`
-          + `Destino: ${dest}\n`
-          + `Qué hay que llevar: ${description}\n`
-          + `Quien completa este pedido: ${rolLabel(solicitanteRol)}\n`
-          + `Paga el viaje: ${rolLabel(quienPaga)}`;
-        if(requiereEfectivo){
-          message += `\n⚠️ El cadete tiene que pagar ${montoEfectivo} al retirarlo, y cobrárselo a quien lo recibe.`;
-        }
-        message += `\nMi teléfono: ${phone}`;
+        const message = `Hola! Quiero pedir un viaje particular por Cadetería Centro.\nOrigen: ${origin}\nDestino: ${dest}\nQué hay que llevar: ${description}\nMi teléfono: ${phone}`;
         window.open(`https://wa.me/${digits}?text=${encodeURIComponent(message)}`, '_blank');
         tripMsg.textContent = 'Pedido guardado. Te llevamos a WhatsApp para coordinar con un cadete.';
       } else {
@@ -3291,6 +2965,8 @@
     await loadSiteSettings();
     applySiteSettings();
     renderPromoBar();
+    await loadPublicBanners();
+    renderVipHeroBanner();
     await render();
     // el script de Google carga async — reintentamos un toque hasta que esté listo
     let tries = 0;
