@@ -275,8 +275,10 @@
   .empty-state h3{font-family:var(--font-display);margin:0;font-size:1.3rem;}
 
   /* ---------- BANNERS VIP (publicidad paga) ---------- */
-  .vip-top-section{margin:20px auto 0;}
+  .vip-top-section{margin:20px 0 0;width:100%;}
+  .vip-top-section .vip-hero-banner{border-radius:0;}
   .vip-hero-section{margin-bottom:8px;}
+  .vip-bottom-section{margin:20px auto 24px;}
   .vip-hero-banner{
     display:block;border-radius:var(--radius-card);overflow:hidden;
     position:relative;background:var(--line);
@@ -288,11 +290,6 @@
     font-size:0.68rem;font-weight:600;letter-spacing:0.03em;text-transform:uppercase;
     padding:4px 9px;border-radius:var(--radius-pill);
   }
-  a.vip-grid-banner{
-    grid-column:1/-1;display:block;border-radius:var(--radius-card);overflow:hidden;
-    position:relative;background:var(--line);
-  }
-  a.vip-grid-banner img{width:100%;max-height:180px;object-fit:cover;display:block;}
 
   /* ---------- Panel admin: gestión de banners VIP ---------- */
   .vip-banner-row{
@@ -721,7 +718,7 @@
   <div class="promo-bar-track" id="promoBarText"></div>
 </div>
 
-<section class="vip-top-section wrap" id="vipTopSection" hidden>
+<section class="vip-top-section" id="vipTopSection" hidden>
   <a class="vip-hero-banner" id="vipTopBanner" href="#" target="_blank" rel="noopener">
     <span class="vip-ad-tag">Publicidad</span>
     <img id="vipTopBannerImg" src="" alt="Publicidad">
@@ -882,6 +879,13 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <section class="vip-bottom-section wrap" id="vipBottomSection" hidden>
+    <a class="vip-hero-banner" id="vipBottomBanner" href="#" target="_blank" rel="noopener">
+      <span class="vip-ad-tag">Publicidad</span>
+      <img id="vipBottomBannerImg" src="" alt="Publicidad">
+    </a>
   </section>
 
   <section class="how" id="como-funciona">
@@ -1471,7 +1475,7 @@
             <div>
               <label for="vbImage">Imagen del banner</label>
               <input type="file" id="vbImage" accept="image/*">
-              <span class="field-hint">Se ajusta sola al tamaño del cartel. Para "arriba de todo" o el banner principal funciona mejor una imagen ancha (ej. 1200x400); para el intercalado, cualquier proporción sirve.</span>
+              <span class="field-hint">Se ajusta sola al tamaño del cartel. Funciona mejor una imagen ancha (ej. 1200x400) en las 3 posiciones.</span>
               <div id="vbImagePreview" style="margin-top:10px;"></div>
             </div>
           </div>
@@ -1491,7 +1495,7 @@
               <select id="vbPosition">
                 <option value="top">Arriba de todo (debajo del anuncio)</option>
                 <option value="hero">Donde está el banner principal</option>
-                <option value="grid">Intercalado entre los negocios</option>
+                <option value="grid">Abajo de todo (debajo de "Pedí un viaje")</option>
               </select>
             </div>
             <div>
@@ -1556,6 +1560,7 @@
   let gridVipBanners = [];   // banners activos con position:'grid'
   let vipBannerTopIndex = 0;
   let vipBannerHeroIndex = 0;
+  let vipBannerBottomIndex = 0;
   let editingProductId = null;
   let currentBusinessCache = null; // último negocio del panel, para no re-pedirlo en cada click
 
@@ -1878,16 +1883,7 @@
       return;
     }
 
-    const CADA_CUANTAS_TARJETAS_UN_BANNER = 6;
-    let bannerCursor = 0;
-
     all.forEach((biz, i) => {
-      if(i > 0 && i % CADA_CUANTAS_TARJETAS_UN_BANNER === 0 && gridVipBanners.length > 0){
-        const banner = gridVipBanners[bannerCursor % gridVipBanners.length];
-        bannerCursor++;
-        cardGrid.insertAdjacentHTML('beforeend', vipGridBannerHtml(banner));
-      }
-
       const card = document.createElement('a');
       card.className = 'biz-card';
       card.href = '#/negocio/' + biz.id;
@@ -3007,11 +3003,36 @@
     }
   }
 
-  function vipGridBannerHtml(banner){
-    const inner = `<img src="${banner.imageUrl}" alt="Publicidad"><span class="vip-ad-tag">Publicidad</span>`;
-    return banner.linkUrl
-      ? `<a class="vip-grid-banner" href="${banner.linkUrl}" target="_blank" rel="noopener">${inner}</a>`
-      : `<div class="vip-grid-banner">${inner}</div>`;
+  let vipBannerBottomTimer = null;
+
+  function renderVipBottomBanner(){
+    const section = document.getElementById('vipBottomSection');
+    if(gridVipBanners.length === 0){
+      section.hidden = true;
+      if(vipBannerBottomTimer) clearInterval(vipBannerBottomTimer);
+      return;
+    }
+    section.hidden = false;
+    const applyBanner = () => {
+      const banner = gridVipBanners[vipBannerBottomIndex % gridVipBanners.length];
+      document.getElementById('vipBottomBannerImg').src = banner.imageUrl;
+      const link = document.getElementById('vipBottomBanner');
+      if(banner.linkUrl){
+        link.href = banner.linkUrl;
+        link.style.cursor = 'pointer';
+      } else {
+        link.removeAttribute('href');
+        link.style.cursor = 'default';
+      }
+    };
+    applyBanner();
+    if(vipBannerBottomTimer) clearInterval(vipBannerBottomTimer);
+    if(gridVipBanners.length > 1){
+      vipBannerBottomTimer = setInterval(() => {
+        vipBannerBottomIndex = (vipBannerBottomIndex + 1) % gridVipBanners.length;
+        applyBanner();
+      }, 6000);
+    }
   }
 
   async function saveSiteSettingsPatch(patch){
@@ -3210,7 +3231,7 @@
       if(desde && hasta) rango = `${desde} — ${hasta}`;
       else if(desde) rango = `Desde ${desde}`;
       else if(hasta) rango = `Hasta ${hasta}`;
-      const posicionLabel = b.position === 'top' ? 'Arriba de todo' : (b.position === 'hero' ? 'Banner principal' : 'Intercalado entre negocios');
+      const posicionLabel = b.position === 'top' ? 'Arriba de todo' : (b.position === 'hero' ? 'Banner principal' : 'Abajo de todo');
       return `
         <div class="vip-banner-row" data-id="${b.id}">
           <div class="vip-banner-thumb"><img src="${b.imageUrl}" alt=""></div>
@@ -3660,6 +3681,7 @@
     await loadPublicBanners();
     renderVipTopBanner();
     renderVipHeroBanner();
+    renderVipBottomBanner();
     await render();
     // el script de Google carga async — reintentamos un toque hasta que esté listo
     let tries = 0;
