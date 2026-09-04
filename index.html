@@ -247,6 +247,7 @@
 
   /* ---------- BANNERS VIP (publicidad paga) ---------- */
   .vip-hero-section{margin-bottom:8px;}
+  .vip-top-section{margin:20px auto 0;}
   .vip-hero-banner{
     display:block;border-radius:var(--radius-card);overflow:hidden;
     position:relative;background:var(--line);
@@ -597,6 +598,13 @@
 <div class="promo-bar" id="promoBar" hidden>
   <div class="promo-bar-track" id="promoBarText"></div>
 </div>
+
+<section class="vip-top-section wrap" id="vipTopSection" hidden>
+  <a class="vip-hero-banner" id="vipTopBanner" href="#" target="_blank" rel="noopener">
+    <span class="vip-ad-tag">Publicidad</span>
+    <img id="vipTopBannerImg" src="" alt="Publicidad">
+  </a>
+</section>
 
 <main id="app">
 
@@ -1251,7 +1259,7 @@
             <div>
               <label for="vbImage">Imagen del banner</label>
               <input type="file" id="vbImage" accept="image/*">
-              <span class="field-hint">Se ajusta sola al tamaño del cartel. Para el banner grande (hero) funciona mejor una imagen ancha (ej. 1200x400); para el intercalado, cualquier proporción sirve.</span>
+              <span class="field-hint">Se ajusta sola al tamaño del cartel. Para "arriba de todo" o el banner principal funciona mejor una imagen ancha (ej. 1200x400); para el intercalado, cualquier proporción sirve.</span>
               <div id="vbImagePreview" style="margin-top:10px;"></div>
             </div>
           </div>
@@ -1269,8 +1277,9 @@
             <div>
               <label for="vbPosition">Dónde se muestra</label>
               <select id="vbPosition">
+                <option value="top">Arriba de todo (debajo del anuncio)</option>
+                <option value="hero">Donde está el banner principal</option>
                 <option value="grid">Intercalado entre los negocios</option>
-                <option value="hero">Banner grande arriba de todo</option>
               </select>
             </div>
             <div>
@@ -1330,8 +1339,10 @@
   let siteSettings = { heroTitle:'', heroSubtitle:'', heroImages:[], logoUrl:'', promoEnabled:false, promoText:'', cadeteriaWhatsapp:'' };
   let activeCategory = 'Todos';
   let searchTerm = '';
+  let topVipBanners = [];   // banners activos con position:'top'
   let heroVipBanners = [];   // banners activos con position:'hero', ya filtrados por el backend
   let gridVipBanners = [];   // banners activos con position:'grid'
+  let vipBannerTopIndex = 0;
   let vipBannerHeroIndex = 0;
   let editingProductId = null;
   let currentBusinessCache = null; // último negocio del panel, para no re-pedirlo en cada click
@@ -2429,11 +2440,45 @@
   async function loadPublicBanners(){
     try{
       const banners = await apiFetch('/banners');
+      topVipBanners = banners.filter(b => b.position === 'top');
       heroVipBanners = banners.filter(b => b.position === 'hero');
       gridVipBanners = banners.filter(b => b.position === 'grid');
     }catch(e){
+      topVipBanners = [];
       heroVipBanners = [];
       gridVipBanners = [];
+    }
+  }
+
+  let vipBannerTopTimer = null;
+
+  function renderVipTopBanner(){
+    const section = document.getElementById('vipTopSection');
+    if(topVipBanners.length === 0){
+      section.hidden = true;
+      if(vipBannerTopTimer) clearInterval(vipBannerTopTimer);
+      return;
+    }
+    section.hidden = false;
+    const applyBanner = () => {
+      const banner = topVipBanners[vipBannerTopIndex % topVipBanners.length];
+      document.getElementById('vipTopBannerImg').src = banner.imageUrl;
+      const link = document.getElementById('vipTopBanner');
+      if(banner.linkUrl){
+        link.href = banner.linkUrl;
+        link.style.cursor = 'pointer';
+      } else {
+        link.removeAttribute('href');
+        link.style.cursor = 'default';
+      }
+    };
+    applyBanner();
+    if(vipBannerTopTimer) clearInterval(vipBannerTopTimer);
+    if(topVipBanners.length > 1){
+      vipBannerTopTimer = setInterval(() => {
+        vipBannerTopIndex = (vipBannerTopIndex + 1) % topVipBanners.length;
+        applyBanner();
+      }, 6000);
     }
   }
 
@@ -2594,7 +2639,7 @@
       if(desde && hasta) rango = `${desde} — ${hasta}`;
       else if(desde) rango = `Desde ${desde}`;
       else if(hasta) rango = `Hasta ${hasta}`;
-      const posicionLabel = b.position === 'hero' ? 'Banner grande (hero)' : 'Intercalado entre negocios';
+      const posicionLabel = b.position === 'top' ? 'Arriba de todo' : (b.position === 'hero' ? 'Banner principal' : 'Intercalado entre negocios');
       return `
         <div class="vip-banner-row" data-id="${b.id}">
           <div class="vip-banner-thumb"><img src="${b.imageUrl}" alt=""></div>
@@ -2966,6 +3011,7 @@
     applySiteSettings();
     renderPromoBar();
     await loadPublicBanners();
+    renderVipTopBanner();
     renderVipHeroBanner();
     await render();
     // el script de Google carga async — reintentamos un toque hasta que esté listo
