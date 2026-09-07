@@ -721,7 +721,14 @@
     nav.main-nav{display:none;}
   }
   @media (max-width:600px){
-    .card-grid{grid-template-columns:1fr;}
+    .card-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+    a.biz-card{padding:14px;gap:6px;}
+    .biz-avatar{width:34px;height:34px;font-size:0.85rem;}
+    .biz-name{font-size:0.95rem;}
+    .biz-cat{font-size:0.62rem;padding:3px 9px 3px 7px;}
+    .biz-desc{font-size:0.8rem;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
+    .biz-meta{font-size:0.78rem;}
+    .catalog-link, .no-products{font-size:0.78rem;}
     .form-row{grid-template-columns:1fr;}
     .search-box{flex-direction:column;}
     h1.hero-title{max-width:none;}
@@ -2123,12 +2130,10 @@
       const card = document.createElement('a');
       card.className = 'biz-card';
       card.href = '#/negocio/' + biz.id;
-      const products = (biz.products || []).slice(0,2);
       const totalProducts = (biz.products || []).length;
-      const productsHtml = products.length
-        ? products.map(p => `<div class="prod-row" data-pid="${p.id}"><span>${escapeHtml(p.name)}</span><span class="price">$${escapeHtml(String(p.price))}</span></div>`).join('')
+      const catalogLink = totalProducts > 0
+        ? `<span class="catalog-link">Ver catálogo completo (${totalProducts})</span>`
         : `<span class="no-products">Todavía no cargó su menú</span>`;
-      const catalogLink = totalProducts > 2 ? `<span class="catalog-link">Ver catálogo completo (${totalProducts})</span>` : (totalProducts > 0 ? `<span class="catalog-link">Ver catálogo completo</span>` : '');
 
       card.innerHTML = `
         <div class="biz-top">
@@ -2143,16 +2148,8 @@
         <div class="biz-meta">
           <span>${escapeHtml(biz.address || 'Dirección no cargada')}</span>
         </div>
-        <div class="biz-products">${productsHtml}${catalogLink}</div>
+        <div class="biz-products">${catalogLink}</div>
       `;
-      card.querySelectorAll('.prod-row[data-pid]').forEach(row => {
-        row.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          const prod = (biz.products || []).find(pp => pp.id === row.dataset.pid);
-          if(prod) openProductModal(prod, biz);
-        });
-      });
       cardGrid.appendChild(card);
     });
   }
