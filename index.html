@@ -1112,8 +1112,10 @@
                   <option>Pizzería</option>
                   <option>Panadería</option>
                   <option>Parrilla</option>
-                  <option>Comida china</option>
                   <option>Heladería</option>
+                  <option>Casa de pastas</option>
+                  <option>Tienda de bebidas</option>
+                  <option>Tienda de ropa</option>
                   <option>Otro</option>
                 </select>
               </div>
@@ -1310,8 +1312,10 @@
                   <option>Pizzería</option>
                   <option>Panadería</option>
                   <option>Parrilla</option>
-                  <option>Comida china</option>
                   <option>Heladería</option>
+                  <option>Casa de pastas</option>
+                  <option>Tienda de bebidas</option>
+                  <option>Tienda de ropa</option>
                   <option>Otro</option>
                 </select>
               </div>
@@ -1745,7 +1749,29 @@
   const API_BASE = 'https://cadeteria-centro-backend.onrender.com/api';
   const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_ACA.apps.googleusercontent.com';
   const SESSION_KEY = 'cc_session';
-  const CATEGORIES = ['Todos','Rotisería','Pizzería','Panadería','Parrilla','Comida china','Heladería','Otro'];
+  const CATEGORIES = ['Rotisería','Pizzería','Panadería','Parrilla','Heladería','Casa de pastas','Tienda de bebidas','Tienda de ropa','Otro'];
+  // Los negocios se registran con un rubro específico de la lista de
+  // arriba, pero los chips de búsqueda agrupan varios rubros parecidos
+  // bajo un solo botón para no abrumar con una fila larga -- "Comidas"
+  // agrupa todo lo gastronómico en vez de mostrar Rotisería/Pizzería/
+  // Panadería/etc. como chips sueltos. "Comida china" queda en el grupo
+  // por si algún negocio viejo la tiene cargada así, aunque ya no se
+  // ofrezca como opción nueva al registrarse.
+  const CATEGORY_GROUPS = {
+    'Comidas': ['Rotisería','Pizzería','Panadería','Parrilla','Heladería','Casa de pastas','Comida china'],
+    'Bebidas': ['Tienda de bebidas'],
+    'Ropa': ['Tienda de ropa'],
+    'Otro': ['Otro'],
+  };
+  const CATEGORY_CHIPS = ['Todos', ...Object.keys(CATEGORY_GROUPS)];
+
+  function categoryQueryValue(chip){
+    // Lo que se le manda al backend para ese chip: la lista de rubros
+    // reales separada por coma (el backend hace un IN() con eso), o null
+    // si es "Todos" (sin filtro).
+    if(chip === 'Todos') return null;
+    return (CATEGORY_GROUPS[chip] || [chip]).join(',');
+  }
   const AVATAR_COLORS = ['#14213D','#E6462A','#8A5F00','#1E7A3D'];
 
   // session: { token, type: 'negocio'|'cliente'|'admin', name, businessId? }
@@ -2027,7 +2053,7 @@
   /* ---------- HOME: LISTADO Y BÚSQUEDA ---------- */
   function renderChips(){
     chipRow.innerHTML = '';
-    CATEGORIES.forEach(cat => {
+    CATEGORY_CHIPS.forEach(cat => {
       const chip = document.createElement('button');
       chip.className = 'chip' + (cat === activeCategory ? ' active' : '');
       chip.type = 'button';
@@ -2053,7 +2079,8 @@
 
     let all;
     try{
-      const qs = activeCategory !== 'Todos' ? `?category=${encodeURIComponent(activeCategory)}` : '';
+      const catParam = categoryQueryValue(activeCategory);
+      const qs = catParam ? `?category=${encodeURIComponent(catParam)}` : '';
       all = await apiFetch('/businesses' + qs);
     }catch(err){
       cardGrid.innerHTML = `<div class="empty-state"><h3>No pudimos cargar los negocios</h3><p>${escapeHtml(err.message)}</p></div>`;
@@ -2126,7 +2153,8 @@
     try{
       const qs = new URLSearchParams();
       qs.set('q', searchTerm);
-      if(activeCategory !== 'Todos') qs.set('category', activeCategory);
+      const catParam = categoryQueryValue(activeCategory);
+      if(catParam) qs.set('category', catParam);
       results = await apiFetch('/products/search?' + qs.toString());
     }catch(err){
       cardGrid.innerHTML = `<div class="empty-state"><h3>No pudimos buscar</h3><p>${escapeHtml(err.message)}</p></div>`;
