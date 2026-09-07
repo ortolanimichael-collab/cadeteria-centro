@@ -222,6 +222,19 @@
   .card-grid{
     display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
   }
+  .card-grid.carousel{
+    display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    gap:16px;padding-bottom:10px;
+  }
+  .card-grid.carousel::-webkit-scrollbar{height:6px;}
+  .card-grid.carousel::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+  .card-grid.carousel > a.biz-card{
+    flex:0 0 260px;width:260px;scroll-snap-align:start;
+  }
+  @media (max-width:600px){
+    .card-grid.carousel > a.biz-card{flex-basis:78vw;width:78vw;}
+  }
   a.biz-card{
     background:var(--panel);border:1px solid var(--line);
     border-radius:var(--radius-card);padding:22px;
@@ -2086,6 +2099,7 @@
   }
 
   async function renderListings(){
+    cardGrid.classList.remove('carousel');
     cardGrid.innerHTML = `<div class="empty-state"><p>Cargando…</p></div>`;
 
     if(searchTerm){
@@ -2152,9 +2166,11 @@
       `;
       cardGrid.appendChild(card);
     });
+    cardGrid.classList.add('carousel');
   }
 
   async function renderProductResults(){
+    cardGrid.classList.remove('carousel');
     listingsTitle.textContent = 'Productos';
 
     let results;
