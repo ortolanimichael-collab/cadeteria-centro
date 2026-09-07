@@ -107,6 +107,8 @@
   .btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--line);}
   .btn-outline:hover{border-color:var(--ink);}
   .btn-navy{background:var(--navy);color:#fff;}
+  .btn-outline-danger{background:transparent;color:#C0392B;border:1.5px solid #C0392B;}
+  .btn-outline-danger:hover{background:#C0392B;color:#fff;}
   .btn-sm{padding:8px 16px;font-size:0.85rem;}
   .btn-block{width:100%;justify-content:center;}
 
@@ -402,6 +404,8 @@
   }
   .panel h3{font-family:var(--font-display);margin:0 0 4px;font-size:1.25rem;}
   .panel .sub{color:var(--ink-soft);font-size:0.9rem;margin:0 0 22px;}
+  .panel-danger{border-color:#C0392B33;}
+  .panel-danger .sub{margin-bottom:16px;}
   .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
   .form-row.full{grid-template-columns:1fr;}
   label{display:block;font-size:0.82rem;font-weight:600;margin-bottom:6px;color:var(--ink);}
@@ -1345,6 +1349,13 @@
               <span class="form-msg" id="profileMsg"></span>
             </div>
           </form>
+        </div>
+
+        <div class="panel panel-danger">
+          <h3>Eliminar mi negocio</h3>
+          <p class="sub">Tu negocio deja de aparecer en la búsqueda al instante y no vas a poder volver a entrar a este panel con esta cuenta. Tus datos y catálogo quedan guardados por si en algún momento necesitás reactivarlo -- escribinos si eso pasa.</p>
+          <button type="button" class="btn btn-outline-danger" id="deleteBusinessBtn">Eliminar mi negocio</button>
+          <span class="form-msg" id="deleteBusinessMsg"></span>
         </div>
 
         <div class="panel">
@@ -2538,6 +2549,7 @@
     [profileForm, productForm].forEach(form => {
       form.querySelectorAll('input, select, textarea, button').forEach(el => { el.disabled = !canEdit; });
     });
+    if(deleteBusinessBtn) deleteBusinessBtn.disabled = !canEdit;
   }
 
   function renderAvatarPreview(biz){
@@ -2606,6 +2618,32 @@
       profileMsg.classList.add('error');
     }
   });
+
+  const deleteBusinessBtn = document.getElementById('deleteBusinessBtn');
+  const deleteBusinessMsg = document.getElementById('deleteBusinessMsg');
+  if(deleteBusinessBtn){
+    deleteBusinessBtn.addEventListener('click', async () => {
+      const nombre = (currentBusinessCache && currentBusinessCache.name) || 'tu negocio';
+      if(!confirm(`¿Seguro que querés eliminar "${nombre}"? Va a desaparecer al instante de las búsquedas y no vas a poder volver a entrar a este panel con esta cuenta.`)) return;
+
+      deleteBusinessBtn.disabled = true;
+      deleteBusinessMsg.textContent = '';
+      deleteBusinessMsg.className = 'form-msg';
+      try{
+        await apiFetch('/business/me', { method: 'DELETE' });
+        session = null;
+        saveSession();
+        location.hash = '#/';
+        alert('Tu negocio fue eliminado. Si en algún momento necesitás reactivarlo, contactanos.');
+        renderHeaderAuthUI();
+        render();
+      }catch(err){
+        deleteBusinessBtn.disabled = false;
+        deleteBusinessMsg.textContent = err.message;
+        deleteBusinessMsg.classList.add('error');
+      }
+    });
+  }
 
   function renderMyProductList(biz){
     const canEdit = biz.canEdit !== false;
