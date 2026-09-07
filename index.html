@@ -565,14 +565,26 @@
   }
   .map-preview iframe{width:100%;height:100%;border:0;display:block;}
   .hours-row{
-    display:flex;align-items:center;gap:10px;padding:7px 0;
-    border-bottom:1px solid var(--line);flex-wrap:wrap;
+    display:flex;flex-direction:column;gap:8px;padding:10px 0;
+    border-bottom:1px solid var(--line);
   }
   .hours-row:last-child{border-bottom:none;}
+  .hours-row-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
   .hours-day{width:78px;font-size:0.86rem;font-weight:600;flex-shrink:0;}
   .hours-closed-label{display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--ink-soft);}
+  .hours-times-list{display:flex;flex-direction:column;gap:6px;margin-left:88px;}
   .hours-times{display:flex;align-items:center;gap:6px;}
   .hours-times input[type=time]{width:110px;padding:7px 8px;font-size:0.85rem;}
+  .hours-remove-range{
+    background:none;border:none;color:var(--ink-soft);cursor:pointer;
+    font-size:0.95rem;padding:2px 6px;line-height:1;
+  }
+  .hours-remove-range:hover{color:var(--flame-dark);}
+  .hours-add-range{
+    margin-left:88px;align-self:flex-start;background:none;border:none;
+    color:var(--flame-dark);font-size:0.82rem;font-weight:600;cursor:pointer;padding:2px 0;
+  }
+  .hours-add-range:hover{text-decoration:underline;}
   .hours-display{display:flex;flex-direction:column;gap:2px;margin-top:12px;font-size:0.9rem;}
   .hours-display-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);}
   .hours-display-row:last-child{border-bottom:none;}
@@ -2406,24 +2418,51 @@
     DIAS_SEMANA.forEach(dia => {
       const cfg = hours[dia.key] || {};
       const closed = !!cfg.closed;
+      // Compatibilidad: horarios viejos guardados como {open, close} sueltos
+      // (un solo turno), en vez de la lista "ranges" nueva -- se muestran igual.
+      const ranges = Array.isArray(cfg.ranges) && cfg.ranges.length
+        ? cfg.ranges
+        : (cfg.open && cfg.close ? [{ open: cfg.open, close: cfg.close }] : [{ open: '09:00', close: '20:00' }]);
+
       const row = document.createElement('div');
       row.className = 'hours-row';
       row.dataset.day = dia.key;
       row.innerHTML = `
-        <span class="hours-day">${dia.label}</span>
-        <label class="hours-closed-label">
-          <input type="checkbox" class="hours-closed-check" style="width:auto;" ${closed ? 'checked' : ''}>
-          Cerrado
-        </label>
-        <div class="hours-times" ${closed ? 'hidden' : ''}>
-          <input type="time" class="hours-open" value="${cfg.open || '09:00'}">
-          <span class="field-hint">a</span>
-          <input type="time" class="hours-close" value="${cfg.close || '20:00'}">
+        <div class="hours-row-top">
+          <span class="hours-day">${dia.label}</span>
+          <label class="hours-closed-label">
+            <input type="checkbox" class="hours-closed-check" style="width:auto;" ${closed ? 'checked' : ''}>
+            Cerrado
+          </label>
         </div>
+        <div class="hours-times-list" ${closed ? 'hidden' : ''}></div>
+        <button type="button" class="hours-add-range" ${closed ? 'hidden' : ''}>+ Agregar otro turno (ej. después de la siesta)</button>
       `;
+      const timesList = row.querySelector('.hours-times-list');
+      const addBtn = row.querySelector('.hours-add-range');
+
+      function addRangeRow(openVal, closeVal){
+        const r = document.createElement('div');
+        r.className = 'hours-times';
+        r.innerHTML = `
+          <input type="time" class="hours-open" value="${openVal || '09:00'}">
+          <span class="field-hint">a</span>
+          <input type="time" class="hours-close" value="${closeVal || '20:00'}">
+          <button type="button" class="hours-remove-range" aria-label="Quitar este turno">✕</button>
+        `;
+        r.querySelector('.hours-remove-range').addEventListener('click', () => {
+          if(timesList.children.length > 1) r.remove();
+        });
+        timesList.appendChild(r);
+      }
+      ranges.forEach(r => addRangeRow(r.open, r.close));
+      addBtn.addEventListener('click', () => addRangeRow('', ''));
+
       const check = row.querySelector('.hours-closed-check');
-      const times = row.querySelector('.hours-times');
-      check.addEventListener('change', () => { times.hidden = check.checked; });
+      check.addEventListener('change', () => {
+        timesList.hidden = check.checked;
+        addBtn.hidden = check.checked;
+      });
       wrap.appendChild(row);
     });
   }
@@ -2435,13 +2474,15 @@
       const closed = row.querySelector('.hours-closed-check').checked;
       if(closed){
         hours[day] = { closed: true };
-      } else {
-        hours[day] = {
-          closed: false,
-          open: row.querySelector('.hours-open').value || '09:00',
-          close: row.querySelector('.hours-close').value || '20:00',
-        };
+        return;
       }
+      const ranges = [];
+      row.querySelectorAll('.hours-times').forEach(r => {
+        const openVal = r.querySelector('.hours-open').value;
+        const closeVal = r.querySelector('.hours-close').value;
+        if(openVal && closeVal) ranges.push({ open: openVal, close: closeVal });
+      });
+      hours[day] = { closed: false, ranges: ranges.length ? ranges : [{ open: '09:00', close: '20:00' }] };
     });
     return hours;
   }
@@ -2788,7 +2829,17 @@
       hoursEl.innerHTML = hoursEntries.map((d, i) => {
         const cfg = biz.hours[d.key];
         const isToday = DIAS_SEMANA[hoyIdx].key === d.key;
-        const val = cfg.closed ? 'Cerrado' : `${cfg.open} a ${cfg.close}`;
+        let val;
+        if(cfg.closed){
+          val = 'Cerrado';
+        } else {
+          // Compatibilidad: horarios viejos guardados como {open, close}
+          // sueltos (un solo turno), en vez de la lista "ranges" nueva.
+          const ranges = Array.isArray(cfg.ranges) && cfg.ranges.length
+            ? cfg.ranges
+            : (cfg.open && cfg.close ? [{ open: cfg.open, close: cfg.close }] : []);
+          val = ranges.map(r => `${r.open} a ${r.close}`).join(' y ');
+        }
         return `<div class="hours-display-row${isToday ? ' today' : ''}"><span>${d.label}</span><span class="val">${val}</span></div>`;
       }).join('');
     } else {
