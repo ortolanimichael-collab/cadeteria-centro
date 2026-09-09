@@ -105,6 +105,8 @@
   .btn-flame{background:var(--flame);color:#fff;}
   .btn-flame:hover{background:var(--flame-dark);}
   .btn-outline{background:transparent;color:var(--ink);border:1.5px solid var(--line);}
+  .btn-outline-danger{background:transparent;color:#C0392B;border:1.5px solid #C0392B;}
+  .btn-outline-danger:hover{background:#C0392B;color:#fff;}
   .btn-outline:hover{border-color:var(--ink);}
   .btn-navy{background:var(--navy);color:#fff;}
   .btn-sm{padding:8px 16px;font-size:0.85rem;}
@@ -1393,6 +1395,9 @@
       <div class="panel" style="margin-top:24px;">
         <h3>Membresías de negocios</h3>
         <p class="sub">Activá, suspendé o dá de baja el acceso de cada negocio. Al suspender, su página pública sigue funcionando igual — solo se le bloquea guardar cambios en su panel. Al dar de baja, desaparece del todo de las búsquedas.</p>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+          <button type="button" class="btn btn-outline-danger btn-sm" id="deleteInactiveBtn">Eliminar negocios inactivos</button>
+        </div>
         <div id="membershipList"></div>
       </div>
     </div>
@@ -2928,9 +2933,22 @@
           <button type="button" class="mship-btn${status==='active'?' active-state':''}" data-status="active">Activar</button>
           <button type="button" class="mship-btn${status==='suspended'?' active-state':''}" data-status="suspended">Suspender</button>
           <button type="button" class="mship-btn${status==='cancelled'?' active-state':''}" data-status="cancelled">Dar de baja</button>
+          ${(status==='suspended'||status==='cancelled') ? `<button type="button" class="mship-btn delete-biz-btn" style="color:#C0392B;border-color:#C0392B;">Eliminar</button>` : ''}
         </div>
       `;
-      row.querySelectorAll('.mship-btn').forEach(btn => {
+      const deleteBtn = row.querySelector('.delete-biz-btn');
+      if(deleteBtn){
+        deleteBtn.addEventListener('click', async () => {
+          if(!confirm(`¿Eliminar definitivamente "${biz.name}"? Se borra el negocio y todos sus productos, no se puede deshacer.`)) return;
+          try{
+            await apiFetch('/admin/businesses/' + biz.id, { method: 'DELETE' });
+            await renderMembershipList();
+          }catch(err){
+            alert('No se pudo eliminar: ' + err.message);
+          }
+        });
+      }
+      row.querySelectorAll('.mship-btn[data-status]').forEach(btn => {
         btn.addEventListener('click', async () => {
           const newStatus = btn.dataset.status;
           if(newStatus === status) return;
@@ -3098,6 +3116,18 @@
       setTimeout(() => { copyResetLinkBtn.textContent = 'Copiar link'; }, 1800);
     }catch(err){
       // si el navegador bloquea el portapapeles, el texto ya queda seleccionable a mano
+    }
+  });
+
+  const deleteInactiveBtn = document.getElementById('deleteInactiveBtn');
+  deleteInactiveBtn.addEventListener('click', async () => {
+    if(!confirm('¿Eliminar TODOS los negocios suspendidos y dados de baja? Se borran junto con sus productos y no se puede deshacer.')) return;
+    try{
+      const res = await apiFetch('/admin/businesses/inactive', { method: 'DELETE' });
+      alert(res.deleted > 0 ? `Se eliminaron ${res.deleted} negocio(s) inactivo(s).` : 'No había negocios inactivos para eliminar.');
+      await renderMembershipList();
+    }catch(err){
+      alert('No se pudo eliminar: ' + err.message);
     }
   });
 

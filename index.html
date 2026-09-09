@@ -224,13 +224,13 @@
   }
   .card-grid.carousel{
     display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;
-    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    -webkit-overflow-scrolling:touch;
     gap:16px;padding-bottom:10px;
   }
   .card-grid.carousel::-webkit-scrollbar{height:6px;}
   .card-grid.carousel::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
   .card-grid.carousel > a.biz-card{
-    flex:0 0 260px;width:260px;scroll-snap-align:start;
+    flex:0 0 260px;width:260px;
   }
   @media (max-width:600px){
     .card-grid.carousel > a.biz-card{flex-basis:78vw;width:78vw;}
@@ -1842,6 +1842,55 @@
   const chipRow = document.getElementById('chipRow');
   const headerAuthArea = document.getElementById('headerAuthArea');
 
+  /* ---------- Carrusel automático de "Negocios en tu zona" ----------
+     Se desplaza solo, lento, hacia la izquierda. El usuario puede seguir
+     arrastrando/scrolleando con el dedo o el mouse en cualquier momento:
+     eso pausa el auto-scroll un rato y después retoma solo. */
+  let autoScrollRAF = null;
+  let autoScrollPausedUntil = 0;
+  let autoScrollLoopWidth = 0;
+
+  function stopAutoScroll(){
+    if(autoScrollRAF) cancelAnimationFrame(autoScrollRAF);
+    autoScrollRAF = null;
+  }
+
+  function pauseAutoScroll(ms){
+    autoScrollPausedUntil = Date.now() + (ms || 2500);
+  }
+
+  function startAutoScroll(){
+    stopAutoScroll();
+    if(!cardGrid.classList.contains('carousel')) return;
+    // El contenido está duplicado (ver renderListings) para poder loopear
+    // sin corte -- la mitad del scrollWidth es el ancho de una vuelta.
+    autoScrollLoopWidth = cardGrid.scrollWidth / 2;
+    if(autoScrollLoopWidth <= cardGrid.clientWidth + 4) return; // entra todo, no hace falta animar
+    const step = () => {
+      if(!cardGrid.classList.contains('carousel') || !cardGrid.isConnected){
+        autoScrollRAF = null;
+        return;
+      }
+      if(Date.now() >= autoScrollPausedUntil){
+        cardGrid.scrollLeft += 0.5;
+        if(cardGrid.scrollLeft >= autoScrollLoopWidth){
+          cardGrid.scrollLeft -= autoScrollLoopWidth;
+        }
+      }
+      autoScrollRAF = requestAnimationFrame(step);
+    };
+    autoScrollRAF = requestAnimationFrame(step);
+  }
+
+  // Cualquier interacción del usuario (arrastrar, tocar, rueda del mouse,
+  // pasar el mouse por encima) pausa el desplazamiento automático -- la
+  // movilidad manual del usuario siempre tiene prioridad.
+  ['pointerdown', 'touchstart', 'wheel'].forEach(evt => {
+    cardGrid.addEventListener(evt, () => pauseAutoScroll(3000), { passive: true });
+  });
+  cardGrid.addEventListener('mouseenter', () => pauseAutoScroll(999999999));
+  cardGrid.addEventListener('mouseleave', () => pauseAutoScroll(1200));
+
   const registroChooser = document.getElementById('registroChooser');
   const registroCliente = document.getElementById('registroCliente');
   const registroNegocio = document.getElementById('registroNegocio');
@@ -2099,6 +2148,7 @@
   }
 
   async function renderListings(){
+    stopAutoScroll();
     cardGrid.classList.remove('carousel');
     cardGrid.innerHTML = `<div class="empty-state"><p>Cargando…</p></div>`;
 
@@ -2167,9 +2217,22 @@
       cardGrid.appendChild(card);
     });
     cardGrid.classList.add('carousel');
+
+    // Duplicamos las tarjetas para que el auto-scroll pueda loopear sin
+    // corte (al llegar a la mitad, se resetea el scroll de forma invisible
+    // porque la segunda mitad es idéntica a la primera).
+    Array.from(cardGrid.children).forEach(card => {
+      const clone = card.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      clone.setAttribute('tabindex', '-1');
+      cardGrid.appendChild(clone);
+    });
+    cardGrid.scrollLeft = 0;
+    requestAnimationFrame(() => requestAnimationFrame(startAutoScroll));
   }
 
   async function renderProductResults(){
+    stopAutoScroll();
     cardGrid.classList.remove('carousel');
     listingsTitle.textContent = 'Productos';
 
