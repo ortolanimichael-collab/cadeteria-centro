@@ -1039,7 +1039,7 @@
     <div class="wrap biz-grid">
       <div class="biz-copy">
         <h2>Sumá tu negocio a Cadetería Centro</h2>
-        <p>Creá tu cuenta, armá tu perfil comercial y subí tu menú. Vas a tener tu propia página, con tu foto de portada, tu logo y todo tu catálogo a la vista.</p>
+        <p>Creá tu tienda en Tiendaly: cargás tus productos una sola vez y se muestran acá, además de tu propia página. Si más adelante cambiás un precio, se actualiza solo.</p>
         <ul class="benefit-list">
           <li><span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#14181B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tu propia página con foto de portada y de perfil</li>
           <li><span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#14181B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>WhatsApp y redes sociales a un clic de distancia</li>
@@ -1048,8 +1048,8 @@
       </div>
       <div class="panel">
         <h3>Empezá gratis</h3>
-        <p class="sub">El registro te lleva menos de un minuto. Vas a poder completar el resto de tu perfil después.</p>
-        <a href="#/registro" class="btn btn-flame btn-block">Registrar mi negocio</a>
+        <p class="sub">El registro te lleva menos de un minuto. Tu tienda se crea en Tiendaly y acá aparecés si lo aceptás al registrarte.</p>
+        <a href="https://tiendaly.ar/registro?canal=cadeteria-centro" target="_blank" rel="noopener" class="btn btn-flame btn-block">Crear mi tienda en Tiendaly</a>
       </div>
     </div>
   </section>
@@ -1071,9 +1071,9 @@
               <span class="choice-title">Soy cliente particular</span>
               <span class="choice-desc">Quiero pedir en negocios o solicitar viajes particulares.</span>
             </a>
-            <a href="#/registro/negocio" class="choice-card">
+            <a href="https://tiendaly.ar/registro?canal=cadeteria-centro" target="_blank" rel="noopener" class="choice-card">
               <span class="choice-title">Soy dueño de un negocio</span>
-              <span class="choice-desc">Quiero vender mis productos en Cadetería Centro.</span>
+              <span class="choice-desc">Creo mi tienda en Tiendaly y aparezco acá sin cargar nada dos veces.</span>
             </a>
           </div>
         </div>
@@ -1116,58 +1116,6 @@
         </div>
       </div>
 
-      <div id="registroNegocio" hidden>
-        <div class="panel auth-panel">
-          <h3>Registrá tu negocio</h3>
-          <p class="sub">Por ahora este es un formulario protocolar para reservar tu lugar. Más adelante vamos a validar los datos de verdad.</p>
-          <form id="registerForm">
-            <div class="form-row full">
-              <div>
-                <label for="bName">Nombre del negocio</label>
-                <input type="text" id="bName" required placeholder="Ej. Rotisería Don Pedro">
-              </div>
-            </div>
-            <div class="form-row full">
-              <div>
-                <label for="bCategory">Rubro</label>
-                <select id="bCategory" required>
-                  <option value="">Elegí un rubro</option>
-                  <option>Rotisería</option>
-                  <option>Pizzería</option>
-                  <option>Panadería</option>
-                  <option>Parrilla</option>
-                  <option>Heladería</option>
-                  <option>Casa de pastas</option>
-                  <option>Tienda de bebidas</option>
-                  <option>Tienda de ropa</option>
-                  <option>Otro</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row full">
-              <div>
-                <label for="bEmail">Email</label>
-                <input type="email" id="bEmail" required placeholder="tu@email.com">
-              </div>
-            </div>
-            <div class="form-row">
-              <div>
-                <label for="bPassword">Contraseña</label>
-                <input type="password" id="bPassword" required placeholder="Elegí una contraseña" minlength="6">
-              </div>
-              <div>
-                <label for="bPassword2">Repetir contraseña</label>
-                <input type="password" id="bPassword2" required placeholder="Repetila" minlength="6">
-              </div>
-            </div>
-            <div class="form-actions" style="margin-top:14px;">
-              <button type="submit" class="btn btn-flame btn-block">Crear cuenta y continuar</button>
-            </div>
-            <span class="form-msg" id="registerMsg"></span>
-          </form>
-        </div>
-        <div class="note-box">Al crear la cuenta vas a entrar directo al panel de tu negocio, donde vas a poder cargar tu perfil comercial y tus productos.</div>
-      </div>
     </div>
   </section>
 </div>
@@ -1257,163 +1205,6 @@
           </div>
           <span class="form-msg" id="resetMsg"></span>
         </form>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ============ PANEL DE NEGOCIO ============ -->
-<div class="view" id="view-panel" hidden>
-  <section class="panel-view">
-    <div class="wrap">
-      <a href="#/" class="back-link">← Volver a la búsqueda</a>
-      <div class="panel-header">
-        <div>
-          <h1 id="panelTitle">Panel de tu negocio</h1>
-          <p>Completá tu perfil comercial y cargá tu catálogo. Los clientes lo ven desde la página principal.</p>
-        </div>
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <div id="myBizSelectWrap"></div>
-          <a href="#" id="viewPublicLink" class="btn btn-outline btn-sm">Ver mi página pública</a>
-        </div>
-      </div>
-
-      <div class="membership-banner" id="membershipBanner" hidden></div>
-
-      <div class="panel-two-col">
-        <div class="panel">
-          <h3>Perfil comercial</h3>
-          <p class="sub">Así te ven tus clientes en tu página.</p>
-          <form id="profileForm">
-            <div class="avatar-preview-row">
-              <div class="avatar-preview" id="avatarPreview"></div>
-              <div>
-                <label for="pfAvatar" style="margin-bottom:4px;">Foto de perfil (logo)</label>
-                <input type="file" id="pfAvatar" accept="image/*">
-                <span class="field-hint">JPG o PNG. La ajustamos automáticamente al subirla.</span>
-              </div>
-            </div>
-            <div class="form-row full">
-              <div>
-                <label for="pfCover">Foto de portada</label>
-                <div class="cover-preview" id="coverPreview"></div>
-                <input type="file" id="pfCover" accept="image/*">
-                <span class="field-hint">Se recorta a modo panorámico en tu página pública.</span>
-              </div>
-            </div>
-            <div class="form-row full">
-              <div>
-                <label for="pfDesc">Descripción del negocio</label>
-                <textarea id="pfDesc" placeholder="Contales a tus clientes qué los espera"></textarea>
-              </div>
-            </div>
-            <div class="form-row">
-              <div>
-                <label for="pfAddress">Dirección</label>
-                <input type="text" id="pfAddress" placeholder="Calle y número">
-                <span class="field-hint">Al guardar, la ubicamos sola en el mapa.</span>
-              </div>
-              <div>
-                <label for="pfPhone">Teléfono</label>
-                <input type="tel" id="pfPhone" placeholder="Ej. 351 555 1234">
-              </div>
-            </div>
-            <div class="form-row full" id="pfMapWrap" hidden>
-              <div>
-                <div class="map-preview" id="pfMapPreview"></div>
-                <a href="#" target="_blank" rel="noopener" class="field-hint" id="pfMapLink" style="display:inline-block; margin-top:6px;">Ver en Google Maps</a>
-              </div>
-            </div>
-            <div class="form-row">
-              <div>
-                <label for="pfWhatsapp">WhatsApp</label>
-                <input type="tel" id="pfWhatsapp" placeholder="Solo números, con código de área">
-              </div>
-              <div>
-                <label for="pfCategory">Rubro</label>
-                <select id="pfCategory">
-                  <option>Rotisería</option>
-                  <option>Pizzería</option>
-                  <option>Panadería</option>
-                  <option>Parrilla</option>
-                  <option>Heladería</option>
-                  <option>Casa de pastas</option>
-                  <option>Tienda de bebidas</option>
-                  <option>Tienda de ropa</option>
-                  <option>Otro</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div>
-                <label for="pfInstagram">Instagram</label>
-                <input type="text" id="pfInstagram" placeholder="usuario o link">
-              </div>
-              <div>
-                <label for="pfFacebook">Facebook</label>
-                <input type="text" id="pfFacebook" placeholder="usuario o link">
-              </div>
-            </div>
-            <div class="form-row full">
-              <div>
-                <label for="pfWebsite">Página oficial</label>
-                <input type="text" id="pfWebsite" placeholder="https://tunegocio.com">
-              </div>
-            </div>
-            <div class="divider"></div>
-            <label style="margin-bottom:10px;">Horarios de atención</label>
-            <div id="pfHoursEditor"></div>
-            <div class="divider"></div>
-            <div class="form-actions">
-              <button type="submit" class="btn btn-navy">Guardar perfil</button>
-              <span class="form-msg" id="profileMsg"></span>
-            </div>
-          </form>
-        </div>
-
-        <div class="panel">
-          <h3>Catálogo de productos</h3>
-          <p class="sub">Todo lo que cargues acá aparece en tu página pública y en la búsqueda.</p>
-          <form id="productForm">
-            <div class="form-row">
-              <div>
-                <label for="pName">Producto</label>
-                <input type="text" id="pName" required placeholder="Ej. Milanesa napolitana">
-              </div>
-              <div>
-                <label for="pPrice">Precio</label>
-                <input type="number" id="pPrice" min="0" step="1" required placeholder="0">
-              </div>
-            </div>
-            <div class="form-row full">
-              <div>
-                <label for="pDesc">Descripción (opcional)</label>
-                <input type="text" id="pDesc" placeholder="Ej. Con papas fritas">
-              </div>
-            </div>
-            <div class="form-row full">
-              <div>
-                <label for="pImage" style="margin-bottom:4px;">Fotos del producto (opcional, podés subir varias)</label>
-                <input type="file" id="pImage" accept="image/*" multiple>
-                <div class="prod-gallery" id="productImgGallery"></div>
-              </div>
-            </div>
-            <div class="divider"></div>
-            <div class="form-actions">
-              <button type="submit" class="btn btn-flame" id="productSubmitBtn">Agregar producto</button>
-              <button type="button" class="btn-link" id="cancelEditBtn" hidden>Cancelar edición</button>
-              <span class="form-msg" id="productMsg"></span>
-            </div>
-          </form>
-          <div class="product-list" id="myProductList"></div>
-        </div>
-
-        <div class="panel panel-danger">
-          <h3>Eliminar mi negocio</h3>
-          <p class="sub">Tu negocio deja de aparecer en la búsqueda al instante y no vas a poder volver a entrar a este panel con esta cuenta. Tus datos y catálogo quedan guardados por si en algún momento necesitás reactivarlo -- escribinos si eso pasa.</p>
-          <button type="button" class="btn btn-outline-danger" id="deleteBusinessBtn">Eliminar mi negocio</button>
-          <span class="form-msg" id="deleteBusinessMsg"></span>
-        </div>
       </div>
     </div>
   </section>
@@ -1584,9 +1375,22 @@
       </div>
 
       <div class="panel" style="margin-top:24px;">
-        <h3>Membresías de negocios</h3>
-        <p class="sub">Activá, suspendé o dá de baja el acceso de cada negocio. Al suspender, su página pública sigue funcionando igual — solo se le bloquea guardar cambios en su panel. Al dar de baja, desaparece del todo de las búsquedas.</p>
+        <h3>Negocios que se ven en el sitio</h3>
+        <p class="sub">Vienen de Tiendaly y se actualizan solos cada pocos minutos. Cada dueño administra su tienda desde Tiendaly; si retira el permiso o deja de estar activo, desaparece de acá.</p>
+        <div class="form-actions" style="margin-bottom:12px;">
+          <button type="button" class="btn btn-outline btn-sm" id="syncTiendalyBtn">Actualizar ahora</button>
+          <span class="form-msg" id="syncTiendalyMsg"></span>
+        </div>
         <div id="membershipList"></div>
+      </div>
+
+      <div class="panel" style="margin-top:24px;">
+        <h3>Reporte del mes</h3>
+        <p class="sub">Para mostrarle al dueño del sitio cómo se usa. Son clics y vistas, no ventas: los pedidos se arreglan entre cliente y negocio.</p>
+        <div class="form-row">
+          <div><label for="reporteMes">Mes</label><input type="month" id="reporteMes"></div>
+        </div>
+        <div id="reporteBox"></div>
       </div>
 
       <div class="panel" style="margin-top:24px;">
@@ -1780,28 +1584,28 @@
   const API_BASE = 'https://cadeteria-centro-backend.onrender.com/api';
   const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID_ACA.apps.googleusercontent.com';
   const SESSION_KEY = 'cc_session';
-  const CATEGORIES = ['Rotisería','Pizzería','Panadería','Parrilla','Heladería','Casa de pastas','Tienda de bebidas','Tienda de ropa','Otro'];
-  // Los negocios se registran con un rubro específico de la lista de
-  // arriba, pero los chips de búsqueda agrupan varios rubros parecidos
-  // bajo un solo botón para no abrumar con una fila larga -- "Comidas"
-  // agrupa todo lo gastronómico en vez de mostrar Rotisería/Pizzería/
-  // Panadería/etc. como chips sueltos. "Comida china" queda en el grupo
-  // por si algún negocio viejo la tiene cargada así, aunque ya no se
-  // ofrezca como opción nueva al registrarse.
-  const CATEGORY_GROUPS = {
-    'Comidas': ['Rotisería','Pizzería','Panadería','Parrilla','Heladería','Casa de pastas','Comida china'],
-    'Bebidas': ['Tienda de bebidas'],
-    'Ropa': ['Tienda de ropa'],
-    'Otro': ['Otro'],
-  };
-  const CATEGORY_CHIPS = ['Todos', ...Object.keys(CATEGORY_GROUPS)];
-
+  const TIENDALY_REG = 'https://tiendaly.ar/registro?canal=cadeteria-centro';
+  let rubrosCache = { at: 0, list: [] };
   function categoryQueryValue(chip){
-    // Lo que se le manda al backend para ese chip: la lista de rubros
-    // reales separada por coma (el backend hace un IN() con eso), o null
-    // si es "Todos" (sin filtro).
-    if(chip === 'Todos') return null;
-    return (CATEGORY_GROUPS[chip] || [chip]).join(',');
+    // Los rubros salen de los negocios que hay en el sitio (vienen de Tiendaly): el chip es el rubro tal cual.
+    return chip === 'Todos' ? null : chip;
+  }
+  async function loadRubros(){
+    if(Date.now() - rubrosCache.at < 60000) return rubrosCache.list;
+    try{
+      const all = await apiFetch('/businesses');
+      const set = {};
+      all.forEach(b => { if(b.category) set[b.category] = (set[b.category] || 0) + 1; });
+      rubrosCache = { at: Date.now(), list: Object.keys(set).sort((a,b) => set[b]-set[a] || a.localeCompare(b)) };
+    }catch(e){ /* se queda con los rubros anteriores */ }
+    return rubrosCache.list;
+  }
+  // Conteo anónimo para el reporte mensual: sin cookies, sin IP y sin datos de la persona.
+  function track(kind, businessId){
+    try{
+      fetch(API_BASE + '/track', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ kind, businessId: businessId || null }), keepalive:true }).catch(() => {});
+    }catch(e){}
   }
   const AVATAR_COLORS = ['#14213D','#E6462A','#8A5F00','#1E7A3D'];
 
@@ -1816,8 +1620,6 @@
   let vipBannerTopIndex = 0;
   let vipBannerHeroIndex = 0;
   let vipBannerBottomIndex = 0;
-  let editingProductId = null;
-  let currentBusinessCache = null; // último negocio del panel, para no re-pedirlo en cada click
 
   const heroArtEl = document.getElementById('heroArt');
   const defaultHeroArtHtml = heroArtEl.innerHTML;
@@ -1830,7 +1632,6 @@
     ingresar: document.getElementById('view-ingresar'),
     recuperar: document.getElementById('view-recuperar'),
     restablecer: document.getElementById('view-restablecer'),
-    panel: document.getElementById('view-panel'),
     negocio: document.getElementById('view-negocio'),
     admin: document.getElementById('view-admin')
   };
@@ -1893,30 +1694,10 @@
 
   const registroChooser = document.getElementById('registroChooser');
   const registroCliente = document.getElementById('registroCliente');
-  const registroNegocio = document.getElementById('registroNegocio');
   const clientForm = document.getElementById('clientForm');
   const clientRegisterMsg = document.getElementById('clientRegisterMsg');
-  const registerForm = document.getElementById('registerForm');
-  const registerMsg = document.getElementById('registerMsg');
   const loginForm = document.getElementById('loginForm');
   const loginMsg = document.getElementById('loginMsg');
-
-  const myBizSelectWrap = document.getElementById('myBizSelectWrap');
-  const viewPublicLink = document.getElementById('viewPublicLink');
-  const panelTitle = document.getElementById('panelTitle');
-
-  const profileForm = document.getElementById('profileForm');
-  const profileMsg = document.getElementById('profileMsg');
-  const avatarPreview = document.getElementById('avatarPreview');
-  const coverPreview = document.getElementById('coverPreview');
-  const pfAvatarInput = document.getElementById('pfAvatar');
-  const pfCoverInput = document.getElementById('pfCover');
-  let pendingAvatarDataUrl = '';
-  let pendingCoverDataUrl = '';
-
-  const productForm = document.getElementById('productForm');
-  const productMsg = document.getElementById('productMsg');
-  const myProductList = document.getElementById('myProductList');
 
   const tripForm = document.getElementById('tripForm');
   const tripMsg = document.getElementById('tripMsg');
@@ -2013,6 +1794,7 @@
     try{
       const raw = localStorage.getItem(SESSION_KEY);
       session = raw ? JSON.parse(raw) : null;
+      if(session && session.type === 'negocio'){ session = null; localStorage.removeItem(SESSION_KEY); }   // los negocios ya no inician sesión acá
     }catch(e){ session = null; }
   }
 
@@ -2028,7 +1810,6 @@
     const h = location.hash;
     if(h === '#/registro') return { name:'registro', sub:'chooser' };
     if(h === '#/registro/cliente') return { name:'registro', sub:'cliente' };
-    if(h === '#/registro/negocio') return { name:'registro', sub:'negocio' };
     if(h === '#/ingresar') return { name:'ingresar' };
     if(h === '#/recuperar') return { name:'recuperar' };
     if(h.indexOf('#/restablecer') === 0){
@@ -2036,7 +1817,6 @@
       const params = new URLSearchParams(qIndex >= 0 ? h.slice(qIndex + 1) : '');
       return { name:'restablecer', token: params.get('token') || '' };
     }
-    if(h === '#/panel') return { name:'panel' };
     if(h === '#/admin') return { name:'admin' };
     if(h.indexOf('#/negocio/') === 0) return { name:'negocio', id: h.replace('#/negocio/','') };
     return { name:'home' };
@@ -2049,7 +1829,6 @@
   function showRegistroSub(sub){
     registroChooser.hidden = sub !== 'chooser';
     registroCliente.hidden = sub !== 'cliente';
-    registroNegocio.hidden = sub !== 'negocio';
   }
 
   function renderHeaderAuthUI(){
@@ -2061,13 +1840,7 @@
       `;
       return;
     }
-    if(session.type === 'negocio'){
-      headerAuthArea.innerHTML = `
-        <span class="header-greeting">Hola, <strong>${escapeHtml(session.name)}</strong></span>
-        <a href="#/panel" class="btn btn-outline btn-sm">Mi negocio</a>
-        <button type="button" class="btn-link" id="logoutBtn">Cerrar sesión</button>
-      `;
-    } else if(session.type === 'admin'){
+    if(session.type === 'admin'){
       headerAuthArea.innerHTML = `
         <a href="#/admin" class="btn btn-navy btn-sm">Panel admin</a>
         <button type="button" class="btn-link" id="logoutBtn">Cerrar sesión</button>
@@ -2104,13 +1877,6 @@
     } else if(route.name === 'restablecer'){
       showView('restablecer');
       initRestablecer(route.token);
-    } else if(route.name === 'panel'){
-      if(!session || session.type !== 'negocio'){
-        location.hash = '#/ingresar';
-        return;
-      }
-      showView('panel');
-      await renderPanel();
     } else if(route.name === 'admin'){
       if(!session || session.type !== 'admin'){
         location.hash = '#/ingresar';
@@ -2123,6 +1889,7 @@
       await renderPublicBusiness(route.id);
     } else {
       showView('home');
+      await loadRubros();
       renderChips();
       await renderListings();
       await renderMyTrips();
@@ -2133,7 +1900,7 @@
   /* ---------- HOME: LISTADO Y BÚSQUEDA ---------- */
   function renderChips(){
     chipRow.innerHTML = '';
-    CATEGORY_CHIPS.forEach(cat => {
+    ['Todos', ...rubrosCache.list].forEach(cat => {
       const chip = document.createElement('button');
       chip.className = 'chip' + (cat === activeCategory ? ' active' : '');
       chip.type = 'button';
@@ -2185,7 +1952,7 @@
         <div class="empty-state">
           <h3>Todavía no hay negocios acá</h3>
           <p>Sé el primer negocio de tu zona en aparecer en Cadetería Centro.</p>
-          <a href="#/registro" class="btn btn-flame">Registrar mi negocio</a>
+          <a href="https://tiendaly.ar/registro?canal=cadeteria-centro" target="_blank" rel="noopener" class="btn btn-flame">Crear mi tienda en Tiendaly</a>
         </div>`;
       return;
     }
@@ -2284,44 +2051,6 @@
     });
   }
 
-  /* ---------- REGISTRO: NEGOCIO ---------- */
-  registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    registerMsg.textContent = '';
-    registerMsg.className = 'form-msg';
-
-    const name = document.getElementById('bName').value.trim();
-    const category = document.getElementById('bCategory').value;
-    const email = document.getElementById('bEmail').value.trim();
-    const password = document.getElementById('bPassword').value;
-    const password2 = document.getElementById('bPassword2').value;
-
-    if(!name || !category || !email || !password || !password2){
-      registerMsg.textContent = 'Completá todos los campos.';
-      registerMsg.classList.add('error');
-      return;
-    }
-    if(password !== password2){
-      registerMsg.textContent = 'Las contraseñas no coinciden.';
-      registerMsg.classList.add('error');
-      return;
-    }
-
-    try{
-      const res = await apiFetch('/auth/register/business', {
-        method: 'POST',
-        body: JSON.stringify({ name, category, email, password, password2 })
-      });
-      session = { token: res.token, type: 'negocio', name: res.business.name, businessId: res.business.id };
-      saveSession();
-      registerForm.reset();
-      location.hash = '#/panel';
-    }catch(err){
-      registerMsg.textContent = err.message;
-      registerMsg.classList.add('error');
-    }
-  });
-
   /* ---------- REGISTRO: CLIENTE ---------- */
   clientForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -2382,18 +2111,13 @@
 
       if(res.type === 'admin'){
         session = { token: res.token, type: 'admin', name: res.name || 'Administrador' };
-      } else if(res.type === 'business'){
-        session = { token: res.token, type: 'negocio', name: res.business.name, businessId: res.business.id };
       } else {
         session = { token: res.token, type: 'cliente', name: res.client.name };
       }
       saveSession();
       loginForm.reset();
 
-      if(res.membershipWarning){
-        alert(res.membershipWarning);
-      }
-      location.hash = session.type === 'negocio' ? '#/panel' : (session.type === 'admin' ? '#/admin' : '#/');
+      location.hash = session.type === 'admin' ? '#/admin' : '#/';
     }catch(err){
       loginMsg.textContent = err.message;
       loginMsg.classList.add('error');
@@ -2475,132 +2199,11 @@
     }
   });
 
-  /* ---------- PANEL ---------- */
-  async function renderPanel(){
-    myBizSelectWrap.innerHTML = '';
-    exitEditMode();
-
-    let biz;
-    try{
-      biz = await apiFetch('/business/me');
-    }catch(err){
-      if(err.status === 401){
-        session = null;
-        saveSession();
-        location.hash = '#/ingresar';
-        return;
-      }
-      panelTitle.textContent = 'No pudimos cargar tu negocio';
-      return;
-    }
-
-    currentBusinessCache = biz;
-    panelTitle.textContent = `Panel de ${biz.name}`;
-    viewPublicLink.href = '#/negocio/' + biz.id;
-
-    document.getElementById('pfDesc').value = biz.description || '';
-    document.getElementById('pfAddress').value = biz.address || '';
-    document.getElementById('pfPhone').value = biz.phone || '';
-    document.getElementById('pfWhatsapp').value = biz.whatsapp || '';
-    document.getElementById('pfCategory').value = biz.category || 'Otro';
-    document.getElementById('pfInstagram').value = biz.instagram || '';
-    document.getElementById('pfFacebook').value = biz.facebook || '';
-    document.getElementById('pfWebsite').value = biz.website || '';
-
-    renderHoursEditor(biz.hours || {});
-    renderMapPreview(biz.lat, biz.lng, document.getElementById('pfMapWrap'), document.getElementById('pfMapPreview'), document.getElementById('pfMapLink'));
-
-    setPanelEditable(biz.canEdit !== false);
-
-    pendingAvatarDataUrl = '';
-    pendingCoverDataUrl = '';
-    pfAvatarInput.value = '';
-    pfCoverInput.value = '';
-
-    renderAvatarPreview(biz);
-    renderMyProductList(biz);
-  }
-
   const DIAS_SEMANA = [
     { key: 'lun', label: 'Lunes' }, { key: 'mar', label: 'Martes' }, { key: 'mie', label: 'Miércoles' },
     { key: 'jue', label: 'Jueves' }, { key: 'vie', label: 'Viernes' }, { key: 'sab', label: 'Sábado' },
     { key: 'dom', label: 'Domingo' },
   ];
-
-  function renderHoursEditor(hours){
-    const wrap = document.getElementById('pfHoursEditor');
-    wrap.innerHTML = '';
-    DIAS_SEMANA.forEach(dia => {
-      const cfg = hours[dia.key] || {};
-      const closed = !!cfg.closed;
-      // Compatibilidad: horarios viejos guardados como {open, close} sueltos
-      // (un solo turno), en vez de la lista "ranges" nueva -- se muestran igual.
-      const ranges = Array.isArray(cfg.ranges) && cfg.ranges.length
-        ? cfg.ranges
-        : (cfg.open && cfg.close ? [{ open: cfg.open, close: cfg.close }] : [{ open: '09:00', close: '20:00' }]);
-
-      const row = document.createElement('div');
-      row.className = 'hours-row';
-      row.dataset.day = dia.key;
-      row.innerHTML = `
-        <div class="hours-row-top">
-          <span class="hours-day">${dia.label}</span>
-          <label class="hours-closed-label">
-            <input type="checkbox" class="hours-closed-check" style="width:auto;" ${closed ? 'checked' : ''}>
-            Cerrado
-          </label>
-        </div>
-        <div class="hours-times-list" ${closed ? 'hidden' : ''}></div>
-        <button type="button" class="hours-add-range" ${closed ? 'hidden' : ''}>+ Agregar otro turno (ej. después de la siesta)</button>
-      `;
-      const timesList = row.querySelector('.hours-times-list');
-      const addBtn = row.querySelector('.hours-add-range');
-
-      function addRangeRow(openVal, closeVal){
-        const r = document.createElement('div');
-        r.className = 'hours-times';
-        r.innerHTML = `
-          <input type="time" class="hours-open" value="${openVal || '09:00'}">
-          <span class="field-hint">a</span>
-          <input type="time" class="hours-close" value="${closeVal || '20:00'}">
-          <button type="button" class="hours-remove-range" aria-label="Quitar este turno">✕</button>
-        `;
-        r.querySelector('.hours-remove-range').addEventListener('click', () => {
-          if(timesList.children.length > 1) r.remove();
-        });
-        timesList.appendChild(r);
-      }
-      ranges.forEach(r => addRangeRow(r.open, r.close));
-      addBtn.addEventListener('click', () => addRangeRow('', ''));
-
-      const check = row.querySelector('.hours-closed-check');
-      check.addEventListener('change', () => {
-        timesList.hidden = check.checked;
-        addBtn.hidden = check.checked;
-      });
-      wrap.appendChild(row);
-    });
-  }
-
-  function collectHoursFromEditor(){
-    const hours = {};
-    document.querySelectorAll('#pfHoursEditor .hours-row').forEach(row => {
-      const day = row.dataset.day;
-      const closed = row.querySelector('.hours-closed-check').checked;
-      if(closed){
-        hours[day] = { closed: true };
-        return;
-      }
-      const ranges = [];
-      row.querySelectorAll('.hours-times').forEach(r => {
-        const openVal = r.querySelector('.hours-open').value;
-        const closeVal = r.querySelector('.hours-close').value;
-        if(openVal && closeVal) ranges.push({ open: openVal, close: closeVal });
-      });
-      hours[day] = { closed: false, ranges: ranges.length ? ranges : [{ open: '09:00', close: '20:00' }] };
-    });
-    return hours;
-  }
 
   function renderMapPreview(lat, lng, wrapEl, previewEl, linkEl){
     if(lat == null || lng == null){
@@ -2613,256 +2216,6 @@
     previewEl.innerHTML = `<iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&marker=${lat},${lng}" title="Ubicación en el mapa"></iframe>`;
     linkEl.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   }
-
-  function setPanelEditable(canEdit){
-    const banner = document.getElementById('membershipBanner');
-    if(canEdit){
-      banner.hidden = true;
-    } else {
-      banner.hidden = false;
-      banner.textContent = 'Tu membresía no está al día: podés ver todo tu negocio, pero no vas a poder guardar cambios ni cargar productos hasta regularizarla. Contactá a Cadetería Centro para reactivar tu cuenta.';
-    }
-    [profileForm, productForm].forEach(form => {
-      form.querySelectorAll('input, select, textarea, button').forEach(el => { el.disabled = !canEdit; });
-    });
-    if(deleteBusinessBtn) deleteBusinessBtn.disabled = !canEdit;
-  }
-
-  function renderAvatarPreview(biz){
-    avatarPreview.style.background = pendingAvatarDataUrl || biz.avatarUrl ? 'transparent' : colorFor(biz.id);
-    avatarPreview.innerHTML = (pendingAvatarDataUrl || biz.avatarUrl)
-      ? `<img src="${pendingAvatarDataUrl || biz.avatarUrl}" alt="">`
-      : initials(biz.name);
-    const coverSrc = pendingCoverDataUrl || biz.coverUrl;
-    coverPreview.style.background = coverSrc
-      ? `url('${coverSrc}') center/cover no-repeat`
-      : 'linear-gradient(135deg, var(--navy), var(--flame))';
-  }
-
-  pfAvatarInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if(!file || !currentBusinessCache) return;
-    try{
-      pendingAvatarDataUrl = await fileToResizedDataUrl(file, 300, 0.85);
-      renderAvatarPreview(currentBusinessCache);
-    }catch(err){
-      profileMsg.textContent = 'No pudimos procesar esa imagen.';
-      profileMsg.className = 'form-msg error';
-    }
-  });
-
-  pfCoverInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if(!file || !currentBusinessCache) return;
-    try{
-      pendingCoverDataUrl = await fileToResizedDataUrl(file, 1000, 0.8);
-      renderAvatarPreview(currentBusinessCache);
-    }catch(err){
-      profileMsg.textContent = 'No pudimos procesar esa imagen.';
-      profileMsg.className = 'form-msg error';
-    }
-  });
-
-  profileForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    profileMsg.textContent = '';
-    profileMsg.className = 'form-msg';
-
-    const payload = {
-      description: document.getElementById('pfDesc').value.trim(),
-      address: document.getElementById('pfAddress').value.trim(),
-      phone: document.getElementById('pfPhone').value.trim(),
-      whatsapp: document.getElementById('pfWhatsapp').value.trim(),
-      category: document.getElementById('pfCategory').value,
-      instagram: document.getElementById('pfInstagram').value.trim(),
-      facebook: document.getElementById('pfFacebook').value.trim(),
-      website: document.getElementById('pfWebsite').value.trim(),
-      hours: collectHoursFromEditor(),
-    };
-    if(pendingAvatarDataUrl) payload.avatarUrl = pendingAvatarDataUrl;
-    if(pendingCoverDataUrl) payload.coverUrl = pendingCoverDataUrl;
-
-    try{
-      const biz = await apiFetch('/business/me', { method: 'PUT', body: JSON.stringify(payload) });
-      currentBusinessCache = biz;
-      profileMsg.textContent = 'Perfil guardado.';
-      profileMsg.classList.add('success');
-      renderAvatarPreview(biz);
-      renderMapPreview(biz.lat, biz.lng, document.getElementById('pfMapWrap'), document.getElementById('pfMapPreview'), document.getElementById('pfMapLink'));
-    }catch(err){
-      profileMsg.textContent = err.message;
-      profileMsg.classList.add('error');
-    }
-  });
-
-  const deleteBusinessBtn = document.getElementById('deleteBusinessBtn');
-  const deleteBusinessMsg = document.getElementById('deleteBusinessMsg');
-  if(deleteBusinessBtn){
-    deleteBusinessBtn.addEventListener('click', async () => {
-      const nombre = (currentBusinessCache && currentBusinessCache.name) || 'tu negocio';
-      if(!confirm(`¿Seguro que querés eliminar "${nombre}"? Va a desaparecer al instante de las búsquedas y no vas a poder volver a entrar a este panel con esta cuenta.`)) return;
-
-      deleteBusinessBtn.disabled = true;
-      deleteBusinessMsg.textContent = '';
-      deleteBusinessMsg.className = 'form-msg';
-      try{
-        await apiFetch('/business/me', { method: 'DELETE' });
-        session = null;
-        saveSession();
-        location.hash = '#/';
-        alert('Tu negocio fue eliminado. Si en algún momento necesitás reactivarlo, contactanos.');
-        renderHeaderAuthUI();
-        render();
-      }catch(err){
-        deleteBusinessBtn.disabled = false;
-        deleteBusinessMsg.textContent = err.message;
-        deleteBusinessMsg.classList.add('error');
-      }
-    });
-  }
-
-  function renderMyProductList(biz){
-    const canEdit = biz.canEdit !== false;
-    myProductList.innerHTML = '';
-    if(!biz.products || biz.products.length === 0){
-      myProductList.innerHTML = `<p class="sub" style="margin:16px 0 0;">Este negocio todavía no tiene productos cargados.</p>`;
-      return;
-    }
-    biz.products.forEach(p => {
-      const row = document.createElement('div');
-      row.className = 'product-item';
-      const thumb = p.image
-        ? `<img class="prod-thumb" src="${p.image}" alt="">`
-        : `<div class="prod-thumb"></div>`;
-      const actionsHtml = canEdit ? `
-        <div style="display:flex; gap:12px; align-items:center;">
-          <button class="del" type="button" data-action="edit" data-id="${p.id}">Editar</button>
-          <button class="del" type="button" data-action="del" data-id="${p.id}">Quitar</button>
-        </div>
-      ` : '';
-      row.innerHTML = `
-        <div class="product-item-text">
-          ${thumb}
-          <span>${escapeHtml(p.name)} — $${escapeHtml(String(p.price))}${(p.images && p.images.length > 1) ? ` · ${p.images.length} fotos` : ''}</span>
-        </div>
-        ${actionsHtml}
-      `;
-      if(canEdit){
-        row.querySelector('[data-action="del"]').addEventListener('click', async () => {
-          try{
-            await apiFetch('/business/me/products/' + p.id, { method: 'DELETE' });
-            if(editingProductId === p.id) exitEditMode();
-            const fresh = await apiFetch('/business/me');
-            currentBusinessCache = fresh;
-            renderMyProductList(fresh);
-          }catch(err){
-            productMsg.textContent = err.message;
-            productMsg.className = 'form-msg error';
-          }
-        });
-        row.querySelector('[data-action="edit"]').addEventListener('click', () => {
-          enterEditMode(p);
-        });
-      }
-      myProductList.appendChild(row);
-    });
-  }
-
-  const pImageInput = document.getElementById('pImage');
-  const productImgGallery = document.getElementById('productImgGallery');
-  const productSubmitBtn = document.getElementById('productSubmitBtn');
-  const cancelEditBtn = document.getElementById('cancelEditBtn');
-  let pendingProductImages = [];
-
-  function renderProductGallery(){
-    productImgGallery.innerHTML = pendingProductImages.map((img, i) => `
-      <div class="prod-gallery-item">
-        <img src="${img}" alt="">
-        <button type="button" data-i="${i}" aria-label="Quitar imagen">✕</button>
-      </div>
-    `).join('');
-    productImgGallery.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        pendingProductImages.splice(parseInt(btn.dataset.i, 10), 1);
-        renderProductGallery();
-      });
-    });
-  }
-
-  function enterEditMode(p){
-    editingProductId = p.id;
-    document.getElementById('pName').value = p.name;
-    document.getElementById('pPrice').value = p.price;
-    document.getElementById('pDesc').value = p.desc || '';
-    pImageInput.value = '';
-    pendingProductImages = (p.images && p.images.length) ? p.images.slice() : (p.image ? [p.image] : []);
-    renderProductGallery();
-    productSubmitBtn.textContent = 'Guardar cambios';
-    cancelEditBtn.hidden = false;
-    document.getElementById('pName').scrollIntoView({behavior:'smooth', block:'center'});
-  }
-
-  function exitEditMode(){
-    editingProductId = null;
-    pendingProductImages = [];
-    productForm.reset();
-    pImageInput.value = '';
-    renderProductGallery();
-    productSubmitBtn.textContent = 'Agregar producto';
-    cancelEditBtn.hidden = true;
-  }
-
-  cancelEditBtn.addEventListener('click', exitEditMode);
-
-  pImageInput.addEventListener('change', async (e) => {
-    const files = Array.from(e.target.files || []);
-    if(files.length === 0) return;
-    try{
-      const dataUrls = await Promise.all(files.map(f => fileToResizedDataUrl(f, 700, 0.8)));
-      pendingProductImages.push(...dataUrls);
-      renderProductGallery();
-      pImageInput.value = '';
-    }catch(err){
-      productMsg.textContent = 'No pudimos procesar alguna de esas imágenes.';
-      productMsg.className = 'form-msg error';
-    }
-  });
-
-  productForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    productMsg.textContent = '';
-    productMsg.className = 'form-msg';
-
-    const name = document.getElementById('pName').value.trim();
-    const price = document.getElementById('pPrice').value;
-    const desc = document.getElementById('pDesc').value.trim();
-
-    if(!name || price === ''){
-      productMsg.textContent = 'Completá el nombre y el precio.';
-      productMsg.classList.add('error');
-      return;
-    }
-
-    const payload = { name, price, desc, images: pendingProductImages };
-
-    try{
-      if(editingProductId){
-        await apiFetch('/business/me/products/' + editingProductId, { method: 'PUT', body: JSON.stringify(payload) });
-      } else {
-        await apiFetch('/business/me/products', { method: 'POST', body: JSON.stringify(payload) });
-      }
-      const wasEditing = !!editingProductId;
-      exitEditMode();
-      productMsg.textContent = wasEditing ? 'Producto actualizado.' : 'Producto agregado.';
-      productMsg.classList.add('success');
-      const fresh = await apiFetch('/business/me');
-      currentBusinessCache = fresh;
-      renderMyProductList(fresh);
-    }catch(err){
-      productMsg.textContent = err.message;
-      productMsg.classList.add('error');
-    }
-  });
 
   /* ---------- PÁGINA PÚBLICA DEL NEGOCIO ---------- */
   async function renderPublicBusiness(id){
@@ -2912,6 +2265,7 @@
     avatar.style.background = biz.avatarUrl ? 'transparent' : colorFor(biz.id);
     avatar.innerHTML = avatarHtml(biz);
 
+    track('business_view', biz.id);
     nameEl.textContent = biz.name;
     catEl.textContent = biz.category;
     openBadgeEl.innerHTML = openStatusBadge(biz.isOpenNow);
@@ -2931,6 +2285,16 @@
       a.target = '_blank';
       a.rel = 'noopener';
       a.textContent = 'Escribir por WhatsApp';
+      a.addEventListener('click', () => track('whatsapp_click', biz.id));
+      contactRow.appendChild(a);
+    }
+    if(biz.tiendalyUrl){
+      const a = document.createElement('a');
+      a.className = 'contact-btn';
+      a.href = biz.tiendalyUrl;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = 'Ver su tienda online';
       contactRow.appendChild(a);
     }
     if(biz.instagram){
@@ -3502,22 +2866,21 @@
     try{
       const stats = await apiFetch('/admin/stats');
       document.getElementById('adminStats').innerHTML = `
-        <div class="stat-item"><span>Negocios registrados</span><strong>${stats.businesses}</strong></div>
+        <div class="stat-item"><span>Negocios en el sitio</span><strong>${stats.businesses}</strong></div>
         <div class="stat-item"><span>Productos publicados</span><strong>${stats.products}</strong></div>
         <div class="stat-item"><span>Viajes particulares pendientes</span><strong>${stats.pendingTrips}</strong></div>
-        <div class="stat-item"><span>Cuentas registradas</span><strong>${stats.accounts}</strong></div>
+        <div class="stat-item"><span>Clientes registrados</span><strong>${stats.accounts}</strong></div>
       `;
     }catch(err){
       document.getElementById('adminStats').innerHTML = `<p class="sub" style="margin:0;">No pudimos cargar las estadísticas.</p>`;
     }
 
     await renderMembershipList();
+    cargarReporte();
     loadVipBanners();
     loadStores();
     loadQuickProductsAdmin();
   }
-
-  const STATUS_LABELS = { trial: 'Prueba', active: 'Activo', suspended: 'Suspendido', cancelled: 'Dado de baja' };
 
   async function renderMembershipList(){
     const wrap = document.getElementById('membershipList');
@@ -3529,47 +2892,59 @@
       wrap.innerHTML = `<p class="sub" style="margin:0;">No pudimos cargar los negocios.</p>`;
       return;
     }
-
     if(businesses.length === 0){
-      wrap.innerHTML = `<p class="sub" style="margin:0;">Todavía no hay negocios registrados.</p>`;
+      wrap.innerHTML = `<p class="sub" style="margin:0;">Todavía no hay negocios de Tiendaly en el sitio.</p>`;
       return;
     }
-
-    wrap.innerHTML = '';
-    businesses.forEach(biz => {
-      const status = biz.subscriptionStatus || 'trial';
-      const row = document.createElement('div');
-      row.className = 'membership-row';
-      row.innerHTML = `
+    wrap.innerHTML = businesses.map(biz => `
+      <div class="membership-row">
         <div class="membership-info">
           <strong>${escapeHtml(biz.name)}</strong>
-          <span>${escapeHtml(biz.email)} — ${escapeHtml(biz.category)}</span>
+          <span>${escapeHtml(biz.category || '')} — ${(biz.products || []).length} productos</span>
         </div>
-        <span class="status-pill ${status}">${STATUS_LABELS[status] || status}</span>
-        <div class="membership-actions">
-          <button type="button" class="mship-btn${status==='active'?' active-state':''}" data-status="active">Activar</button>
-          <button type="button" class="mship-btn${status==='suspended'?' active-state':''}" data-status="suspended">Suspender</button>
-          <button type="button" class="mship-btn${status==='cancelled'?' active-state':''}" data-status="cancelled">Dar de baja</button>
-        </div>
-      `;
-      row.querySelectorAll('.mship-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const newStatus = btn.dataset.status;
-          if(newStatus === status) return;
-          if(newStatus === 'cancelled' && !confirm(`¿Seguro que querés dar de baja a "${biz.name}"? Va a desaparecer por completo de las búsquedas.`)) return;
-          try{
-            await apiFetch('/admin/businesses/' + biz.id + '/subscription', {
-              method: 'PUT', body: JSON.stringify({ status: newStatus })
-            });
-            await renderMembershipList();
-          }catch(err){
-            alert('No se pudo actualizar: ' + err.message);
-          }
-        });
-      });
-      wrap.appendChild(row);
-    });
+        ${biz.tiendalyUrl ? `<a class="btn btn-outline btn-sm" href="${escapeHtml(biz.tiendalyUrl)}" target="_blank" rel="noopener">Ver en Tiendaly</a>` : ''}
+      </div>`).join('');
   }
+
+  const syncBtn = document.getElementById('syncTiendalyBtn');
+  const syncMsg = document.getElementById('syncTiendalyMsg');
+  syncBtn.addEventListener('click', async () => {
+    syncMsg.textContent = 'Actualizando…'; syncMsg.className = 'form-msg';
+    try{
+      const r = await apiFetch('/admin/sync-tiendaly', { method: 'POST' });
+      syncMsg.textContent = `Listo: ${r.negocios} negocios, ${r.productos} productos.`;
+      rubrosCache.at = 0;
+      await renderMembershipList();
+    }catch(err){
+      syncMsg.textContent = err.message; syncMsg.className = 'form-msg error';
+    }
+  });
+
+  const reporteMes = document.getElementById('reporteMes');
+  async function cargarReporte(){
+    const box = document.getElementById('reporteBox');
+    box.innerHTML = `<p class="sub">Cargando…</p>`;
+    try{
+      const r = await apiFetch('/admin/reporte?mes=' + encodeURIComponent(reporteMes.value || ''));
+      if(!reporteMes.value) reporteMes.value = r.mes;
+      const s = r.sitio, t = r.tiendaly;
+      const fila = (a, b) => `<div class="stat-item"><span>${a}</span><strong>${b}</strong></div>`;
+      box.innerHTML = `<div class="stat-row">
+        ${fila('Visitas al sitio', s.visitas)}
+        ${fila('Negocios vistos', s.negocios_vistos)}
+        ${fila('Clics a WhatsApp de negocios', s.clics_whatsapp)}
+        ${fila('Pedidos de cadetería (formularios)', s.pedidos_cadeteria)}
+        ${t ? fila('Solicitudes de envío desde las tiendas', t.solicitudes_envio) : ''}
+        ${t ? fila('Clics a WhatsApp en las tiendas', t.clics_whatsapp) : ''}
+      </div>
+      ${s.por_negocio.length ? `<h4 style="margin:18px 0 6px;">Por negocio (en este sitio)</h4>` + s.por_negocio.map(n =>
+        `<div class="membership-row"><div class="membership-info"><strong>${escapeHtml(n.negocio)}</strong><span>${n.vistas} vistas · ${n.clics_whatsapp} clics a WhatsApp</span></div></div>`).join('') : ''}
+      ${t ? '' : `<p class="sub" style="margin-top:12px;">No pudimos leer los datos de Tiendaly en este momento.</p>`}`;
+    }catch(err){
+      box.innerHTML = `<p class="sub">No pudimos cargar el reporte.</p>`;
+    }
+  }
+  reporteMes.addEventListener('change', cargarReporte);
 
   function renderBannerImgList(){
     const images = siteSettings.heroImages || [];
@@ -4400,6 +3775,7 @@
       }
     }, 250);
   }
+  try{ if(!sessionStorage.getItem('cc_visit')){ sessionStorage.setItem('cc_visit','1'); track('visit'); } }catch(e){ track('visit'); }
   init();
 })();
 </script>
