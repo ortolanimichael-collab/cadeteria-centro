@@ -752,6 +752,55 @@
     .brand-mark{width:44px;height:44px;border-radius:11px;}
     .promo-bar{font-size:1.05rem;padding:12px 0;}
   }
+
+  /* ---------- ARMADO DEL PRODUCTO Y PEDIDO (carrito) ---------- */
+  .opt-group{border:0;padding:0;margin:20px 0 0;min-width:0;}
+  .opt-group legend{font-family:var(--font-display);font-weight:700;font-size:1.02rem;padding:0;}
+  .opt-rule{color:var(--ink-soft);font-size:0.82rem;margin:2px 0 4px;}
+  .opt-row{display:flex;align-items:center;gap:12px;padding:11px 2px;border-bottom:1px solid var(--line);cursor:pointer;min-height:46px;}
+  .opt-row input{width:22px;height:22px;accent-color:var(--flame);flex:none;margin:0;}
+  .opt-row .opt-name{flex:1;}
+  .opt-row .opt-extra{font-weight:700;font-size:0.9rem;color:var(--flame-dark);white-space:nowrap;}
+  .opt-row.disabled{opacity:0.45;cursor:not-allowed;}
+  .opt-err{color:var(--flame-dark);font-weight:700;font-size:0.85rem;margin-top:4px;}
+  .opt-err:empty{display:none;}
+  .opt-note-label{display:block;font-weight:600;font-size:0.9rem;margin-top:20px;}
+  .opt-note{display:block;width:100%;margin-top:6px;padding:10px;border:1.5px solid var(--line);border-radius:10px;font:inherit;resize:vertical;}
+  .opt-footer{display:flex;gap:12px;align-items:center;margin-top:20px;}
+  .qty-stepper{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:var(--radius-pill);overflow:hidden;flex:none;}
+  .qty-stepper button{border:0;background:#fff;width:40px;height:42px;font-size:1.25rem;font-weight:700;cursor:pointer;color:var(--ink);}
+  .qty-stepper button:hover{background:var(--bg);}
+  .qty-stepper span{min-width:30px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums;}
+  .btn-add{flex:1;border:0;background:var(--flame);color:#fff;font:inherit;font-weight:700;padding:13px 16px;border-radius:var(--radius-pill);cursor:pointer;}
+  .btn-add:hover{background:var(--flame-dark);}
+  .cart-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:150;
+    width:min(560px,calc(100% - 28px));display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--navy);color:#fff;border:0;border-radius:var(--radius-pill);padding:14px 20px;font:inherit;font-weight:700;cursor:pointer;
+    box-shadow:0 8px 24px rgba(20,24,27,0.35);}
+  .cart-bar[hidden]{display:none;}
+  .cart-bar .cart-count{background:var(--flame);border-radius:var(--radius-pill);padding:2px 10px;margin-right:8px;}
+  body.has-cart{padding-bottom:84px;}
+  .cart-head{padding:22px 26px 6px;}
+  .cart-head h3{font-family:var(--font-display);font-size:1.35rem;margin:0 0 2px;}
+  .cart-line{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:14px 0;border-bottom:1px solid var(--line);}
+  .cart-line .cl-name{font-weight:600;}
+  .cart-line .cl-det{grid-column:1;color:var(--ink-soft);font-size:0.85rem;line-height:1.35;}
+  .cart-line .cl-sub{font-weight:700;text-align:right;}
+  .cart-line .cl-ctl{grid-column:1 / -1;display:flex;align-items:center;gap:12px;margin-top:4px;}
+  .cart-line .qty-stepper button{width:34px;height:32px;font-size:1.05rem;}
+  .cart-line .cl-del{border:0;background:none;color:var(--flame-dark);font:inherit;font-size:0.85rem;cursor:pointer;text-decoration:underline;padding:0;}
+  .cart-body{padding:0 26px 26px;}
+  .cart-field{display:block;margin-top:14px;font-weight:600;font-size:0.9rem;}
+  .cart-field input[type=text],.cart-field textarea{display:block;width:100%;margin-top:6px;padding:10px;border:1.5px solid var(--line);border-radius:10px;font:inherit;font-weight:400;}
+  .cart-radios{display:flex;gap:18px;margin-top:8px;font-weight:400;}
+  .cart-radios input{accent-color:var(--flame);}
+  .cart-total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1.25rem;font-weight:700;margin-top:18px;}
+  .cart-hint{color:var(--ink-soft);font-size:0.8rem;margin:6px 0 0;}
+  .cart-err{color:var(--flame-dark);font-weight:700;font-size:0.9rem;margin-top:10px;}
+  .cart-err:empty{display:none;}
+  .cart-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+  .cart-clear{border:0;background:none;color:var(--ink-soft);font:inherit;cursor:pointer;text-decoration:underline;}
+  .cc-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-weight:600;z-index:300;}
 </style>
 </head>
 <body>
@@ -1260,6 +1309,8 @@
 </div>
 
 <div id="productModalRoot"></div>
+<div id="cartRoot"></div>
+<button type="button" class="cart-bar" id="cartBar" hidden></button>
 
 <!-- ============ PANEL ADMINISTRADOR ============ -->
 <div class="view" id="view-admin" hidden>
@@ -1822,8 +1873,11 @@
     return { name:'home' };
   }
 
+  let currentViewName = 'home';
   function showView(name){
+    currentViewName = name;
     Object.keys(views).forEach(k => { views[k].hidden = (k !== name); });
+    renderCartBar();
   }
 
   function showRegistroSub(sub){
@@ -2044,7 +2098,7 @@
       card.addEventListener('click', async () => {
         try{
           const biz = await apiFetch('/businesses/' + item.bizId);
-          openProductModal(item, biz);
+          openProductModal((biz.products || []).find(x => x.id === item.id) || item, biz);
         }catch(err){ /* si falla, no pasa nada, el usuario puede reintentar */ }
       });
       cardGrid.appendChild(card);
@@ -2383,6 +2437,170 @@
     });
   }
 
+
+  /* ---------- PEDIDO: carrito de un solo negocio, se envía por WhatsApp ---------- */
+  const CART_KEY = 'cc_pedido';
+  let memCart = null;
+
+  function money(n){
+    return '$' + (Number(n) || 0).toLocaleString('es-AR', { maximumFractionDigits: 2 });
+  }
+  function cartLoad(){
+    try{
+      const c = JSON.parse(localStorage.getItem(CART_KEY));
+      if(c && Array.isArray(c.items) && c.items.length) return c;
+      return null;
+    }catch(e){ return memCart; }
+  }
+  function cartSave(c){
+    memCart = (c && c.items.length) ? c : null;
+    try{ if(memCart) localStorage.setItem(CART_KEY, JSON.stringify(memCart)); else localStorage.removeItem(CART_KEY); }catch(e){}
+    renderCartBar();
+  }
+  function cartTotal(c){ return c.items.reduce((t, i) => t + (i.price + i.extra) * i.qty, 0); }
+  function cartCount(c){ return c.items.reduce((t, i) => t + i.qty, 0); }
+
+  function ccToast(txt){
+    let t = document.getElementById('ccToast');
+    if(!t){ t = document.createElement('div'); t.id = 'ccToast'; t.className = 'cc-toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+    t.textContent = txt; t.hidden = false;
+    clearTimeout(t._t); t._t = setTimeout(() => { t.hidden = true; }, 1800);
+  }
+
+  // Un pedido es de un solo negocio. Devuelve false si el cliente decide no cambiar de negocio.
+  function addToCart(biz, product, detalle, extra, qty){
+    let c = cartLoad();
+    if(c && c.bizId !== biz.id){
+      if(!confirm('Tu pedido actual es de «' + c.bizName + '». ¿Lo vaciás para empezar uno nuevo con «' + biz.name + '»? (Cada pedido es de un solo negocio.)')) return false;
+      c = null;
+    }
+    if(!c) c = { bizId: biz.id, bizName: biz.name, whatsapp: biz.whatsapp || '', items: [] };
+    const k = product.id + '|' + detalle;
+    const it = c.items.find(i => i.k === k);
+    if(it) it.qty = Math.min(99, it.qty + qty);
+    else c.items.push({ k, pid: product.id, name: product.name, price: Number(product.price) || 0, extra: Number(extra) || 0, qty, detalle });
+    cartSave(c);
+    return true;
+  }
+
+  function renderCartBar(){
+    const bar = document.getElementById('cartBar');
+    if(!bar) return;
+    const c = cartLoad();
+    const visible = !!c && (currentViewName === 'home' || currentViewName === 'negocio');
+    bar.hidden = !visible;
+    document.body.classList.toggle('has-cart', visible);
+    if(visible) bar.innerHTML = `<span><span class="cart-count">${cartCount(c)}</span>Tu pedido · ${escapeHtml(c.bizName)}</span><span>${money(cartTotal(c))} · Ver</span>`;
+  }
+
+  function closeCart(){
+    document.getElementById('cartRoot').innerHTML = '';
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', onCartKeydown);
+  }
+  function onCartKeydown(e){ if(e.key === 'Escape') closeCart(); }
+
+  function cartMessage(c, f){
+    const L = ['Hola ' + c.bizName + '! Quiero hacer este pedido que vi en Cadetería Centro:', ''];
+    c.items.forEach(i => {
+      L.push('• ' + i.qty + ' x ' + i.name + ' — ' + money((i.price + i.extra) * i.qty));
+      if(i.detalle) L.push('   ↳ ' + i.detalle);
+    });
+    L.push('', '*Total: ' + money(cartTotal(c)) + '*');
+    L.push('Entrega: ' + (f.entrega === 'envio' ? 'envío a ' + f.direccion : 'retiro en el local'));
+    if(f.nombre) L.push('A nombre de: ' + f.nombre);
+    if(f.notas) L.push('Notas: ' + f.notas);
+    return L.join('\n');
+  }
+
+  function openCart(){
+    const root = document.getElementById('cartRoot');
+    let c = cartLoad();
+    if(!c){ closeCart(); return; }
+    const form = { nombre: '', entrega: 'retiro', direccion: '', notas: '' };
+    try{ Object.assign(form, JSON.parse(sessionStorage.getItem('cc_pedido_form')) || {}); }catch(e){}
+
+    function paint(keepFocus){
+      c = cartLoad();
+      if(!c){ closeCart(); return; }
+      root.innerHTML = `
+        <div class="product-modal-overlay" id="cartOverlay">
+          <div class="product-modal" role="dialog" aria-modal="true" aria-label="Tu pedido">
+            <button type="button" class="product-modal-close" id="cartClose" aria-label="Cerrar" style="background:var(--bg);">✕</button>
+            <div class="cart-head"><h3>Tu pedido</h3><div class="sub" style="margin:0;color:var(--ink-soft);">De <strong>${escapeHtml(c.bizName)}</strong></div></div>
+            <div class="cart-body">
+              <div id="cartLines">${c.items.map((i, ix) => `
+                <div class="cart-line">
+                  <div class="cl-name">${escapeHtml(i.name)}</div><div class="cl-sub">${money((i.price + i.extra) * i.qty)}</div>
+                  ${i.detalle ? `<div class="cl-det">${escapeHtml(i.detalle)}</div>` : ''}
+                  <div class="cl-ctl">
+                    <div class="qty-stepper"><button type="button" data-ix="${ix}" data-d="-1" aria-label="Quitar uno">−</button><span>${i.qty}</span><button type="button" data-ix="${ix}" data-d="1" aria-label="Sumar uno">+</button></div>
+                    <button type="button" class="cl-del" data-del="${ix}">Quitar</button>
+                  </div>
+                </div>`).join('')}</div>
+              <label class="cart-field">Tu nombre<input type="text" id="cartNombre" maxlength="80" value="${escapeHtml(form.nombre)}" autocomplete="name"></label>
+              <div class="cart-field">Entrega
+                <div class="cart-radios">
+                  <label><input type="radio" name="cartEntrega" value="retiro" ${form.entrega === 'envio' ? '' : 'checked'}> Retiro en el local</label>
+                  <label><input type="radio" name="cartEntrega" value="envio" ${form.entrega === 'envio' ? 'checked' : ''}> Envío</label>
+                </div>
+              </div>
+              <label class="cart-field" id="cartDirWrap" ${form.entrega === 'envio' ? '' : 'hidden'}>Dirección de entrega<input type="text" id="cartDir" maxlength="160" value="${escapeHtml(form.direccion)}" autocomplete="street-address"></label>
+              <label class="cart-field">Notas para el local (opcional)<textarea id="cartNotas" rows="2" maxlength="300">${escapeHtml(form.notas)}</textarea></label>
+              <div class="cart-total"><span>Total</span><span>${money(cartTotal(c))}</span></div>
+              <p class="cart-hint">El local confirma el precio final y el costo de envío por WhatsApp. El pago lo arreglás directamente con ellos.</p>
+              <div class="cart-err" id="cartErr" role="alert"></div>
+              <div class="cart-actions">
+                <button type="button" class="contact-btn whatsapp btn-block" id="cartSend" style="justify-content:center;border:0;cursor:pointer;">Enviar pedido por WhatsApp</button>
+                <button type="button" class="cart-clear" id="cartClear">Vaciar pedido</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      document.body.style.overflow = 'hidden';
+      const ov = document.getElementById('cartOverlay');
+      ov.addEventListener('click', e => { if(e.target === ov) closeCart(); });
+      document.getElementById('cartClose').addEventListener('click', closeCart);
+      const readForm = () => {
+        form.nombre = document.getElementById('cartNombre').value.trim();
+        form.entrega = root.querySelector('input[name=cartEntrega]:checked').value;
+        form.direccion = document.getElementById('cartDir').value.trim();
+        form.notas = document.getElementById('cartNotas').value.replace(/\s+/g, ' ').trim();
+        try{ sessionStorage.setItem('cc_pedido_form', JSON.stringify(form)); }catch(e){}
+      };
+      root.querySelectorAll('#cartNombre,#cartDir,#cartNotas').forEach(el => el.addEventListener('input', readForm));
+      root.querySelectorAll('input[name=cartEntrega]').forEach(r => r.addEventListener('change', () => {
+        readForm(); document.getElementById('cartDirWrap').hidden = form.entrega !== 'envio';
+      }));
+      root.querySelectorAll('.cart-line button[data-d]').forEach(b => b.addEventListener('click', () => {
+        readForm(); const cc = cartLoad(); const it = cc.items[+b.dataset.ix];
+        it.qty = Math.max(1, Math.min(99, it.qty + (+b.dataset.d))); cartSave(cc); paint();
+      }));
+      root.querySelectorAll('.cl-del').forEach(b => b.addEventListener('click', () => {
+        readForm(); const cc = cartLoad(); cc.items.splice(+b.dataset.del, 1); cartSave(cc); paint();
+      }));
+      document.getElementById('cartClear').addEventListener('click', () => {
+        if(confirm('¿Vaciar el pedido?')){ cartSave(null); closeCart(); }
+      });
+      document.getElementById('cartSend').addEventListener('click', () => {
+        readForm();
+        const err = document.getElementById('cartErr');
+        const digits = (c.whatsapp || '').replace(/[^0-9]/g, '');
+        if(!digits){ err.textContent = 'Este negocio todavía no cargó un WhatsApp de contacto.'; return; }
+        if(form.entrega === 'envio' && !form.direccion){ err.textContent = 'Poné la dirección de entrega.'; return; }
+        err.textContent = '';
+        const url = 'https://wa.me/' + digits + '?text=' + encodeURIComponent(cartMessage(c, form));
+        const w = window.open(url, '_blank', 'noopener');
+        if(!w) window.location.href = url;
+      });
+    }
+    paint();
+    document.addEventListener('keydown', onCartKeydown);
+    const first = document.getElementById('cartClose'); if(first) first.focus();
+  }
+  document.getElementById('cartBar').addEventListener('click', openCart);
+  renderCartBar();
+
   /* ---------- MODAL DE PRODUCTO ---------- */
   function openProductModal(product, biz){
     const root = document.getElementById('productModalRoot');
@@ -2407,9 +2625,10 @@
           ${thumbsHtml}
           <div class="product-modal-body">
             <h3>${escapeHtml(product.name)}</h3>
-            <span class="pprice" id="modalTotalPrice">$${escapeHtml(String(product.price))}</span>
+            <span class="pprice" id="modalTotalPrice">${money(product.price)}</span>
             ${product.desc ? `<p class="pdesc">${escapeHtml(product.desc)}</p>` : ''}
             <div class="product-modal-biz">De <strong>${escapeHtml(biz.name)}</strong> — ${escapeHtml(biz.category)}</div>
+            <div id="modalGroups"></div>
             <div id="modalCtaWrap"></div>
           </div>
         </div>
@@ -2425,26 +2644,104 @@
       });
     });
 
+    const groups = (Array.isArray(product.variantGroups) ? product.variantGroups : [])
+      .filter(g => g && Array.isArray(g.options) && g.options.length);
+    let qty = 1;
+
+    function ruleText(g){
+      if(g.type === 'remove') return 'Destildá lo que no querés';
+      if(g.type === 'single') return g.required ? 'Elegí una' : 'Elegí una (opcional)';
+      const mn = Math.max(g.min || 0, g.required ? 1 : 0), mx = g.max || 0;
+      if(mn && mx && mn === mx) return 'Elegí ' + mn;
+      if(mn && mx) return 'Elegí de ' + mn + ' a ' + mx;
+      if(mn) return 'Elegí al menos ' + mn;
+      if(mx) return 'Elegí hasta ' + mx + ' (opcional)';
+      return 'Elegí las que quieras (opcional)';
+    }
+
+    document.getElementById('modalGroups').innerHTML = groups.map((g, gi) => {
+      const one = g.type === 'single', rem = g.type === 'remove';
+      const none = one && !g.required
+        ? `<label class="opt-row"><input type="radio" name="g${gi}" value="-1" ${g.options.some(o => o.checked) ? '' : 'checked'}><span class="opt-name">Ninguna</span></label>` : '';
+      const rows = g.options.map((o, oi) => `
+        <label class="opt-row"><input type="${one ? 'radio' : 'checkbox'}" ${one ? `name="g${gi}"` : ''} data-g="${gi}" data-o="${oi}" ${rem || o.checked ? 'checked' : ''}>
+          <span class="opt-name">${escapeHtml(o.name)}</span>${o.price ? `<span class="opt-extra">+ ${money(o.price)}</span>` : ''}</label>`).join('');
+      return `<fieldset class="opt-group" data-gi="${gi}"><legend>${escapeHtml(g.name)}</legend><div class="opt-rule">${ruleText(g)}</div>${none}${rows}<div class="opt-err" role="alert"></div></fieldset>`;
+    }).join('');
+
+    // Lo que eligió el cliente: devuelve { extra, partes, errores: {gi: texto} }
     function currentSelections(){
-      return { chosen: [], total: product.price };
+      let extra = 0; const partes = [], errores = {};
+      groups.forEach((g, gi) => {
+        const boxes = [...root.querySelectorAll(`input[data-g="${gi}"]`)];
+        const on = boxes.filter(b => b.checked).map(b => g.options[+b.dataset.o]);
+        if(g.type === 'remove'){
+          boxes.filter(b => !b.checked).forEach(b => partes.push('SIN ' + g.options[+b.dataset.o].name));
+          return;
+        }
+        const mn = g.type === 'single' ? (g.required ? 1 : 0) : Math.max(g.min || 0, g.required ? 1 : 0);
+        if(on.length < mn) errores[gi] = mn === 1 ? 'Elegí una opción.' : 'Elegí al menos ' + mn + '.';
+        if(on.length){
+          on.forEach(o => { extra += Number(o.price) || 0; });
+          partes.push(g.name + ': ' + on.map(o => o.name + (o.price ? ' (+' + money(o.price) + ')' : '')).join(', '));
+        }
+      });
+      return { extra, partes, errores };
+    }
+
+    function refreshGroups(){
+      groups.forEach((g, gi) => {
+        if(g.type !== 'multiple' || !g.max) return;
+        const boxes = [...root.querySelectorAll(`input[data-g="${gi}"]`)];
+        const n = boxes.filter(b => b.checked).length;
+        boxes.forEach(b => { b.disabled = !b.checked && n >= g.max; b.closest('.opt-row').classList.toggle('disabled', b.disabled); });
+      });
     }
 
     function updateModal(){
-      const { chosen, total } = currentSelections();
-      document.getElementById('modalTotalPrice').textContent = '$' + total;
+      refreshGroups();
+      const { extra } = currentSelections();
+      root.querySelectorAll('.opt-err').forEach(e => { e.textContent = ''; });
+      const unit = (Number(product.price) || 0) + extra;
+      document.getElementById('modalTotalPrice').textContent = money(unit * qty);
 
       const ctaWrap = document.getElementById('modalCtaWrap');
-      if(biz.whatsapp){
-        const digits = biz.whatsapp.replace(/[^0-9]/g,'');
-        let message = `Hola ${biz.name}! Quiero pedir "${product.name}"`;
-        if(chosen.length) message += ` (${chosen.join(', ')})`;
-        message += ` — $${total} — que vi en la página de Cadetería Centro.`;
-        ctaWrap.innerHTML = `<a class="contact-btn whatsapp btn-block product-modal-cta" style="justify-content:center;" href="https://wa.me/${digits}?text=${encodeURIComponent(message)}" target="_blank" rel="noopener">Pedir por WhatsApp</a>`;
-      } else {
+      if(!biz.whatsapp){
         ctaWrap.innerHTML = `<p class="sub product-modal-cta" style="margin:0;">Este negocio todavía no cargó un WhatsApp de contacto.</p>`;
+        return;
       }
+      if(!ctaWrap.dataset.ready){
+        ctaWrap.dataset.ready = '1';
+        ctaWrap.innerHTML = `
+          <label class="opt-note-label" for="modalNote">Aclaración para el local (opcional)</label>
+          <textarea class="opt-note" id="modalNote" rows="2" maxlength="140" placeholder="Ej: bien cocida, sin sal…"></textarea>
+          <div class="opt-footer">
+            <div class="qty-stepper"><button type="button" id="qtyMinus" aria-label="Quitar uno">−</button><span id="qtyVal">1</span><button type="button" id="qtyPlus" aria-label="Sumar uno">+</button></div>
+            <button type="button" class="btn-add" id="addToCart"></button>
+          </div>`;
+        document.getElementById('qtyMinus').addEventListener('click', () => { qty = Math.max(1, qty - 1); updateModal(); });
+        document.getElementById('qtyPlus').addEventListener('click', () => { qty = Math.min(50, qty + 1); updateModal(); });
+        document.getElementById('addToCart').addEventListener('click', () => {
+          const sel = currentSelections();
+          const bad = Object.keys(sel.errores);
+          if(bad.length){
+            bad.forEach(gi => { root.querySelector(`.opt-group[data-gi="${gi}"] .opt-err`).textContent = sel.errores[gi]; });
+            root.querySelector(`.opt-group[data-gi="${bad[0]}"]`).scrollIntoView({block:'center', behavior:'smooth'});
+            return;
+          }
+          const nota = document.getElementById('modalNote').value.replace(/\s+/g, ' ').trim().slice(0, 140);
+          const partes = sel.partes.concat(nota ? ['Nota: ' + nota] : []);
+          if(addToCart(biz, product, partes.join(' · '), sel.extra, qty)){
+            closeProductModal();
+            ccToast('Agregado a tu pedido');
+          }
+        });
+      }
+      document.getElementById('qtyVal').textContent = qty;
+      document.getElementById('addToCart').textContent = 'Agregar al pedido · ' + money(unit * qty);
     }
 
+    root.querySelector('#modalGroups').addEventListener('change', updateModal);
     updateModal();
 
     const overlay = document.getElementById('productModalOverlay');
