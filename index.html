@@ -2038,19 +2038,42 @@
       cardGrid.appendChild(card);
     });
     cardGrid.classList.add('carousel');
+    cardGrid.scrollLeft = 0;
+    prepararLoop();
+  }
 
-    // Duplicamos las tarjetas para que el auto-scroll pueda loopear sin
-    // corte (al llegar a la mitad, se resetea el scroll de forma invisible
-    // porque la segunda mitad es idéntica a la primera).
+  // Duplicamos las tarjetas para que el auto-scroll pueda loopear sin corte
+  // (al llegar a la mitad, se resetea el scroll de forma invisible porque la
+  // segunda mitad es idéntica a la primera). SOLO si las tarjetas reales no
+  // entran en pantalla: si entran, duplicarlas hace que cada negocio se vea
+  // repetido y no hay nada que animar.
+  function prepararLoop(){
+    stopAutoScroll();
+    cardGrid.querySelectorAll('[data-clon]').forEach(c => c.remove());
+    if(!cardGrid.classList.contains('carousel')) return;
+    if(cardGrid.children.length < 3) return;           // con 1 o 2 negocios no hay nada que girar: se verían repetidos
+    if(cardGrid.scrollWidth <= cardGrid.clientWidth + 4) return;
     Array.from(cardGrid.children).forEach(card => {
       const clone = card.cloneNode(true);
+      clone.setAttribute('data-clon', '1');
       clone.setAttribute('aria-hidden', 'true');
       clone.setAttribute('tabindex', '-1');
       cardGrid.appendChild(clone);
     });
-    cardGrid.scrollLeft = 0;
     requestAnimationFrame(() => requestAnimationFrame(startAutoScroll));
   }
+
+  // Si cambia el ancho (girar el celular, achicar la ventana) puede que ahora
+  // entren o dejen de entrar: se vuelve a decidir si hace falta duplicar.
+  (function(){
+    let ancho = window.innerWidth, t = null;
+    window.addEventListener('resize', () => {
+      if(window.innerWidth === ancho) return;          // la barra del navegador del celular no cuenta
+      ancho = window.innerWidth;
+      clearTimeout(t);
+      t = setTimeout(() => { cardGrid.scrollLeft = 0; prepararLoop(); }, 200);
+    });
+  })();
 
   async function renderProductResults(){
     stopAutoScroll();
