@@ -1450,6 +1450,9 @@
           <span class="form-msg" id="syncTiendalyMsg"></span>
         </div>
         <div id="membershipList"></div>
+        <h4 style="margin:22px 0 6px;">Negocios ocultos</h4>
+        <p class="sub" style="margin:0 0 8px;">Los que sacaste de la página principal. No vuelven solos: para que se vean de nuevo, tocá «Mostrar».</p>
+        <div id="deletedBusinessList"></div>
       </div>
 
       <div class="panel" style="margin-top:24px;">
@@ -3220,6 +3223,7 @@
   }
 
   async function renderMembershipList(){
+    renderDeletedList();
     const wrap = document.getElementById('membershipList');
     wrap.innerHTML = `<p class="sub" style="margin:0;">Cargando negocios…</p>`;
     let businesses;
@@ -3240,7 +3244,47 @@
           <span>${escapeHtml(biz.category || '')} — ${(biz.products || []).length} productos</span>
         </div>
         ${biz.tiendalyUrl ? `<a class="btn btn-outline btn-sm" href="${escapeHtml(biz.tiendalyUrl)}" target="_blank" rel="noopener">Ver en Tiendaly</a>` : ''}
+        <button type="button" class="btn btn-outline-danger btn-sm" data-ocultar-negocio="${escapeHtml(biz.id)}" data-nombre="${escapeHtml(biz.name)}">Ocultar del sitio</button>
       </div>`).join('');
+    wrap.querySelectorAll('[data-ocultar-negocio]').forEach(btn => btn.addEventListener('click', async () => {
+      const nombre = btn.dataset.nombre;
+      if(!confirm(`¿Ocultar «${nombre}» de Cadetería Centro?\n\nDeja de verse en el sitio y no vuelve aunque Tiendaly lo siga enviando. En Tiendaly no se toca nada: el negocio sigue con su cuenta y su tienda. Cuando quieras, lo volvés a mostrar desde «Negocios ocultos».`)) return;
+      btn.disabled = true;
+      try{
+        await apiFetch('/admin/businesses/' + encodeURIComponent(btn.dataset.ocultarNegocio), { method: 'DELETE' });
+        rubrosCache.at = 0;
+        await renderMembershipList();
+      }catch(err){
+        btn.disabled = false;
+        alert(err.message);
+      }
+    }));
+  }
+
+  async function renderDeletedList(){
+    const wrap = document.getElementById('deletedBusinessList');
+    let lista = [];
+    try{ lista = await apiFetch('/admin/businesses-eliminados'); }catch(err){ lista = []; }
+    if(lista.length === 0){
+      wrap.innerHTML = `<p class="sub" style="margin:0;">No ocultaste ningún negocio.</p>`;
+      return;
+    }
+    wrap.innerHTML = lista.map(x => `
+      <div class="membership-row">
+        <div class="membership-info"><strong>${escapeHtml(x.name || ('Negocio ' + x.tiendalyId))}</strong><span>Oculto en este sitio</span></div>
+        <button type="button" class="btn btn-outline btn-sm" data-mostrar-negocio="${x.tiendalyId}">Mostrar</button>
+      </div>`).join('');
+    wrap.querySelectorAll('[data-mostrar-negocio]').forEach(btn => btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      try{
+        await apiFetch('/admin/businesses-eliminados/' + btn.dataset.mostrarNegocio, { method: 'DELETE' });
+        rubrosCache.at = 0;
+        await renderMembershipList();
+      }catch(err){
+        btn.disabled = false;
+        alert(err.message);
+      }
+    }));
   }
 
   const syncBtn = document.getElementById('syncTiendalyBtn');
