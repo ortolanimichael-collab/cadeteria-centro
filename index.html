@@ -1890,6 +1890,7 @@
     }
     if(h === '#/admin') return { name:'admin' };
     if(h.indexOf('#/negocio/') === 0) return { name:'negocio', id: h.replace('#/negocio/','') };
+    if(h.indexOf('#/tienda/') === 0) return { name:'tienda', id: h.replace('#/tienda/','') };   // link que viene del botón «Ver mi tienda en Cadetería Centro» de Tiendaly
     return { name:'home' };
   }
 
@@ -1958,6 +1959,13 @@
       }
       showView('admin');
       await renderAdmin();
+    } else if(route.name === 'tienda'){
+      // El id que llega es el de Tiendaly: se busca el negocio acá y se abre su página.
+      try{
+        const b = await apiFetch('/businesses/by-tiendaly/' + encodeURIComponent(route.id));
+        location.replace('#/negocio/' + b.id);
+      }catch(e){ location.replace('#/'); }
+      return;
     } else if(route.name === 'negocio'){
       showView('negocio');
       await renderPublicBusiness(route.id);
