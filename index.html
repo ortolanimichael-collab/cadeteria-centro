@@ -1308,9 +1308,7 @@
       </div>
 
       <div id="pubMapSectionWrap" hidden>
-        <h2 class="section-title" style="font-size:1.1rem; margin-top:28px;">Ubicación</h2>
-        <div class="map-preview" id="pubMapPreview" style="height:220px;"></div>
-        <a href="#" target="_blank" rel="noopener" class="field-hint" id="pubMapLink" style="display:inline-block; margin-top:6px;">Ver en Google Maps</a>
+        <a href="#" target="_blank" rel="noopener" class="field-hint" id="pubMapLink" style="display:inline-block; margin-top:20px;">📍 Ver ubicación en Google Maps</a>
       </div>
 
       <hr class="feed-divider">
@@ -2318,7 +2316,7 @@
     wrapEl.hidden = false;
     const delta = 0.006;
     const bbox = `${lng - delta},${lat - delta},${lng + delta},${lat + delta}`;
-    previewEl.innerHTML = `<iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&marker=${lat},${lng}" title="Ubicación en el mapa"></iframe>`;
+    if(previewEl) previewEl.innerHTML = `<iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&marker=${lat},${lng}" title="Ubicación en el mapa"></iframe>`;
     linkEl.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   }
 
@@ -2459,7 +2457,7 @@
 
     if(biz.lat != null && biz.lng != null){
       mapWrap.hidden = false;
-      renderMapPreview(biz.lat, biz.lng, mapWrap, document.getElementById('pubMapPreview'), document.getElementById('pubMapLink'));
+      renderMapPreview(biz.lat, biz.lng, mapWrap, null, document.getElementById('pubMapLink'));   // sin mapa incrustado: solo el enlace
     } else {
       mapWrap.hidden = true;
     }
