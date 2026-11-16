@@ -718,6 +718,13 @@
     overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:var(--ink);
     transition:transform .15s ease, box-shadow .15s ease;position:relative;
   }
+  .promo-chip{position:absolute;top:10px;left:10px;z-index:2;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;
+    font-size:.78rem;font-weight:800;padding:5px 10px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+  .promo-escalera{margin:10px 0;padding:10px 12px;border:1px solid var(--line,#e5e7eb);border-radius:12px;background:var(--bg,#f7f7f8);}
+  .promo-escalera .pe-tit{font-weight:700;margin-bottom:4px;}
+  .promo-escalera ul{margin:0;padding-left:18px;}
+  .promo-aviso{margin:6px 0;font-weight:700;color:#b91c1c;}
+  .cl-promo{font-size:.82rem;font-weight:700;color:#b91c1c;}
   a.result-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,24,27,0.08);}
   .result-img{width:100%;height:140px;object-fit:cover;background:var(--bg);}
   .result-img-placeholder{
@@ -2113,6 +2120,7 @@
       const catParam = categoryQueryValue(activeCategory);
       if(catParam) qs.set('category', catParam);
       results = await apiFetch('/products/search?' + qs.toString());
+      recordarPromos(results);
     }catch(err){
       cardGrid.innerHTML = `<div class="empty-state"><h3>No pudimos buscar</h3><p>${escapeHtml(err.message)}</p></div>`;
       return;
@@ -2136,6 +2144,7 @@
       card.href = 'javascript:void(0)';
       card.innerHTML = `
         ${openStatusBadge(item.bizIsOpenNow).replace('open-badge', 'open-badge open-badge-float')}
+        ${tieneTramos(item) ? `<span class="promo-chip">🏷 ${item.qtyPromos[0].qty} x ${money(item.qtyPromos[0].price)}</span>` : ''}
         ${item.image ? `<img class="result-img" src="${item.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
           <p class="pname">${escapeHtml(item.name)}</p>
@@ -2464,6 +2473,7 @@
 
     catalog.innerHTML = '';
     const products = biz.products || [];
+    recordarPromos(products);
     if(products.length === 0){
       catalog.innerHTML = `<div class="empty-state"><h3>Todavía no hay productos cargados</h3><p>Este negocio va a sumar su menú pronto.</p></div>`;
       return;
@@ -2474,6 +2484,7 @@
       card.className = 'result-card';
       card.innerHTML = `
         ${openStatusBadge(biz.isOpenNow).replace('open-badge', 'open-badge open-badge-float')}
+        ${tieneTramos(p) ? `<span class="promo-chip">🏷 ${p.qtyPromos[0].qty} x ${money(p.qtyPromos[0].price)}</span>` : ''}
         ${p.image ? `<img class="result-img" src="${p.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
           <p class="pname">${escapeHtml(p.name)}</p>
@@ -2506,7 +2517,36 @@
     try{ if(memCart) localStorage.setItem(CART_KEY, JSON.stringify(memCart)); else localStorage.removeItem(CART_KEY); }catch(e){}
     renderCartBar();
   }
-  function cartTotal(c){ return c.items.reduce((t, i) => t + (i.price + i.extra) * i.qty, 0); }
+  // Promos por cantidad (2 x $17.000): arma la combinación que más le conviene al cliente, igual que Tiendaly.
+  // El precio de cada tramo es el TOTAL por esas unidades. Los extras no entran en la promo.
+  function promoTotal(unit, qty, promos){
+    const tramos = (Array.isArray(promos) ? promos : [])
+      .filter(t => t && Number(t.qty) >= 2 && Number(t.price) > 0)
+      .map(t => ({ qty: Math.floor(Number(t.qty)), price: Number(t.price) }));
+    const n = Math.max(0, Math.floor(Number(qty) || 0));
+    unit = Number(unit) || 0;
+    if(!tramos.length || !n) return unit * n;
+    const mejor = [0];
+    for(let q = 1; q <= n; q++){
+      let m = mejor[q - 1] + unit;
+      tramos.forEach(t => { if(t.qty <= q) m = Math.min(m, mejor[q - t.qty] + t.price); });
+      mejor[q] = m;
+    }
+    return mejor[n];
+  }
+  function tieneTramos(p){ return !!(p && Array.isArray(p.qtyPromos) && p.qtyPromos.length); }
+  // Las promos que está mostrando el sitio ahora, por producto. Un pedido empezado antes de que el negocio cargara
+  // la promo quedó guardado en el navegador sin ella, así que el precio se toma siempre de lo último que vimos.
+  const PROMOS_AL_DIA = Object.create(null);
+  function recordarPromos(lista){
+    (Array.isArray(lista) ? lista : []).forEach(p => {
+      if(p && p.id != null) PROMOS_AL_DIA[p.id] = Array.isArray(p.qtyPromos) ? p.qtyPromos : [];
+    });
+  }
+  function promosDe(i){ return (i && i.pid != null && PROMOS_AL_DIA[i.pid]) || i.promos || []; }
+  function lineTotal(i){ return promoTotal(i.price, i.qty, promosDe(i)) + (Number(i.extra) || 0) * i.qty; }
+  function lineAhorro(i){ return (i.price + (Number(i.extra) || 0)) * i.qty - lineTotal(i); }
+  function cartTotal(c){ return c.items.reduce((t, i) => t + lineTotal(i), 0); }
   function cartCount(c){ return c.items.reduce((t, i) => t + i.qty, 0); }
 
   function ccToast(txt){
@@ -2527,7 +2567,8 @@
     const k = product.id + '|' + detalle;
     const it = c.items.find(i => i.k === k);
     if(it) it.qty = Math.min(99, it.qty + qty);
-    else c.items.push({ k, pid: product.id, name: product.name, price: Number(product.price) || 0, extra: Number(extra) || 0, qty, detalle });
+    else c.items.push({ k, pid: product.id, name: product.name, price: Number(product.price) || 0, extra: Number(extra) || 0, qty, detalle,
+                       promos: Array.isArray(product.qtyPromos) ? product.qtyPromos : [] });
     cartSave(c);
     return true;
   }
@@ -2552,7 +2593,7 @@
   function cartMessage(c, f){
     const L = ['Hola ' + c.bizName + '! Quiero hacer este pedido que vi en Cadetería Centro:', ''];
     c.items.forEach(i => {
-      L.push('• ' + i.qty + ' x ' + i.name + ' — ' + money((i.price + i.extra) * i.qty));
+      L.push('• ' + i.qty + ' x ' + i.name + ' — ' + money(lineTotal(i)) + (lineAhorro(i) > 0 ? ' (promo)' : ''));
       if(i.detalle) L.push('   ↳ ' + i.detalle);
     });
     L.push('', '*Total: ' + money(cartTotal(c)) + '*');
@@ -2580,7 +2621,8 @@
             <div class="cart-body">
               <div id="cartLines">${c.items.map((i, ix) => `
                 <div class="cart-line">
-                  <div class="cl-name">${escapeHtml(i.name)}</div><div class="cl-sub">${money((i.price + i.extra) * i.qty)}</div>
+                  <div class="cl-name">${escapeHtml(i.name)}</div><div class="cl-sub">${money(lineTotal(i))}</div>
+                  ${lineAhorro(i) > 0 ? `<div class="cl-promo">🏷 Promo aplicada · ahorrás ${money(lineAhorro(i))}</div>` : ''}
                   ${i.detalle ? `<div class="cl-det">${escapeHtml(i.detalle)}</div>` : ''}
                   <div class="cl-ctl">
                     <div class="qty-stepper"><button type="button" data-ix="${ix}" data-d="-1" aria-label="Quitar uno">−</button><span>${i.qty}</span><button type="button" data-ix="${ix}" data-d="1" aria-label="Sumar uno">+</button></div>
@@ -2676,6 +2718,11 @@
             <h3>${escapeHtml(product.name)}</h3>
             <span class="pprice" id="modalTotalPrice">${money(product.price)}</span>
             ${product.desc ? `<p class="pdesc">${escapeHtml(product.desc)}</p>` : ''}
+            ${tieneTramos(product) ? `<div class="promo-escalera">
+              <div class="pe-tit">🏷 Llevando más, te sale más barato</div>
+              <ul>${product.qtyPromos.map(t => `<li><strong>${t.qty} unidades: ${money(t.price)}</strong></li>`).join('')}</ul>
+            </div>` : ''}
+            <div class="promo-aviso" id="modalPromoAviso" hidden></div>
             <div class="product-modal-biz">De <strong>${escapeHtml(biz.name)}</strong> — ${escapeHtml(biz.category)}</div>
             <div id="modalGroups"></div>
             <div id="modalCtaWrap"></div>
@@ -2752,7 +2799,14 @@
       const { extra } = currentSelections();
       root.querySelectorAll('.opt-err').forEach(e => { e.textContent = ''; });
       const unit = (Number(product.price) || 0) + extra;
-      document.getElementById('modalTotalPrice').textContent = money(unit * qty);
+      const total = promoTotal(Number(product.price) || 0, qty, product.qtyPromos) + extra * qty;
+      document.getElementById('modalTotalPrice').textContent = money(total);
+      const aviso = document.getElementById('modalPromoAviso');
+      if(aviso){
+        const ahorro = unit * qty - total;
+        aviso.hidden = !(ahorro > 0);
+        aviso.textContent = ahorro > 0 ? '🏷 Promo aplicada: ahorrás ' + money(ahorro) : '';
+      }
 
       const ctaWrap = document.getElementById('modalCtaWrap');
       if(!biz.whatsapp){
@@ -2787,7 +2841,7 @@
         });
       }
       document.getElementById('qtyVal').textContent = qty;
-      document.getElementById('addToCart').textContent = 'Agregar al pedido · ' + money(unit * qty);
+      document.getElementById('addToCart').textContent = 'Agregar al pedido · ' + money(total);
     }
 
     root.querySelector('#modalGroups').addEventListener('change', updateModal);
