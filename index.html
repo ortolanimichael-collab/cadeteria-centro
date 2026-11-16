@@ -718,18 +718,20 @@
     overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:var(--ink);
     transition:transform .15s ease, box-shadow .15s ease;position:relative;
   }
-  /* Debajo del cartelito «Abierto», que va arriba a la izquierda, para que no se tapen */
-  .promo-chip{position:absolute;top:46px;left:10px;z-index:2;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;
-    font-size:.78rem;font-weight:800;padding:5px 10px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.25);white-space:nowrap;}
+  /* Pegada a la esquina de abajo a la derecha de la foto (arriba a la izquierda va el cartel «Abierto») */
+  .promo-chip{position:absolute;top:calc(var(--img-h,140px) - 32px);right:10px;left:auto;z-index:2;
+    background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;
+    font-size:.78rem;font-weight:800;padding:5px 10px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.3);white-space:nowrap;
+    max-width:calc(100% - 20px);overflow:hidden;text-overflow:ellipsis;}
   .promo-escalera{margin:10px 0;padding:10px 12px;border:1px solid var(--line,#e5e7eb);border-radius:12px;background:var(--bg,#f7f7f8);}
   .promo-escalera .pe-tit{font-weight:700;margin-bottom:4px;}
   .promo-escalera ul{margin:0;padding-left:18px;}
   .promo-aviso{margin:6px 0;font-weight:700;color:#b91c1c;}
   .cl-promo{font-size:.82rem;font-weight:700;color:#b91c1c;}
   a.result-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,24,27,0.08);}
-  .result-img{width:100%;height:140px;object-fit:cover;background:var(--bg);}
+  .result-img{width:100%;height:var(--img-h,140px);object-fit:cover;background:var(--bg);}
   .result-img-placeholder{
-    width:100%;height:140px;background:var(--bg);display:flex;align-items:center;justify-content:center;
+    width:100%;height:var(--img-h,140px);background:var(--bg);display:flex;align-items:center;justify-content:center;
     color:var(--ink-soft);font-size:0.78rem;
   }
   .result-body{padding:16px;display:flex;flex-direction:column;gap:6px;flex:1;}
@@ -770,9 +772,9 @@
     .form-row{grid-template-columns:1fr;}
     .search-box{flex-direction:column;}
     h1.hero-title{max-width:none;}
-    .result-img{height:120px;}
+    .result-img, .result-img-placeholder{--img-h:120px;}
     .promo-bar{font-size:1.05rem;padding:12px 0;}
-    .promo-chip{font-size:.72rem;padding:4px 8px;top:42px;left:8px;}
+    .promo-chip{--img-h:120px;font-size:.72rem;padding:4px 8px;top:calc(var(--img-h) - 29px);right:8px;left:auto;max-width:calc(100% - 16px);}
 
     /* Cabecera: en el celular la marca y los botones tienen que entrar en una sola línea */
     .header-inner{padding:10px 0;gap:8px;}
