@@ -718,8 +718,9 @@
     overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:var(--ink);
     transition:transform .15s ease, box-shadow .15s ease;position:relative;
   }
-  .promo-chip{position:absolute;top:10px;left:10px;z-index:2;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;
-    font-size:.78rem;font-weight:800;padding:5px 10px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+  /* Debajo del cartelito «Abierto», que va arriba a la izquierda, para que no se tapen */
+  .promo-chip{position:absolute;top:46px;left:10px;z-index:2;background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;
+    font-size:.78rem;font-weight:800;padding:5px 10px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.25);white-space:nowrap;}
   .promo-escalera{margin:10px 0;padding:10px 12px;border:1px solid var(--line,#e5e7eb);border-radius:12px;background:var(--bg,#f7f7f8);}
   .promo-escalera .pe-tit{font-weight:700;margin-bottom:4px;}
   .promo-escalera ul{margin:0;padding-left:18px;}
@@ -769,12 +770,33 @@
     .form-row{grid-template-columns:1fr;}
     .search-box{flex-direction:column;}
     h1.hero-title{max-width:none;}
-    .cover-banner{height:190px;}
-    .profile-head{margin-top:-80px;gap:12px;}
-    .profile-avatar{width:200px;height:200px;font-size:3.8rem;border-width:4px;margin-left:-8px;}
     .result-img{height:120px;}
-    .brand-mark{width:44px;height:44px;border-radius:11px;}
     .promo-bar{font-size:1.05rem;padding:12px 0;}
+    .promo-chip{font-size:.72rem;padding:4px 8px;top:42px;left:8px;}
+
+    /* Cabecera: en el celular la marca y los botones tienen que entrar en una sola línea */
+    .header-inner{padding:10px 0;gap:8px;}
+    .brand{font-size:1.02rem;gap:9px;line-height:1.1;min-width:0;}
+    .brand-text{white-space:nowrap;}
+    .brand-mark{width:38px;height:38px;border-radius:10px;flex:none;}
+    .brand-mark svg{width:23px;height:23px;}
+    .header-auth-area{gap:6px;flex:none;}
+    .header-auth-area .btn{padding:8px 13px;font-size:0.8rem;}
+    .header-auth-area .btn-link{font-size:0.8rem;}
+    .header-greeting{display:none;}
+
+    /* Perfil del negocio: el logo arriba y los datos debajo, en vez de uno al lado del otro */
+    .cover-banner{height:150px;}
+    .profile-head{flex-direction:column;align-items:stretch;margin-top:-52px;gap:10px;padding-bottom:14px;}
+    .profile-avatar{width:96px;height:96px;font-size:2.1rem;border-width:4px;margin-left:0;}
+    .profile-info{padding-top:0;padding-bottom:0;}
+    .profile-info h1{font-size:1.3rem;margin-bottom:6px;}
+    .profile-meta-row{font-size:0.84rem;gap:6px;}
+    .profile-meta-row .dot-sep{display:none;}          /* los puntitos sueltos quedaban colgando al cortar la línea */
+    .profile-meta-row #pubAddress, .profile-meta-row #pubPhone{flex:0 0 100%;}
+    .contact-row{padding-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .contact-row .contact-btn{justify-content:center;padding:11px 8px;font-size:0.84rem;text-align:center;}
+    .contact-row .contact-btn.whatsapp{grid-column:1 / -1;}
   }
 
   /* ---------- ARMADO DEL PRODUCTO Y PEDIDO (carrito) ---------- */
@@ -825,6 +847,13 @@
   .cart-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
   .cart-clear{border:0;background:none;color:var(--ink-soft);font:inherit;cursor:pointer;text-decoration:underline;}
   .cc-toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-weight:600;z-index:300;}
+
+  /* ---------- Pantallas angostas (celulares chicos) ---------- */
+  @media (max-width:430px){
+    .brand-text{display:none;}                 /* queda solo el isotipo: el nombre no entraba en una línea */
+    .opt-footer{flex-wrap:wrap;gap:10px;}      /* «Agregar al pedido · $17.000» no entraba al lado del contador */
+    .btn-add{flex:1 1 100%;padding:13px 10px;font-size:0.95rem;}
+  }
 </style>
 </head>
 <body>
@@ -835,7 +864,7 @@
       <span class="brand-mark" id="headerBrandMark">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M5 17a2 2 0 100-4 2 2 0 000 4zM19 17a2 2 0 100-4 2 2 0 000 4z" stroke="#fff" stroke-width="2"/><path d="M5 15V8a1 1 0 011-1h5l5 5h3v3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
       </span>
-      Cadetería Centro
+      <span class="brand-text">Cadetería Centro</span>
     </a>
     <nav class="main-nav">
       <a href="#/">Buscar</a>
@@ -2148,7 +2177,7 @@
         ${item.image ? `<img class="result-img" src="${item.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
           <p class="pname">${escapeHtml(item.name)}</p>
-          <span class="pprice">$${escapeHtml(String(item.price))}</span>
+          <span class="pprice">${money(item.price)}</span>
           ${item.desc ? `<p class="pdesc">${escapeHtml(item.desc)}</p>` : ''}
           <p class="result-biz">De <strong>${escapeHtml(item.bizName)}</strong></p>
         </div>
@@ -2488,7 +2517,7 @@
         ${p.image ? `<img class="result-img" src="${p.image}" alt="">` : `<div class="result-img-placeholder">Sin foto</div>`}
         <div class="result-body">
           <p class="pname">${escapeHtml(p.name)}</p>
-          <span class="pprice">$${escapeHtml(String(p.price))}</span>
+          <span class="pprice">${money(p.price)}</span>
           ${p.desc ? `<p class="pdesc">${escapeHtml(p.desc)}</p>` : ''}
         </div>
       `;
